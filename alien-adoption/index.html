@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Companions — Alien Pet Adoption Agency</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --surface: #13131a;
+            --surface-hover: #1a1a24;
+            --border: #2a2a3a;
+            --border-focus: #6366f1;
+            --text: #e4e4ed;
+            --text-muted: #8888a4;
+            --accent: #6366f1;
+            --accent-soft: rgba(99, 102, 241, 0.12);
+            --tag-bg: #1e1e2e;
+            --tag-text: #a5b4fc;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --pink: #f472b6;
+            --cyan: #22d3ee;
+            --radius: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px 100px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* ─── Header ─── */
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--tag-text);
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 8px;
+        }
+
+        h1 .emoji { margin-right: 6px; }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            max-width: 600px;
+        }
+
+        /* ─── Stats Bar ─── */
+
+        .stats-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* ─── Catalog Grid ─── */
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pill:hover, .pill.active {
+            color: var(--tag-text);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+        }
+
+        .catalog {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .alien-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.15s;
+            cursor: pointer;
+        }
+
+        .alien-card:hover {
+            border-color: var(--border-focus);
+            transform: translateY(-2px);
+        }
+
+        .alien-card-visual {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 52px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alien-card-visual::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.15;
+        }
+
+        .alien-card-body {
+            padding: 16px;
+        }
+
+        .alien-card-body h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .alien-card-body .species {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .alien-card-body .blurb {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .alien-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .alien-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            border: 1px solid;
+        }
+
+        .alien-tag.size { color: var(--cyan); border-color: rgba(34,211,238,0.3); background: rgba(34,211,238,0.08); }
+        .alien-tag.temperament { color: var(--success); border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.08); }
+        .alien-tag.planet { color: var(--pink); border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.08); }
+        .alien-tag.danger { color: var(--danger); border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+        .alien-tag.ability { color: var(--warning); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+
+        .alien-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .alien-price {
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .compat-score {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* ─── Detail Modal ─── */
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            max-width: 560px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 24px 24px 0;
+        }
+
+        .modal-close {
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .modal-close:hover { background: var(--surface-hover); }
+
+        .modal-visual {
+            text-align: center;
+            font-size: 72px;
+            padding: 20px 0;
+        }
+
+        .modal-body {
+            padding: 0 24px 24px;
+        }
+
+        .modal-body h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .modal-species {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .modal-bio {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .detail-item .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+            margin-bottom: 2px;
+        }
+
+        .detail-item .value {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .warnings {
+            background: rgba(248,113,113,0.06);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 20px;
+        }
+
+        .warnings h4 {
+            font-size: 12px;
+            color: var(--danger);
+            font-family: 'DM Mono', monospace;
+            margin-bottom: 6px;
+        }
+
+        .warnings ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .warnings li::before {
+            content: '⚠ ';
+        }
+
+        .adopt-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            cursor: pointer;
+            width: 100%;
+            transition: opacity 0.2s;
+        }
+
+        .adopt-btn:hover { opacity: 0.9; }
+
+        /* ─── Tool Log Panel ─── */
+
+        .log-section {
+            margin-top: 48px;
+        }
+
+        .log-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .log-section .log-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .log-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .log-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-toolbar span {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .log-clear {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .log-clear:hover { color: var(--text); }
+
+        .log-entries {
+            padding: 12px 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-entry:last-child { border-bottom: none; }
+
+        .log-entry .log-time {
+            color: var(--text-muted);
+            margin-right: 8px;
+        }
+
+        .log-entry .log-tool {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .log-entry .log-arrow {
+            color: var(--text-muted);
+            margin: 0 4px;
+        }
+
+        .log-entry .log-params {
+            color: var(--warning);
+        }
+
+        .log-entry .log-result {
+            color: var(--success);
+            display: block;
+            margin-top: 4px;
+            margin-left: 70px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .log-empty {
+            color: var(--text-muted);
+            padding: 24px;
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+        }
+
+        /* ─── Annotations ─── */
+
+        .annotations {
+            margin-top: 48px;
+        }
+
+        .annotations h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .annotation-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .annotation-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--tag-text);
+            background: var(--tag-bg);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .annotation-label .fn { color: var(--success); }
+
+        .annotation-desc {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .annotation-desc code {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .annotation-desc strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        pre {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        pre .hl { color: var(--accent); }
+        pre .fn { color: var(--success); }
+        pre .str { color: var(--warning); }
+        pre .kw { color: var(--pink); }
+        pre .cm { color: #555570; }
+
+        /* ─── Adoption confirmation ─── */
+
+        .confirmation-banner {
+            display: none;
+            background: rgba(52,211,153,0.08);
+            border: 1px solid rgba(52,211,153,0.25);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 32px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .confirmation-banner.show { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .confirmation-banner h3 {
+            color: var(--success);
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .confirmation-banner p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ─── Responsive ─── */
+
+        @media (max-width: 600px) {
+            .stats-bar { flex-direction: column; }
+            .catalog { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header class="page-header">
+        <div class="badge">WebMCP Imperative API</div>
+        <h1><span class="emoji">&#128125;</span> Cosmic Companions</h1>
+        <p class="subtitle">
+            Intergalactic Alien Pet Adoption Agency. Browse our catalog of exotic extraterrestrial 
+            companions — or let an AI agent find the perfect match for you using WebMCP tools.
+        </p>
+    </header>
+
+    <!-- Confirmation Banner (hidden until adoption) -->
+    <div class="confirmation-banner" id="confirmationBanner"></div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat">
+            <div class="stat-value" id="statTotal">10</div>
+            <div class="stat-label">Species Available</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value" style="color: var(--success)">&#8372;250–12,000</div>
+            <div class="stat-label">Price Range (Galactic Credits)</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value" style="color: var(--pink)">6</div>
+            <div class="stat-label">Planets Represented</div>
+        </div>
+        <div class="stat">
+            <div class="stat-value" style="color: var(--warning)">3</div>
+            <div class="stat-label">Registered Tools</div>
+        </div>
+    </div>
+
+    <!-- Catalog -->
+    <div class="section-header">
+        <h2>Available Companions</h2>
+        <div class="filter-pills">
+            <span class="pill active" data-filter="all">All</span>
+            <span class="pill" data-filter="small">Small</span>
+            <span class="pill" data-filter="medium">Medium</span>
+            <span class="pill" data-filter="large">Large</span>
+            <span class="pill" data-filter="gentle">Gentle</span>
+            <span class="pill" data-filter="chaotic">Chaotic</span>
+        </div>
+    </div>
+
+    <div class="catalog" id="catalog"></div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal"></div>
+    </div>
+
+    <!-- Tool Call Log -->
+    <div class="log-section">
+        <h2>&#128225; Agent Tool Log</h2>
+        <p class="log-desc">Real-time log of WebMCP tool invocations. When an AI agent calls a tool, the call and response appear here.</p>
+        <div class="log-panel">
+            <div class="log-toolbar">
+                <span>navigator.modelContext</span>
+                <button class="log-clear" onclick="clearLog()">clear</button>
+            </div>
+            <div class="log-entries" id="logEntries">
+                <div class="log-empty">No tool calls yet. Use an agent to interact with this page.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Annotations -->
+    <div class="annotations">
+        <h2>&#128270; Imperative API Explained</h2>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="fn">navigator.modelContext.registerTool()</span>
+            </div>
+            <div class="annotation-desc">
+                The core method for the imperative API. You pass it an object with a <code>name</code>, 
+                <code>description</code>, <code>inputSchema</code> (JSON Schema for parameters), 
+                and an <code>execute</code> function. The browser registers this as a tool 
+                that agents can discover and call.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="fn">inputSchema</span> — JSON Schema
+            </div>
+            <div class="annotation-desc">
+                Defines the parameters the tool accepts using standard JSON Schema. 
+                The agent reads this to understand what arguments to pass. Include 
+                <code>description</code> fields on each property — this is what the LLM 
+                actually reads to decide how to fill in the values.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="fn">execute(params)</span> — Returns structured data
+            </div>
+            <div class="annotation-desc">
+                <strong>This is the big difference from the declarative API.</strong> Your execute 
+                function receives the agent's parameters, runs your logic, and returns 
+                structured data as <code>{ content: [{ type: "text", text: "..." }] }</code>. 
+                The agent can then reason about the results, chain follow-up calls, or 
+                relay findings back to the user in natural language.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                Tool chaining pattern
+            </div>
+            <div class="annotation-desc">
+                This demo registers three tools that form a natural workflow: 
+                <code>search_aliens</code> → <code>get_alien_details</code> → <code>adopt_alien</code>. 
+                The agent calls search first, reads the results, picks a candidate, gets more details, 
+                and then completes the adoption. Each tool returns data the agent needs for the next step.
+            </div>
+        </div>
+
+        <h2 style="margin-top: 32px;">&#128196; Example Tool Registration</h2>
+        <pre><span class="cm">// Register a tool with the imperative API</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"search_aliens"</span>,
+  <span class="hl">description</span>: <span class="str">"Search alien pets by planet, size, temperament..."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      planet: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"Planet of origin to filter by"</span>
+      },
+      size: {
+        type: <span class="str">"string"</span>,
+        enum: [<span class="str">"small"</span>, <span class="str">"medium"</span>, <span class="str">"large"</span>]
+      }
+    }
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> results = filterAliens(params);
+    <span class="kw">return</span> {
+      content: [{
+        type: <span class="str">"text"</span>,
+        text: JSON.stringify(results)
+      }]
+    };
+  }
+});</pre>
+    </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  ALIEN CATALOG DATA
+// ═══════════════════════════════════════════════════
+
+const ALIENS = [
+    {
+        id: "zorb-001",
+        name: "Blinky",
+        species: "Zorbian Puffworm",
+        emoji: "🟣",
+        planet: "Zorbax-7",
+        size: "small",
+        temperament: "gentle",
+        ability: "bioluminescence",
+        price: 450,
+        compatibilityScore: 94,
+        blurb: "A squishy, glowing companion that purrs in ultraviolet. Perfect for beginners.",
+        bio: "Zorbian Puffworms are among the most popular starter aliens in the galaxy. Blinky was found drifting near the Helix Nebula in a cozy spore pod. They communicate through color shifts — soft lavender means happy, deep magenta means hungry. Blinky has already been litter-trained (crystalline sand only) and enjoys being carried in jacket pockets.",
+        diet: "Photon flakes, crushed starlight, occasional moonberry",
+        lifespan: "35 Earth years",
+        careLevel: "Easy",
+        warnings: ["Glows brightly at night — may disrupt sleep", "Do not expose to FM radio frequencies"]
+    },
+    {
+        id: "krix-002",
+        name: "Thundermaw",
+        species: "Krixian Howlbeast",
+        emoji: "🔴",
+        planet: "Krixos Prime",
+        size: "large",
+        temperament: "chaotic",
+        ability: "sonic roar",
+        price: 8500,
+        compatibilityScore: 42,
+        blurb: "A massive predator with a heart of gold (literally — it has a gold organ).",
+        bio: "Thundermaw was rescued from an illegal fighting ring on Krixos Prime. Despite their fearsome appearance (six legs, armored scales, teeth that regenerate hourly), they're surprisingly affectionate once bonded. Thundermaw's sonic roar can shatter glass within 50 meters, so a reinforced habitat is mandatory. They've been working with our behavioral team and have made tremendous progress.",
+        diet: "Raw plasma steak, iron ore nuggets, the occasional asteroid fragment",
+        lifespan: "200+ Earth years",
+        careLevel: "Expert",
+        warnings: ["Sonic roar can cause structural damage", "Requires Class-4 containment license", "May eat furniture during bonding phase"]
+    },
+    {
+        id: "flim-003",
+        name: "Puddle",
+        species: "Flimorian Shapeshifter",
+        emoji: "🔵",
+        planet: "Flimora",
+        size: "medium",
+        temperament: "playful",
+        ability: "shapeshifting",
+        price: 3200,
+        compatibilityScore: 78,
+        blurb: "A liquid-bodied trickster that mimics household objects for fun.",
+        bio: "Puddle is a Flimorian Shapeshifter — a species that exists in a semi-liquid state and can temporarily take the form of nearby objects. You might find Puddle disguised as your coffee mug, a throw pillow, or your other pet. This is their version of playing. Puddle can hold a shape for about 20 minutes before reverting to their natural blob form. They especially enjoy rainy days and have an inexplicable fascination with jazz music.",
+        diet: "Distilled nebula water, mineral supplements, any Earth liquid (prefers orange juice)",
+        lifespan: "80 Earth years",
+        careLevel: "Moderate",
+        warnings: ["May impersonate important objects (keys, phones, remotes)", "Cannot hold shape if startled", "Keep away from extreme heat — will evaporate temporarily"]
+    },
+    {
+        id: "vex-004",
+        name: "Whisper",
+        species: "Vexari Thoughtfox",
+        emoji: "🟡",
+        planet: "Vexar Minor",
+        size: "small",
+        temperament: "gentle",
+        ability: "telepathy",
+        price: 6000,
+        compatibilityScore: 88,
+        blurb: "A fox-like empath that communicates through projected emotions and images.",
+        bio: "Whisper is a Vexari Thoughtfox — a species renowned for their low-level telepathic abilities. They don't read specific thoughts, but they pick up on emotional states and can project simple images and feelings back. Owners report that Whisper has an uncanny ability to know when you're sad and will project warm, comforting mental images (usually sunsets and meadows). Whisper is extremely loyal once bonded but can be shy around crowds.",
+        diet: "Thought-enriched kibble (included with adoption), Vexari dream nectar, chamomile tea",
+        lifespan: "50 Earth years",
+        careLevel: "Easy",
+        warnings: ["May project your embarrassing memories if anxious", "Sensitive to loud arguments"]
+    },
+    {
+        id: "grak-005",
+        name: "Crunchwing",
+        species: "Grakkian Crystalbeetle",
+        emoji: "🟢",
+        planet: "Grakka",
+        size: "medium",
+        temperament: "independent",
+        ability: "crystal generation",
+        price: 1800,
+        compatibilityScore: 71,
+        blurb: "A crystalline insectoid that grows decorative gems on its shell. Low maintenance.",
+        bio: "Crunchwing is a Grakkian Crystalbeetle — a docile insectoid species whose carapace naturally produces small crystalline growths. These crystals are purely decorative (and mildly sparkly) and shed seasonally, making Crunchwing a surprisingly fashionable companion. They're extremely low-maintenance, requiring minimal interaction but enjoying the presence of other beings. Crunchwing spends most of their time basking under UV lamps and crunching gravel.",
+        diet: "Assorted gravel, mineral dust, UV light exposure (2 hrs/day minimum)",
+        lifespan: "120 Earth years",
+        careLevel: "Easy",
+        warnings: ["Shed crystals may scratch hardwood floors", "Loud crunching sounds at night"]
+    },
+    {
+        id: "neb-006",
+        name: "Nimbus",
+        species: "Nebulan Cloudling",
+        emoji: "⚪",
+        planet: "Nebula Drift",
+        size: "small",
+        temperament: "gentle",
+        ability: "weather control",
+        price: 4200,
+        compatibilityScore: 85,
+        blurb: "A floating, cloud-like being that generates tiny indoor weather patterns.",
+        bio: "Nimbus is a Nebulan Cloudling — a gaseous life form that resembles a small, sentient cloud. They float at about head height and can generate localized micro-weather: gentle breezes when content, light drizzle when sad, and tiny rainbows when excited. Nimbus bonds deeply with one person and tends to follow them from room to room. They're virtually silent and their presence is described by owners as 'unreasonably cozy.'",
+        diet: "Atmospheric moisture, humidity, the occasional spritz from a spray bottle",
+        lifespan: "Unknown (oldest recorded: 300+ years)",
+        careLevel: "Easy",
+        warnings: ["May cause indoor rain if neglected", "Keep away from open flames", "Electronics may need waterproofing"]
+    },
+    {
+        id: "vol-007",
+        name: "Inferno Jr.",
+        species: "Volcanite Salamander",
+        emoji: "🟠",
+        planet: "Krixos Prime",
+        size: "medium",
+        temperament: "chaotic",
+        ability: "fire breath",
+        price: 5500,
+        compatibilityScore: 53,
+        blurb: "A fiery reptilian with a mischievous streak and a taste for charcoal.",
+        bio: "Inferno Jr. is a Volcanite Salamander — a heat-resistant reptilian species from the volcanic regions of Krixos Prime. They can exhale controlled jets of flame up to 2 meters long, which they primarily use to cook their own food (they refuse to eat anything uncharred). Inferno Jr. is mischievous but trainable, and they've taken well to the 'no indoor fires' protocol. They love basking on heated rocks and have an endearing habit of lightly toasting your socks as a sign of affection.",
+        diet: "Charcoal, lava rocks, any food item (will self-char before eating)",
+        lifespan: "90 Earth years",
+        careLevel: "Advanced",
+        warnings: ["Fire hazard — fireproof habitat required", "Will char unattended clothing", "Insurance surcharge may apply"]
+    },
+    {
+        id: "zyn-008",
+        name: "Glitch",
+        species: "Zynari Phase-Cat",
+        emoji: "🟣",
+        planet: "Zynara",
+        size: "small",
+        temperament: "playful",
+        ability: "phasing",
+        price: 7200,
+        compatibilityScore: 66,
+        blurb: "A cat-like entity that can phase through solid matter. Yes, walls included.",
+        bio: "Glitch is a Zynari Phase-Cat — a feline-like species with the unsettling ability to phase through solid matter. Doors, walls, containers — none of it matters to Glitch. They phase instinctively when startled or when they really want something on the other side. Glitch is incredibly affectionate, aggressively curious, and has no concept of personal space (or physical barriers). Our team has had limited success with phase-boundary training, but Glitch is improving.",
+        diet: "Standard cat food (weirdly), quantum kibble supplement, the occasional moth",
+        lifespan: "45 Earth years",
+        careLevel: "Advanced",
+        warnings: ["Cannot be contained by physical barriers", "May appear in your bed at 3 AM", "Phase-proof rooms available for purchase separately"]
+    },
+    {
+        id: "pax-009",
+        name: "Mossworth",
+        species: "Paxian Treeling",
+        emoji: "🟤",
+        planet: "Paxia Verdant",
+        size: "large",
+        temperament: "gentle",
+        ability: "plant growth",
+        price: 250,
+        compatibilityScore: 97,
+        blurb: "A slow-moving, tree-like companion that accelerates plant growth around it.",
+        bio: "Mossworth is a Paxian Treeling — a large, slow-moving arboreal life form that resembles a walking tree stump with mossy limbs. Wherever Mossworth sits for more than an hour, nearby plants experience rapid growth. Gardens thrive, houseplants flourish, and even barren soil begins to sprout. Mossworth communicates through slow, rumbling vibrations and has the most gentle disposition of any species in our catalog. They enjoy sunlight, rain, and being read to (the vibrations of human speech seem to soothe them).",
+        diet: "Water, compost, sunlight, classical music (not food but they insist)",
+        lifespan: "500+ Earth years",
+        careLevel: "Easy",
+        warnings: ["Very slow — may block hallways", "Accelerated plant growth may affect property", "Produces 3kg of moss daily"]
+    },
+    {
+        id: "xel-010",
+        name: "Axiom",
+        species: "Xelari Hivemind Sprite",
+        emoji: "🔵",
+        planet: "Xelara",
+        size: "small",
+        temperament: "independent",
+        ability: "duplication",
+        price: 12000,
+        compatibilityScore: 58,
+        blurb: "A tiny entity that splits into up to 12 copies. You're adopting a swarm.",
+        bio: "Axiom is a Xelari Hivemind Sprite — a singular consciousness that can temporarily split into up to 12 identical copies. All copies share one mind and act in coordination. Axiom uses this ability to multitask: one copy might sit on your shoulder while three others clean the kitchen and two more play chess against each other. When reunified, Axiom retains all memories from all copies. They're highly intelligent, slightly aloof, and have strong opinions about interior design.",
+        diet: "Electromagnetic energy (sits near routers/outlets), crystallized logic cubes (included)",
+        lifespan: "Unknown — may be functionally immortal",
+        careLevel: "Expert",
+        warnings: ["Up to 12 copies at once — can be overwhelming", "Rearranges furniture without asking", "Has been known to optimize your schedule without consent"]
+    }
+];
+
+
+// ═══════════════════════════════════════════════════
+//  RENDER CATALOG
+// ═══════════════════════════════════════════════════
+
+const catalogEl = document.getElementById('catalog');
+
+function renderCatalog(filter = 'all') {
+    const filtered = ALIENS.filter(a => {
+        if (filter === 'all') return true;
+        return a.size === filter || a.temperament === filter;
+    });
+
+    catalogEl.innerHTML = filtered.map(a => `
+        <div class="alien-card" onclick="showDetail('${a.id}')">
+            <div class="alien-card-visual" style="background: linear-gradient(135deg, ${getColor(a)}, var(--bg))">
+                ${a.emoji}
+            </div>
+            <div class="alien-card-body">
+                <h3>${a.name}</h3>
+                <div class="species">${a.species}</div>
+                <div class="blurb">${a.blurb}</div>
+                <div class="alien-tags">
+                    <span class="alien-tag size">${a.size}</span>
+                    <span class="alien-tag temperament">${a.temperament}</span>
+                    <span class="alien-tag planet">${a.planet}</span>
+                    <span class="alien-tag ability">${a.ability}</span>
+                </div>
+            </div>
+            <div class="alien-card-footer">
+                <span class="alien-price">&#8372;${a.price.toLocaleString()}</span>
+                <span class="compat-score">${a.compatibilityScore}% match</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getColor(alien) {
+    const colors = {
+        'Zorbax-7': 'rgba(139,92,246,0.25)',
+        'Krixos Prime': 'rgba(248,113,113,0.25)',
+        'Flimora': 'rgba(59,130,246,0.25)',
+        'Vexar Minor': 'rgba(251,191,36,0.25)',
+        'Grakka': 'rgba(52,211,153,0.25)',
+        'Nebula Drift': 'rgba(200,200,220,0.2)',
+        'Zynara': 'rgba(167,139,250,0.25)',
+        'Paxia Verdant': 'rgba(101,163,13,0.25)',
+        'Xelara': 'rgba(34,211,238,0.25)'
+    };
+    return colors[alien.planet] || 'rgba(99,102,241,0.2)';
+}
+
+// Filter pills
+document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        renderCatalog(pill.dataset.filter);
+    });
+});
+
+renderCatalog();
+
+
+// ═══════════════════════════════════════════════════
+//  DETAIL MODAL
+// ═══════════════════════════════════════════════════
+
+const modalOverlay = document.getElementById('modalOverlay');
+const modalEl = document.getElementById('modal');
+
+function showDetail(id) {
+    const a = ALIENS.find(x => x.id === id);
+    if (!a) return;
+
+    modalEl.innerHTML = `
+        <div class="modal-header">
+            <div></div>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div class="modal-visual">${a.emoji}</div>
+        <div class="modal-body">
+            <h2>${a.name}</h2>
+            <div class="modal-species">${a.species} — ${a.id}</div>
+            <p class="modal-bio">${a.bio}</p>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="label">planet</div>
+                    <div class="value">${a.planet}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">size</div>
+                    <div class="value">${a.size}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">temperament</div>
+                    <div class="value">${a.temperament}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">ability</div>
+                    <div class="value">${a.ability}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">diet</div>
+                    <div class="value">${a.diet}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">lifespan</div>
+                    <div class="value">${a.lifespan}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">care level</div>
+                    <div class="value">${a.careLevel}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="label">adoption fee</div>
+                    <div class="value" style="color: var(--success)">₴${a.price.toLocaleString()}</div>
+                </div>
+            </div>
+            ${a.warnings.length ? `
+                <div class="warnings">
+                    <h4>&#9888; Warnings</h4>
+                    <ul>${a.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
+                </div>
+            ` : ''}
+            <button class="adopt-btn" onclick="handleAdopt('${a.id}', 'Website Visitor')">Adopt ${a.name}</button>
+        </div>
+    `;
+
+    modalOverlay.classList.add('open');
+}
+
+function closeModal() {
+    modalOverlay.classList.remove('open');
+}
+
+modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+});
+
+function handleAdopt(id, name) {
+    const a = ALIENS.find(x => x.id === id);
+    if (!a) return;
+    closeModal();
+    showConfirmation(a, name);
+}
+
+function showConfirmation(alien, adopterName) {
+    const pickupDate = new Date(Date.now() + 3 * 86400000).toLocaleDateString('en-US', { 
+        weekday: 'long', month: 'long', day: 'numeric' 
+    });
+    const banner = document.getElementById('confirmationBanner');
+    banner.innerHTML = `
+        <h3>&#127881; Adoption Confirmed!</h3>
+        <p><strong>${adopterName}</strong> has adopted <strong>${alien.name}</strong> the ${alien.species}. 
+        Pickup is scheduled for <strong>${pickupDate}</strong> at Cosmic Companions HQ (Docking Bay 7). 
+        Your care package includes: habitat starter kit, 30-day food supply, and a copy of 
+        "So You Adopted a ${alien.species}: A Beginner's Guide."</p>
+    `;
+    banner.classList.add('show');
+    banner.scrollIntoView({ behavior: 'smooth' });
+}
+
+
+// ═══════════════════════════════════════════════════
+//  TOOL CALL LOG
+// ═══════════════════════════════════════════════════
+
+const logEntriesEl = document.getElementById('logEntries');
+let logCount = 0;
+
+function addLog(toolName, params, result) {
+    if (logCount === 0) logEntriesEl.innerHTML = '';
+    logCount++;
+    const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+
+    const resultPreview = typeof result === 'string' 
+        ? result 
+        : JSON.stringify(result, null, 2);
+
+    // Truncate long results for display
+    const displayResult = resultPreview.length > 500 
+        ? resultPreview.substring(0, 500) + '\n  ...' 
+        : resultPreview;
+
+    entry.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-tool">${toolName}</span>
+        <span class="log-arrow">←</span>
+        <span class="log-params">${JSON.stringify(params)}</span>
+        <span class="log-result">→ ${displayResult}</span>
+    `;
+    logEntriesEl.appendChild(entry);
+    logEntriesEl.scrollTop = logEntriesEl.scrollHeight;
+}
+
+function clearLog() {
+    logCount = 0;
+    logEntriesEl.innerHTML = '<div class="log-empty">No tool calls yet. Use an agent to interact with this page.</div>';
+}
+
+
+// ═══════════════════════════════════════════════════
+//  TOOL LOGIC (shared between UI and WebMCP)
+// ═══════════════════════════════════════════════════
+
+function searchAliens(params) {
+    let results = [...ALIENS];
+    if (params.planet) {
+        results = results.filter(a => a.planet.toLowerCase().includes(params.planet.toLowerCase()));
+    }
+    if (params.size) {
+        results = results.filter(a => a.size === params.size.toLowerCase());
+    }
+    if (params.temperament) {
+        results = results.filter(a => a.temperament === params.temperament.toLowerCase());
+    }
+    if (params.ability) {
+        results = results.filter(a => a.ability.toLowerCase().includes(params.ability.toLowerCase()));
+    }
+    if (params.max_price) {
+        results = results.filter(a => a.price <= params.max_price);
+    }
+    if (params.min_compatibility) {
+        results = results.filter(a => a.compatibilityScore >= params.min_compatibility);
+    }
+    return results.map(a => ({
+        id: a.id,
+        name: a.name,
+        species: a.species,
+        planet: a.planet,
+        size: a.size,
+        temperament: a.temperament,
+        ability: a.ability,
+        price: a.price,
+        compatibilityScore: a.compatibilityScore,
+        blurb: a.blurb
+    }));
+}
+
+function getAlienDetails(id) {
+    const a = ALIENS.find(x => x.id === id);
+    if (!a) return { error: "Species not found" };
+    return { ...a };
+}
+
+function adoptAlien(id, adopterName) {
+    const a = ALIENS.find(x => x.id === id);
+    if (!a) return { error: "Species not found" };
+    const pickupDate = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
+    // Trigger UI update
+    showConfirmation(a, adopterName || 'Anonymous Adopter');
+    return {
+        status: "confirmed",
+        adoptionId: "ADOPT-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
+        alien: a.name,
+        species: a.species,
+        adopterName: adopterName || "Anonymous Adopter",
+        pickupDate: pickupDate,
+        pickupLocation: "Cosmic Companions HQ — Docking Bay 7",
+        carePackage: [
+            "Habitat starter kit",
+            "30-day food supply (" + a.diet.split(',')[0] + ")",
+            "Behavioral guide: 'So You Adopted a " + a.species + "'",
+            "Emergency vet hotline (Galactic toll-free)"
+        ]
+    };
+}
+
+
+// ═══════════════════════════════════════════════════
+//  WEBMCP TOOL REGISTRATION (Imperative API)
+// ═══════════════════════════════════════════════════
+
+function registerWebMCPTools() {
+    if (!navigator.modelContext) {
+        console.log('WebMCP not available — tools registered in demo mode only.');
+        return;
+    }
+
+    // ── Tool 1: Search Aliens ──
+    navigator.modelContext.registerTool({
+        name: "search_aliens",
+        description: "Search the alien pet catalog. Filter by planet of origin, size (small/medium/large), temperament (gentle/playful/chaotic/independent), special ability, maximum price in Galactic Credits, or minimum compatibility score (0-100). Returns a list of matching aliens with basic info. Call get_alien_details for full profiles.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                planet: {
+                    type: "string",
+                    description: "Planet of origin to filter by (e.g., 'Zorbax-7', 'Krixos Prime', 'Flimora', 'Vexar Minor', 'Grakka', 'Nebula Drift', 'Zynara', 'Paxia Verdant', 'Xelara')"
+                },
+                size: {
+                    type: "string",
+                    enum: ["small", "medium", "large"],
+                    description: "Size category to filter by"
+                },
+                temperament: {
+                    type: "string",
+                    enum: ["gentle", "playful", "chaotic", "independent"],
+                    description: "Temperament to filter by"
+                },
+                ability: {
+                    type: "string",
+                    description: "Special ability to search for (e.g., 'telepathy', 'shapeshifting', 'fire breath')"
+                },
+                max_price: {
+                    type: "number",
+                    description: "Maximum adoption price in Galactic Credits"
+                },
+                min_compatibility: {
+                    type: "number",
+                    description: "Minimum compatibility score (0-100)"
+                }
+            }
+        },
+        async execute(params) {
+            const results = searchAliens(params);
+            addLog('search_aliens', params, `Found ${results.length} alien(s)`);
+            return {
+                content: [{
+                    type: "text",
+                    text: JSON.stringify({
+                        totalResults: results.length,
+                        aliens: results
+                    }, null, 2)
+                }]
+            };
+        }
+    });
+
+    // ── Tool 2: Get Alien Details ──
+    navigator.modelContext.registerTool({
+        name: "get_alien_details",
+        description: "Get the full profile of a specific alien pet, including detailed bio, diet, care requirements, lifespan, warnings, and adoption fee. Requires the alien's ID (e.g., 'zorb-001'). Use search_aliens first to find IDs.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                id: {
+                    type: "string",
+                    description: "The unique alien ID (e.g., 'zorb-001', 'krix-002')"
+                }
+            },
+            required: ["id"]
+        },
+        async execute(params) {
+            const details = getAlienDetails(params.id);
+            addLog('get_alien_details', params, details.error || `${details.name} — ${details.species}`);
+            // Also open the modal in the UI
+            if (!details.error) showDetail(params.id);
+            return {
+                content: [{
+                    type: "text",
+                    text: JSON.stringify(details, null, 2)
+                }]
+            };
+        }
+    });
+
+    // ── Tool 3: Adopt Alien ──
+    navigator.modelContext.registerTool({
+        name: "adopt_alien",
+        description: "Complete the adoption of an alien pet. Requires the alien's ID and the adopter's name. Returns a confirmation with adoption ID, pickup date, pickup location, and care package contents.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                id: {
+                    type: "string",
+                    description: "The unique alien ID to adopt (e.g., 'zorb-001')"
+                },
+                adopter_name: {
+                    type: "string",
+                    description: "Full name of the person adopting the alien"
+                }
+            },
+            required: ["id", "adopter_name"]
+        },
+        async execute(params) {
+            const result = adoptAlien(params.id, params.adopter_name);
+            addLog('adopt_alien', params, result.error || `Adoption ${result.adoptionId} confirmed!`);
+            return {
+                content: [{
+                    type: "text",
+                    text: JSON.stringify(result, null, 2)
+                }]
+            };
+        }
+    });
+
+    console.log('WebMCP tools registered: search_aliens, get_alien_details, adopt_alien');
+}
+
+// Register tools when page loads
+registerWebMCPTools();
+</script>
+</body>
+</html>
