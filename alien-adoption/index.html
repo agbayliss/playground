@@ -264,40 +264,46 @@
             color: var(--text-muted);
         }
 
-        /* ─── Detail Modal ─── */
+        /* ─── Inline Detail Panel ─── */
 
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        .alien-card.active {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 2px var(--accent-soft);
         }
 
-        .modal-overlay.open { display: flex; }
-
-        .modal {
+        .inline-detail {
+            grid-column: 1 / -1;
             background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            max-width: 560px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
+            border: 1px solid var(--border-focus);
+            border-radius: 14px;
+            overflow: hidden;
+            animation: expandIn 0.3s ease;
         }
 
-        .modal-header {
+        @keyframes expandIn {
+            from { opacity: 0; max-height: 0; margin-top: -8px; }
+            to { opacity: 1; max-height: 1200px; margin-top: 0; }
+        }
+
+        .inline-detail-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 24px 24px 0;
+            padding: 24px 28px 0;
         }
 
-        .modal-close {
+        .inline-detail-title-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .inline-detail-emoji {
+            font-size: 48px;
+            line-height: 1;
+        }
+
+        .inline-detail-close {
             background: var(--tag-bg);
             border: 1px solid var(--border);
             color: var(--text-muted);
@@ -313,32 +319,26 @@
             flex-shrink: 0;
         }
 
-        .modal-close:hover { background: var(--surface-hover); }
+        .inline-detail-close:hover { background: var(--surface-hover); }
 
-        .modal-visual {
-            text-align: center;
-            font-size: 72px;
-            padding: 20px 0;
+        .inline-detail-body {
+            padding: 20px 28px 28px;
         }
 
-        .modal-body {
-            padding: 0 24px 24px;
-        }
-
-        .modal-body h2 {
+        .inline-detail-body h2 {
             font-size: 22px;
             font-weight: 700;
             margin-bottom: 4px;
         }
 
-        .modal-species {
+        .inline-detail-species {
             font-family: 'DM Mono', monospace;
             font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 16px;
         }
 
-        .modal-bio {
+        .inline-detail-bio {
             font-size: 14px;
             color: var(--text-muted);
             line-height: 1.7;
@@ -677,11 +677,6 @@
 
     <div class="catalog" id="catalog"></div>
 
-    <!-- Detail Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal" id="modal"></div>
-    </div>
-
     <!-- Tool Call Log -->
     <div class="log-section">
         <h2>&#128225; Agent Tool Log</h2>
@@ -976,15 +971,17 @@ const ALIENS = [
 // ═══════════════════════════════════════════════════
 
 const catalogEl = document.getElementById('catalog');
+let currentDetailId = null;
 
 function renderCatalog(filter = 'all') {
+    closeDetail(false);
     const filtered = ALIENS.filter(a => {
         if (filter === 'all') return true;
         return a.size === filter || a.temperament === filter;
     });
 
     catalogEl.innerHTML = filtered.map(a => `
-        <div class="alien-card" onclick="showDetail('${a.id}')">
+        <div class="alien-card" data-id="${a.id}" onclick="showDetail('${a.id}')">
             <div class="alien-card-visual" style="background: linear-gradient(135deg, ${getColor(a)}, var(--bg))">
                 ${a.emoji}
             </div>
@@ -1035,26 +1032,70 @@ renderCatalog();
 
 
 // ═══════════════════════════════════════════════════
-//  DETAIL MODAL
+//  INLINE DETAIL PANEL
 // ═══════════════════════════════════════════════════
-
-const modalOverlay = document.getElementById('modalOverlay');
-const modalEl = document.getElementById('modal');
 
 function showDetail(id) {
     const a = ALIENS.find(x => x.id === id);
     if (!a) return;
 
-    modalEl.innerHTML = `
-        <div class="modal-header">
-            <div></div>
-            <button class="modal-close" onclick="closeModal()">✕</button>
+    // If clicking the same card, close it
+    if (currentDetailId === id) {
+        closeDetail();
+        return;
+    }
+
+    // Remove any existing detail panel and active state
+    closeDetail(false);
+    currentDetailId = id;
+
+    // Find the clicked card element
+    const cards = catalogEl.querySelectorAll('.alien-card');
+    let clickedCard = null;
+    cards.forEach(card => {
+        if (card.dataset.id === id) {
+            clickedCard = card;
+            card.classList.add('active');
+        }
+    });
+
+    if (!clickedCard) return;
+
+    // Figure out which row the card is in by checking positions
+    const catalogRect = catalogEl.getBoundingClientRect();
+    const clickedRect = clickedCard.getBoundingClientRect();
+    const clickedRow = clickedRect.top;
+
+    // Find the last card in the same row
+    let lastInRow = clickedCard;
+    cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        if (Math.abs(rect.top - clickedRow) < 5 && rect.left > lastInRow.getBoundingClientRect().left) {
+            lastInRow = card;
+        }
+    });
+
+    // Also check if there's a detail panel already in the DOM (shouldn't be, but safety)
+    const existingPanel = catalogEl.querySelector('.inline-detail');
+    if (existingPanel) existingPanel.remove();
+
+    // Create the inline detail panel
+    const panel = document.createElement('div');
+    panel.className = 'inline-detail';
+    panel.id = 'inlineDetail';
+    panel.innerHTML = `
+        <div class="inline-detail-header">
+            <div class="inline-detail-title-row">
+                <span class="inline-detail-emoji">${a.emoji}</span>
+                <div>
+                    <h2>${a.name}</h2>
+                    <div class="inline-detail-species">${a.species} — ${a.id}</div>
+                </div>
+            </div>
+            <button class="inline-detail-close" onclick="closeDetail()">✕</button>
         </div>
-        <div class="modal-visual">${a.emoji}</div>
-        <div class="modal-body">
-            <h2>${a.name}</h2>
-            <div class="modal-species">${a.species} — ${a.id}</div>
-            <p class="modal-bio">${a.bio}</p>
+        <div class="inline-detail-body">
+            <p class="inline-detail-bio">${a.bio}</p>
             <div class="detail-grid">
                 <div class="detail-item">
                     <div class="label">planet</div>
@@ -1099,21 +1140,36 @@ function showDetail(id) {
         </div>
     `;
 
-    modalOverlay.classList.add('open');
+    // Insert the panel after the last card in the row
+    lastInRow.insertAdjacentElement('afterend', panel);
+
+    // Smooth scroll to show the panel
+    setTimeout(() => {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
 }
 
-function closeModal() {
-    modalOverlay.classList.remove('open');
-}
-
-modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) closeModal();
-});
+function closeDetail(smooth = true) {
+    currentDetailId = null;
+    const panel = document.getElementById('inlineDetail');
+    if (panel) {
+        if (smooth) {
+            panel.style.transition = 'opacity 0.2s, max-height 0.3s';
+            panel.style.opacity = '0';
+            panel.style.maxHeight = '0';
+            setTimeout(() => panel.remove(), 300);
+        } else {
+            panel.remove();
+        }
+    }
+    // Remove active state from all cards
+    catalogEl.querySelectorAll('.alien-card.active').forEach(c => c.classList.remove('active'));
+};
 
 function handleAdopt(id, name) {
     const a = ALIENS.find(x => x.id === id);
     if (!a) return;
-    closeModal();
+    closeDetail();
     showConfirmation(a, name);
 }
 
@@ -1319,7 +1375,7 @@ function registerWebMCPTools() {
         async execute(params) {
             const details = getAlienDetails(params.id);
             addLog('get_alien_details', params, details.error || `${details.name} — ${details.species}`);
-            // Also open the modal in the UI
+            // Also open the inline detail panel in the UI
             if (!details.error) showDetail(params.id);
             return {
                 content: [{
