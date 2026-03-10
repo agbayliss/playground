@@ -587,36 +587,6 @@
         pre .kw { color: var(--pink); }
         pre .cm { color: #555570; }
 
-        /* ─── Adoption confirmation ─── */
-
-        .confirmation-banner {
-            display: none;
-            background: rgba(52,211,153,0.08);
-            border: 1px solid rgba(52,211,153,0.25);
-            border-radius: 12px;
-            padding: 20px 24px;
-            margin-bottom: 32px;
-            animation: slideIn 0.3s ease;
-        }
-
-        .confirmation-banner.show { display: block; }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .confirmation-banner h3 {
-            color: var(--success);
-            font-size: 16px;
-            margin-bottom: 6px;
-        }
-
-        .confirmation-banner p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
         /* ─── Responsive ─── */
 
         @media (max-width: 600px) {
@@ -638,9 +608,6 @@
             companions — or let an AI agent find the perfect match for you using WebMCP tools.
         </p>
     </header>
-
-    <!-- Confirmation Banner (hidden until adoption) -->
-    <div class="confirmation-banner" id="confirmationBanner"></div>
 
     <!-- Stats -->
     <div class="stats-bar">
@@ -1136,7 +1103,7 @@ function showDetail(id) {
                     <ul>${a.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
                 </div>
             ` : ''}
-            <button class="adopt-btn" onclick="handleAdopt('${a.id}', 'Website Visitor')">Adopt ${a.name}</button>
+            <button class="adopt-btn" onclick="handleAdopt('${a.id}')">Adopt ${a.name}</button>
         </div>
     `;
 
@@ -1166,28 +1133,12 @@ function closeDetail(smooth = true) {
     catalogEl.querySelectorAll('.alien-card.active').forEach(c => c.classList.remove('active'));
 };
 
-function handleAdopt(id, name) {
-    const a = ALIENS.find(x => x.id === id);
-    if (!a) return;
-    closeDetail();
-    showConfirmation(a, name);
+function handleAdopt(id) {
+    window.location.href = `adopt.html?id=${id}`;
 }
 
-function showConfirmation(alien, adopterName) {
-    const pickupDate = new Date(Date.now() + 3 * 86400000).toLocaleDateString('en-US', { 
-        weekday: 'long', month: 'long', day: 'numeric' 
-    });
-    const banner = document.getElementById('confirmationBanner');
-    banner.innerHTML = `
-        <h3>&#127881; Adoption Confirmed!</h3>
-        <p><strong>${adopterName}</strong> has adopted <strong>${alien.name}</strong> the ${alien.species}. 
-        Pickup is scheduled for <strong>${pickupDate}</strong> at Cosmic Companions HQ (Docking Bay 7). 
-        Your care package includes: habitat starter kit, 30-day food supply, and a copy of 
-        "So You Adopted a ${alien.species}: A Beginner's Guide."</p>
-    `;
-    banner.classList.add('show');
-    banner.scrollIntoView({ behavior: 'smooth' });
-}
+// Keep showConfirmation for backwards compat but it won't be used
+function showConfirmation(alien, adopterName) {}
 
 
 // ═══════════════════════════════════════════════════
@@ -1272,29 +1223,6 @@ function getAlienDetails(id) {
     const a = ALIENS.find(x => x.id === id);
     if (!a) return { error: "Species not found" };
     return { ...a };
-}
-
-function adoptAlien(id, adopterName) {
-    const a = ALIENS.find(x => x.id === id);
-    if (!a) return { error: "Species not found" };
-    const pickupDate = new Date(Date.now() + 3 * 86400000).toISOString().split('T')[0];
-    // Trigger UI update
-    showConfirmation(a, adopterName || 'Anonymous Adopter');
-    return {
-        status: "confirmed",
-        adoptionId: "ADOPT-" + Math.random().toString(36).substring(2, 8).toUpperCase(),
-        alien: a.name,
-        species: a.species,
-        adopterName: adopterName || "Anonymous Adopter",
-        pickupDate: pickupDate,
-        pickupLocation: "Cosmic Companions HQ — Docking Bay 7",
-        carePackage: [
-            "Habitat starter kit",
-            "30-day food supply (" + a.diet.split(',')[0] + ")",
-            "Behavioral guide: 'So You Adopted a " + a.species + "'",
-            "Emergency vet hotline (Galactic toll-free)"
-        ]
-    };
 }
 
 
@@ -1389,28 +1317,29 @@ function registerWebMCPTools() {
     // ── Tool 3: Adopt Alien ──
     navigator.modelContext.registerTool({
         name: "adopt_alien",
-        description: "Complete the adoption of an alien pet. Requires the alien's ID and the adopter's name. Returns a confirmation with adoption ID, pickup date, pickup location, and care package contents.",
+        description: "Begin the adoption process for an alien pet. This navigates to the adoption form page where the adopter's details can be filled in. Requires the alien's ID. Use the submit_adoption_form tool on the next page to complete the adoption.",
         inputSchema: {
             type: "object",
             properties: {
                 id: {
                     type: "string",
                     description: "The unique alien ID to adopt (e.g., 'zorb-001')"
-                },
-                adopter_name: {
-                    type: "string",
-                    description: "Full name of the person adopting the alien"
                 }
             },
-            required: ["id", "adopter_name"]
+            required: ["id"]
         },
         async execute(params) {
-            const result = adoptAlien(params.id, params.adopter_name);
-            addLog('adopt_alien', params, result.error || `Adoption ${result.adoptionId} confirmed!`);
+            const a = ALIENS.find(x => x.id === params.id);
+            addLog('adopt_alien', params, a ? `Navigating to adoption form for ${a.name}...` : 'Species not found');
+            if (a) {
+                window.location.href = `adopt.html?id=${params.id}`;
+            }
             return {
                 content: [{
                     type: "text",
-                    text: JSON.stringify(result, null, 2)
+                    text: a 
+                        ? JSON.stringify({ status: "navigating_to_form", alien: a.name, species: a.species, message: "Redirecting to adoption form. Use submit_adoption_form tool on the next page to complete the adoption." })
+                        : JSON.stringify({ error: "Species not found" })
                 }]
             };
         }

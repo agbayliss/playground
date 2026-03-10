@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adopt — Cosmic Companions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --surface: #13131a;
+            --surface-hover: #1a1a24;
+            --border: #2a2a3a;
+            --border-focus: #6366f1;
+            --text: #e4e4ed;
+            --text-muted: #8888a4;
+            --accent: #6366f1;
+            --accent-soft: rgba(99, 102, 241, 0.12);
+            --tag-bg: #1e1e2e;
+            --tag-text: #a5b4fc;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --pink: #f472b6;
+            --cyan: #22d3ee;
+            --radius: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px 100px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        /* ─── Back Link ─── */
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 28px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover { color: var(--text); }
+
+        .back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* ─── Alien Recap Card ─── */
+
+        .recap-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .recap-emoji {
+            font-size: 56px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .recap-info h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 2px;
+        }
+
+        .recap-species {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .recap-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .recap-tag {
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 100px;
+            border: 1px solid;
+        }
+
+        .recap-tag.size { color: var(--cyan); border-color: rgba(34,211,238,0.3); background: rgba(34,211,238,0.08); }
+        .recap-tag.price { color: var(--success); border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.08); }
+        .recap-tag.care { color: var(--warning); border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.08); }
+
+        /* ─── Form Card ─── */
+
+        .form-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .form-card-header {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .form-card-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .form-card-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .agent-indicator {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--success);
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .form-body {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* ─── Form Fields ─── */
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        label .required {
+            color: var(--accent);
+            font-size: 11px;
+        }
+
+        input, select, textarea {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #55556a;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238888a4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Hidden field for alien ID */
+        input[type="hidden"] {
+            display: none;
+        }
+
+        .submit-btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            align-self: flex-start;
+        }
+
+        .submit-btn:hover { opacity: 0.9; }
+        .submit-btn:active { transform: scale(0.98); }
+
+        /* ─── Warnings ─── */
+
+        .warnings {
+            background: rgba(248,113,113,0.06);
+            border: 1px solid rgba(248,113,113,0.2);
+            border-radius: 8px;
+            padding: 12px 14px;
+        }
+
+        .warnings h4 {
+            font-size: 12px;
+            color: var(--danger);
+            font-family: 'DM Mono', monospace;
+            margin-bottom: 6px;
+        }
+
+        .warnings ul {
+            list-style: none;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .warnings li::before {
+            content: '⚠ ';
+        }
+
+        /* ─── Success State ─── */
+
+        .success-card {
+            display: none;
+            background: var(--surface);
+            border: 1px solid rgba(52,211,153,0.3);
+            border-radius: 14px;
+            padding: 48px 32px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .success-card.show { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .success-emoji {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .success-card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--success);
+        }
+
+        .success-card .success-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+            max-width: 440px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .success-details {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 28px;
+            text-align: left;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .success-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }
+
+        .success-detail-row:not(:last-child) {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .success-detail-row .sdl {
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+        }
+
+        .success-detail-row .sdv {
+            font-weight: 500;
+        }
+
+        .success-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* ─── Error State ─── */
+
+        .error-card {
+            background: var(--surface);
+            border: 1px solid rgba(248,113,113,0.3);
+            border-radius: 14px;
+            padding: 48px 32px;
+            text-align: center;
+        }
+
+        .error-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--danger);
+        }
+
+        .error-card p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* ─── Responsive ─── */
+
+        @media (max-width: 500px) {
+            .field-row { grid-template-columns: 1fr; }
+            .recap-card { flex-direction: column; text-align: center; }
+            .recap-tags { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <a href="index.html" class="back-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        Back to catalog
+    </a>
+
+    <!-- Alien Recap (populated by JS) -->
+    <div id="recapCard" class="recap-card"></div>
+
+    <!-- Adoption Form -->
+    <div id="formSection" class="form-card">
+        <div class="form-card-header">
+            <div>
+                <h2>Complete Your Adoption</h2>
+                <p>Tell us about yourself so we can prepare your companion's care package.</p>
+            </div>
+            <div class="agent-indicator">agent-ready</div>
+        </div>
+
+        <!-- 
+            ═══════════════════════════════════════════════
+            DECLARATIVE WEBMCP FORM
+            
+            This form uses the declarative API with:
+            - toolname → names the tool
+            - tooldescription → tells agent what it does
+            - toolparamdescription → describes each field
+            
+            No toolautosubmit — the agent fills the form 
+            but the user must confirm by clicking submit.
+            ═══════════════════════════════════════════════
+        -->
+
+        <form 
+            id="adoptionForm"
+            class="form-body"
+            toolname="submit_adoption_form"
+            tooldescription="Complete the alien pet adoption by filling in the adopter's personal details. The alien being adopted is already selected. Fill in the adopter's full name, email, phone, home environment type, experience level with exotic pets, and any optional notes."
+        >
+            <!-- Hidden field: alien ID (pre-filled from URL) -->
+            <input type="hidden" name="alien_id" id="alienIdField">
+
+            <!-- Name + Email -->
+            <div class="field-row">
+                <div class="field">
+                    <label>Full Name <span class="required">required</span></label>
+                    <input 
+                        type="text" 
+                        name="adopter_name" 
+                        required 
+                        placeholder="Jane Smith"
+                        toolparamdescription="The adopter's full legal name"
+                    >
+                </div>
+                <div class="field">
+                    <label>Email <span class="required">required</span></label>
+                    <input 
+                        type="email" 
+                        name="adopter_email" 
+                        required 
+                        placeholder="jane@example.com"
+                        toolparamdescription="The adopter's email for adoption confirmation and care updates"
+                    >
+                </div>
+            </div>
+
+            <!-- Phone + Home Environment -->
+            <div class="field-row">
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input 
+                        type="tel" 
+                        name="phone" 
+                        placeholder="+1 (555) 000-0000"
+                        toolparamdescription="Contact phone number for pickup coordination"
+                    >
+                </div>
+                <div class="field">
+                    <label>Home Environment <span class="required">required</span></label>
+                    <select 
+                        name="home_environment" 
+                        required
+                        toolparamdescription="Type of living space: apartment, house, space_station, or underwater_dome"
+                    >
+                        <option value="">Select...</option>
+                        <option value="apartment">Apartment</option>
+                        <option value="house">House</option>
+                        <option value="space_station">Space Station</option>
+                        <option value="underwater_dome">Underwater Dome</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Experience Level -->
+            <div class="field">
+                <label>Experience with Exotic Pets <span class="required">required</span></label>
+                <select 
+                    name="experience_level" 
+                    required
+                    toolparamdescription="Adopter's experience level: none (first time), some (1-2 exotic pets before), experienced (3+ exotic pets), or expert (professional handler)"
+                >
+                    <option value="">Select your experience level...</option>
+                    <option value="none">First time — never had an exotic pet</option>
+                    <option value="some">Some — owned 1-2 exotic pets before</option>
+                    <option value="experienced">Experienced — owned 3+ exotic pets</option>
+                    <option value="expert">Expert — professional exotic pet handler</option>
+                </select>
+            </div>
+
+            <!-- Warnings (populated by JS if applicable) -->
+            <div id="warningsSection"></div>
+
+            <!-- Notes -->
+            <div class="field">
+                <label>Notes for the Care Team</label>
+                <textarea 
+                    name="notes" 
+                    placeholder="Anything we should know? Allergies, other pets in the household, special accommodations..."
+                    toolparamdescription="Optional notes about the adopter's household, other pets, allergies, or special requirements"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Confirm Adoption</button>
+        </form>
+    </div>
+
+    <!-- Success State (hidden until submission) -->
+    <div id="successCard" class="success-card"></div>
+
+    <!-- Error State (if alien ID is invalid) -->
+    <div id="errorCard" style="display:none" class="error-card">
+        <h2>Alien Not Found</h2>
+        <p>We couldn't find that species in our catalog. They may have already been adopted or wandered off.</p>
+        <a href="index.html" class="btn-primary">Back to Catalog</a>
+    </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  ALIEN DATA (shared with index.html)
+// ═══════════════════════════════════════════════════
+
+const ALIENS = [
+    {
+        id: "zorb-001", name: "Blinky", species: "Zorbian Puffworm", emoji: "🟣",
+        planet: "Zorbax-7", size: "small", temperament: "gentle", ability: "bioluminescence",
+        price: 450, compatibilityScore: 94, careLevel: "Easy",
+        diet: "Photon flakes, crushed starlight, occasional moonberry",
+        lifespan: "35 Earth years",
+        warnings: ["Glows brightly at night — may disrupt sleep", "Do not expose to FM radio frequencies"]
+    },
+    {
+        id: "krix-002", name: "Thundermaw", species: "Krixian Howlbeast", emoji: "🔴",
+        planet: "Krixos Prime", size: "large", temperament: "chaotic", ability: "sonic roar",
+        price: 8500, compatibilityScore: 42, careLevel: "Expert",
+        diet: "Raw plasma steak, iron ore nuggets, the occasional asteroid fragment",
+        lifespan: "200+ Earth years",
+        warnings: ["Sonic roar can cause structural damage", "Requires Class-4 containment license", "May eat furniture during bonding phase"]
+    },
+    {
+        id: "flim-003", name: "Puddle", species: "Flimorian Shapeshifter", emoji: "🔵",
+        planet: "Flimora", size: "medium", temperament: "playful", ability: "shapeshifting",
+        price: 3200, compatibilityScore: 78, careLevel: "Moderate",
+        diet: "Distilled nebula water, mineral supplements, any Earth liquid (prefers orange juice)",
+        lifespan: "80 Earth years",
+        warnings: ["May impersonate important objects (keys, phones, remotes)", "Cannot hold shape if startled", "Keep away from extreme heat — will evaporate temporarily"]
+    },
+    {
+        id: "vex-004", name: "Whisper", species: "Vexari Thoughtfox", emoji: "🟡",
+        planet: "Vexar Minor", size: "small", temperament: "gentle", ability: "telepathy",
+        price: 6000, compatibilityScore: 88, careLevel: "Easy",
+        diet: "Thought-enriched kibble, Vexari dream nectar, chamomile tea",
+        lifespan: "50 Earth years",
+        warnings: ["May project your embarrassing memories if anxious", "Sensitive to loud arguments"]
+    },
+    {
+        id: "grak-005", name: "Crunchwing", species: "Grakkian Crystalbeetle", emoji: "🟢",
+        planet: "Grakka", size: "medium", temperament: "independent", ability: "crystal generation",
+        price: 1800, compatibilityScore: 71, careLevel: "Easy",
+        diet: "Assorted gravel, mineral dust, UV light exposure (2 hrs/day minimum)",
+        lifespan: "120 Earth years",
+        warnings: ["Shed crystals may scratch hardwood floors", "Loud crunching sounds at night"]
+    },
+    {
+        id: "neb-006", name: "Nimbus", species: "Nebulan Cloudling", emoji: "⚪",
+        planet: "Nebula Drift", size: "small", temperament: "gentle", ability: "weather control",
+        price: 4200, compatibilityScore: 85, careLevel: "Easy",
+        diet: "Atmospheric moisture, humidity, the occasional spritz from a spray bottle",
+        lifespan: "Unknown (oldest recorded: 300+ years)",
+        warnings: ["May cause indoor rain if neglected", "Keep away from open flames", "Electronics may need waterproofing"]
+    },
+    {
+        id: "vol-007", name: "Inferno Jr.", species: "Volcanite Salamander", emoji: "🟠",
+        planet: "Krixos Prime", size: "medium", temperament: "chaotic", ability: "fire breath",
+        price: 5500, compatibilityScore: 53, careLevel: "Advanced",
+        diet: "Charcoal, lava rocks, any food item (will self-char before eating)",
+        lifespan: "90 Earth years",
+        warnings: ["Fire hazard — fireproof habitat required", "Will char unattended clothing", "Insurance surcharge may apply"]
+    },
+    {
+        id: "zyn-008", name: "Glitch", species: "Zynari Phase-Cat", emoji: "🟣",
+        planet: "Zynara", size: "small", temperament: "playful", ability: "phasing",
+        price: 7200, compatibilityScore: 66, careLevel: "Advanced",
+        diet: "Standard cat food (weirdly), quantum kibble supplement, the occasional moth",
+        lifespan: "45 Earth years",
+        warnings: ["Cannot be contained by physical barriers", "May appear in your bed at 3 AM", "Phase-proof rooms available for purchase separately"]
+    },
+    {
+        id: "pax-009", name: "Mossworth", species: "Paxian Treeling", emoji: "🟤",
+        planet: "Paxia Verdant", size: "large", temperament: "gentle", ability: "plant growth",
+        price: 250, compatibilityScore: 97, careLevel: "Easy",
+        diet: "Water, compost, sunlight, classical music (not food but they insist)",
+        lifespan: "500+ Earth years",
+        warnings: ["Very slow — may block hallways", "Accelerated plant growth may affect property", "Produces 3kg of moss daily"]
+    },
+    {
+        id: "xel-010", name: "Axiom", species: "Xelari Hivemind Sprite", emoji: "🔵",
+        planet: "Xelara", size: "small", temperament: "independent", ability: "duplication",
+        price: 12000, compatibilityScore: 58, careLevel: "Expert",
+        diet: "Electromagnetic energy (sits near routers/outlets), crystallized logic cubes (included)",
+        lifespan: "Unknown — may be functionally immortal",
+        warnings: ["Up to 12 copies at once — can be overwhelming", "Rearranges furniture without asking", "Has been known to optimize your schedule without consent"]
+    }
+];
+
+
+// ═══════════════════════════════════════════════════
+//  PAGE INITIALIZATION
+// ═══════════════════════════════════════════════════
+
+const params = new URLSearchParams(window.location.search);
+const alienId = params.get('id');
+const alien = ALIENS.find(a => a.id === alienId);
+
+const recapCard = document.getElementById('recapCard');
+const formSection = document.getElementById('formSection');
+const successCard = document.getElementById('successCard');
+const errorCard = document.getElementById('errorCard');
+
+if (!alien) {
+    // Invalid or missing ID
+    recapCard.style.display = 'none';
+    formSection.style.display = 'none';
+    errorCard.style.display = 'block';
+} else {
+    // Populate the recap card
+    recapCard.innerHTML = `
+        <span class="recap-emoji">${alien.emoji}</span>
+        <div class="recap-info">
+            <h1>Adopting ${alien.name}</h1>
+            <div class="recap-species">${alien.species} — ${alien.id}</div>
+            <div class="recap-tags">
+                <span class="recap-tag size">${alien.size}</span>
+                <span class="recap-tag price">₴${alien.price.toLocaleString()}</span>
+                <span class="recap-tag care">${alien.careLevel} care</span>
+            </div>
+        </div>
+    `;
+
+    // Set hidden alien ID field
+    document.getElementById('alienIdField').value = alien.id;
+
+    // Update submit button text
+    document.getElementById('submitBtn').textContent = `Confirm Adoption of ${alien.name}`;
+
+    // Show warnings if any
+    if (alien.warnings && alien.warnings.length > 0) {
+        document.getElementById('warningsSection').innerHTML = `
+            <div class="warnings">
+                <h4>⚠ Before you adopt — please acknowledge</h4>
+                <ul>${alien.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
+            </div>
+        `;
+    }
+
+    // Handle form submission
+    document.getElementById('adoptionForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const data = Object.fromEntries(formData.entries());
+
+        // Generate confirmation
+        const adoptionId = 'ADOPT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const pickupDate = new Date(Date.now() + 3 * 86400000).toLocaleDateString('en-US', {
+            weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+        });
+
+        // If this was triggered by an agent, respond with structured data
+        if (e.agentInvoked && typeof e.respondWith === 'function') {
+            e.respondWith(JSON.stringify({
+                status: "confirmed",
+                adoptionId: adoptionId,
+                alien: alien.name,
+                species: alien.species,
+                adopterName: data.adopter_name,
+                pickupDate: pickupDate,
+                pickupLocation: "Cosmic Companions HQ — Docking Bay 7"
+            }));
+        }
+
+        // Hide form, show success
+        formSection.style.display = 'none';
+        recapCard.style.display = 'none';
+
+        successCard.innerHTML = `
+            <div class="success-emoji">${alien.emoji}</div>
+            <h2>Adoption Confirmed!</h2>
+            <p class="success-subtitle">
+                Congratulations, <strong>${data.adopter_name}</strong>! 
+                ${alien.name} the ${alien.species} is officially yours.
+            </p>
+            <div class="success-details">
+                <div class="success-detail-row">
+                    <span class="sdl">adoption id</span>
+                    <span class="sdv">${adoptionId}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="sdl">companion</span>
+                    <span class="sdv">${alien.name}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="sdl">adopter</span>
+                    <span class="sdv">${data.adopter_name}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="sdl">email</span>
+                    <span class="sdv">${data.adopter_email}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="sdl">pickup date</span>
+                    <span class="sdv">${pickupDate}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="sdl">pickup location</span>
+                    <span class="sdv">Docking Bay 7</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="sdl">care package</span>
+                    <span class="sdv">Included</span>
+                </div>
+            </div>
+            <div class="success-actions">
+                <a href="index.html" class="btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Adopt Another Pet
+                </a>
+            </div>
+        `;
+        successCard.classList.add('show');
+        successCard.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+</script>
+</body>
+</html>
