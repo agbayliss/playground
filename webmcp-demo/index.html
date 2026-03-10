@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebMCP Declarative API Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --surface: #13131a;
+            --surface-hover: #1a1a24;
+            --border: #2a2a3a;
+            --border-focus: #6366f1;
+            --text: #e4e4ed;
+            --text-muted: #8888a4;
+            --accent: #6366f1;
+            --accent-soft: rgba(99, 102, 241, 0.12);
+            --tag-bg: #1e1e2e;
+            --tag-text: #a5b4fc;
+            --success: #34d399;
+            --radius: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px 80px;
+            line-height: 1.6;
+        }
+
+        .page-header {
+            max-width: 640px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--tag-text);
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 20px;
+            letter-spacing: 0.02em;
+        }
+
+        .badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 15px;
+            max-width: 500px;
+        }
+
+        /* ─── Form Card ─── */
+
+        .form-card {
+            max-width: 640px;
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .form-card-header {
+            padding: 24px 28px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .form-card-header h2 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .form-card-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .agent-indicator {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--success);
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            padding: 4px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .form-body {
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        /* ─── Form Fields ─── */
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        label .required {
+            color: var(--accent);
+            font-size: 11px;
+        }
+
+        input, select, textarea {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 10px 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-soft);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #55556a;
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238888a4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button[type="submit"] {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            align-self: flex-start;
+        }
+
+        button[type="submit"]:hover { opacity: 0.9; }
+        button[type="submit"]:active { transform: scale(0.98); }
+
+        /* ─── Code Annotations ─── */
+
+        .annotations {
+            max-width: 640px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .annotations h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .annotation-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .annotation-label {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--tag-text);
+            background: var(--tag-bg);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .annotation-label .attr {
+            color: var(--success);
+        }
+
+        .annotation-desc {
+            padding: 14px 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .annotation-desc code {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .annotation-desc strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        pre {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        pre .hl { color: var(--accent); }
+        pre .attr { color: var(--success); }
+        pre .val { color: #fbbf24; }
+        pre .tag { color: var(--tag-text); }
+
+        .source-block {
+            max-width: 640px;
+            width: 100%;
+            margin-top: 32px;
+        }
+
+        .source-block h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* ─── Responsive ─── */
+
+        @media (max-width: 500px) {
+            .field-row { grid-template-columns: 1fr; }
+            .form-card-header { flex-direction: column; gap: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="page-header">
+        <div class="badge">WebMCP Declarative API</div>
+        <h1>Support Ticket Form</h1>
+        <p class="subtitle">
+            A standard HTML form enhanced with WebMCP attributes. 
+            An AI agent can discover this form as a callable tool, understand its fields, 
+            and pre-fill or submit it on behalf of the user.
+        </p>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════
+         THE WEBMCP FORM
+         
+         This is a normal HTML form with three types of 
+         WebMCP attributes added:
+         
+         On <form>:
+           toolname          → names the tool for agents
+           tooldescription   → tells the agent what this form does
+           toolautosubmit    → (optional) auto-submit when agent fills it
+         
+         On <input>, <select>, <textarea>:
+           toolparamdescription → describes each field to the agent
+         
+         That's it. The browser reads these attributes and 
+         builds a structured JSON schema that agents can call.
+    ═══════════════════════════════════════════════════ -->
+
+    <div class="form-card">
+        <div class="form-card-header">
+            <div>
+                <h2>New Support Ticket</h2>
+                <p>Fill out the form below or let an AI agent handle it.</p>
+            </div>
+            <div class="agent-indicator">agent-ready</div>
+        </div>
+
+        <form 
+            class="form-body"
+            action="/api/support/submit" 
+            method="POST"
+            toolname="submit_support_ticket"
+            tooldescription="Submit a customer support ticket with contact info, issue category, priority level, and a description of the problem."
+        >
+            <!-- Name + Email side by side -->
+            <div class="field-row">
+                <div class="field">
+                    <label>Full Name <span class="required">required</span></label>
+                    <input 
+                        type="text" 
+                        name="full_name" 
+                        required 
+                        placeholder="Jane Smith"
+                        toolparamdescription="Customer's full name"
+                    >
+                </div>
+                <div class="field">
+                    <label>Email <span class="required">required</span></label>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        required 
+                        placeholder="jane@example.com"
+                        toolparamdescription="Customer's email address for follow-up"
+                    >
+                </div>
+            </div>
+
+            <!-- Category + Priority side by side -->
+            <div class="field-row">
+                <div class="field">
+                    <label>Category <span class="required">required</span></label>
+                    <select 
+                        name="category" 
+                        required
+                        toolparamdescription="The type of issue: billing, technical, account, or general"
+                    >
+                        <option value="">Select a category...</option>
+                        <option value="billing">Billing & Payments</option>
+                        <option value="technical">Technical Issue</option>
+                        <option value="account">Account Access</option>
+                        <option value="general">General Inquiry</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Priority</label>
+                    <select 
+                        name="priority"
+                        toolparamdescription="Urgency level: low, medium, high, or critical"
+                    >
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="critical">Critical</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Subject line -->
+            <div class="field">
+                <label>Subject <span class="required">required</span></label>
+                <input 
+                    type="text" 
+                    name="subject" 
+                    required 
+                    placeholder="Brief summary of your issue"
+                    toolparamdescription="A short summary of the support issue"
+                >
+            </div>
+
+            <!-- Description -->
+            <div class="field">
+                <label>Description <span class="required">required</span></label>
+                <textarea 
+                    name="description" 
+                    required 
+                    placeholder="Describe your issue in detail. Include any error messages, steps to reproduce, or relevant account info."
+                    toolparamdescription="Detailed description of the problem, including error messages and steps to reproduce"
+                ></textarea>
+            </div>
+
+            <button type="submit">Submit Ticket</button>
+        </form>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         ANNOTATIONS: Explain what each WebMCP attribute does
+    ═══════════════════════════════════════════════════ -->
+
+    <div class="annotations">
+        <h3>&#128270; WebMCP Attributes Explained</h3>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="attr">toolname</span> on &lt;form&gt;
+            </div>
+            <div class="annotation-desc">
+                <strong>Required.</strong> Names the tool that this form represents. 
+                When an AI agent scans the page, it discovers a tool called 
+                <code>submit_support_ticket</code>. This is how the agent references 
+                the action — like a function name in an API.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="attr">tooldescription</span> on &lt;form&gt;
+            </div>
+            <div class="annotation-desc">
+                <strong>Required.</strong> A natural-language description of what the tool does. 
+                The agent's LLM reads this to decide <em>when</em> to use the tool. 
+                Be specific — vague descriptions lead to the model guessing wrong.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="attr">toolautosubmit</span> on &lt;form&gt;
+            </div>
+            <div class="annotation-desc">
+                <strong>Optional.</strong> When present, the form auto-submits after the agent fills it in. 
+                Without it, the agent pre-fills the form but waits for the user to review and click submit. 
+                <em>This demo intentionally omits it</em> so you can see the "human-in-the-loop" pattern.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                <span class="attr">toolparamdescription</span> on &lt;input&gt; / &lt;select&gt; / &lt;textarea&gt;
+            </div>
+            <div class="annotation-desc">
+                <strong>Optional but recommended.</strong> Tells the agent what each field expects. 
+                Without this, the agent infers from the <code>name</code>, <code>type</code>, 
+                <code>placeholder</code>, and <code>&lt;label&gt;</code> — which usually works, but 
+                explicit descriptions remove ambiguity.
+            </div>
+        </div>
+
+        <div class="annotation-block">
+            <div class="annotation-label">
+                Events: <span class="attr">toolactivated</span> &amp; <span class="attr">toolcancel</span>
+            </div>
+            <div class="annotation-desc">
+                When an agent invokes a declarative tool, a <code>toolactivated</code> event fires 
+                as fields are pre-filled. If the user cancels, <code>toolcancel</code> fires. 
+                On submit, you can check <code>event.agentInvoked</code> to know whether a human 
+                or an agent triggered it, and use <code>event.respondWith()</code> to return 
+                structured data back to the agent.
+            </div>
+        </div>
+    </div>
+
+    <!-- Source code preview -->
+    <div class="source-block">
+        <h3>&#128196; The Key Markup</h3>
+        <pre><span class="tag">&lt;form</span>
+  <span class="attr">toolname</span>=<span class="val">"submit_support_ticket"</span>
+  <span class="attr">tooldescription</span>=<span class="val">"Submit a customer support ticket..."</span>
+  action="/api/support/submit" method="POST"<span class="tag">&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="text" name="full_name" required
+    <span class="attr">toolparamdescription</span>=<span class="val">"Customer's full name"</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;select</span>
+    name="category" required
+    <span class="attr">toolparamdescription</span>=<span class="val">"The type of issue: billing, technical..."</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;option</span> value="billing"<span class="tag">&gt;</span>Billing<span class="tag">&lt;/option&gt;</span>
+    ...
+  <span class="tag">&lt;/select&gt;</span>
+
+  <span class="tag">&lt;textarea</span>
+    name="description" required
+    <span class="attr">toolparamdescription</span>=<span class="val">"Detailed description of the problem..."</span>
+  <span class="tag">&gt;&lt;/textarea&gt;</span>
+
+<span class="tag">&lt;/form&gt;</span></pre>
+    </div>
+
+</body>
+</html>
