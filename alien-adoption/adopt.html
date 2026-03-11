@@ -392,6 +392,106 @@
             margin-bottom: 20px;
         }
 
+        /* ─── Tool Log Panel ─── */
+
+        .log-section {
+            margin-top: 48px;
+        }
+
+        .log-section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .log-section .log-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .log-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .log-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-toolbar span {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .log-clear {
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--tag-bg);
+            border: 1px solid var(--border);
+            padding: 3px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .log-clear:hover { color: var(--text); }
+
+        .log-entries {
+            padding: 12px 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .log-entry:last-child { border-bottom: none; }
+
+        .log-entry .log-time {
+            color: var(--text-muted);
+            margin-right: 8px;
+        }
+
+        .log-entry .log-tool {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .log-entry .log-arrow {
+            color: var(--text-muted);
+            margin: 0 4px;
+        }
+
+        .log-entry .log-params {
+            color: var(--warning);
+            display: block;
+            margin-top: 4px;
+            margin-left: 70px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .log-empty {
+            color: var(--text-muted);
+            padding: 24px;
+            text-align: center;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+        }
+
         /* ─── Responsive ─── */
 
         @media (max-width: 500px) {
@@ -539,6 +639,21 @@
         <h2>Alien Not Found</h2>
         <p>We couldn't find that species in our catalog. They may have already been adopted or wandered off.</p>
         <a href="index.html" class="btn-primary">Back to Catalog</a>
+    </div>
+
+    <!-- Tool Call Log -->
+    <div class="log-section" id="logSection">
+        <h2>&#128225; Agent Tool Log</h2>
+        <p class="log-desc">Real-time log of WebMCP tool invocations on this page.</p>
+        <div class="log-panel">
+            <div class="log-toolbar">
+                <span>declarative api — submit_adoption_form</span>
+                <button class="log-clear" onclick="clearLog()">clear</button>
+            </div>
+            <div class="log-entries" id="logEntries">
+                <div class="log-empty">No tool calls yet. Use an agent to interact with this form.</div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -759,6 +874,58 @@ if (!alien) {
         `;
         successCard.classList.add('show');
         successCard.scrollIntoView({ behavior: 'smooth' });
+    });
+}
+
+
+// ═══════════════════════════════════════════════════
+//  TOOL CALL LOG
+// ═══════════════════════════════════════════════════
+
+const logEntriesEl = document.getElementById('logEntries');
+let logCount = 0;
+
+function addLog(toolName, detail) {
+    if (logCount === 0) logEntriesEl.innerHTML = '';
+    logCount++;
+    const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerHTML = `
+        <span class="log-time">${time}</span>
+        <span class="log-tool">${toolName}</span>
+        <span class="log-arrow">←</span>
+        ${detail ? `<span class="log-params">${detail}</span>` : ''}
+    `;
+    logEntriesEl.appendChild(entry);
+    logEntriesEl.scrollTop = logEntriesEl.scrollHeight;
+}
+
+function clearLog() {
+    logCount = 0;
+    logEntriesEl.innerHTML = '<div class="log-empty">No tool calls yet. Use an agent to interact with this form.</div>';
+}
+
+// Listen for WebMCP declarative tool events
+const adoptionForm = document.getElementById('adoptionForm');
+
+if (adoptionForm) {
+    // Fires when the agent starts filling in the form
+    adoptionForm.addEventListener('toolactivated', (e) => {
+        addLog('submit_adoption_form', 'Agent is filling in form fields...');
+    });
+
+    // Fires if the agent or user cancels
+    adoptionForm.addEventListener('toolcancel', (e) => {
+        addLog('submit_adoption_form', 'Tool invocation cancelled.');
+    });
+
+    // Log when form is actually submitted (by human or agent)
+    adoptionForm.addEventListener('submit', (e) => {
+        const source = e.agentInvoked ? 'agent' : 'human';
+        const formData = new FormData(adoptionForm);
+        const data = Object.fromEntries(formData.entries());
+        addLog('submit_adoption_form', `Form submitted by ${source}: ${JSON.stringify(data, null, 2)}`);
     });
 }
 </script>
