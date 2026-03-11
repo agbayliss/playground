@@ -906,26 +906,29 @@ function clearLog() {
     logEntriesEl.innerHTML = '<div class="log-empty">No tool calls yet. Use an agent to interact with this form.</div>';
 }
 
-// Listen for WebMCP declarative tool events
+// Detect when fields get filled (by agent or human) and log it
 const adoptionForm = document.getElementById('adoptionForm');
 
 if (adoptionForm) {
-    // Fires when the agent starts filling in the form
-    adoptionForm.addEventListener('toolactivated', (e) => {
-        addLog('submit_adoption_form', 'Agent is filling in form fields...');
-    });
+    const fields = adoptionForm.querySelectorAll('input:not([type="hidden"]), select, textarea');
+    const lastKnown = {};
+    fields.forEach(f => { lastKnown[f.name] = f.value; });
 
-    // Fires if the agent or user cancels
-    adoptionForm.addEventListener('toolcancel', (e) => {
-        addLog('submit_adoption_form', 'Tool invocation cancelled.');
-    });
+    // Check for value changes every 500ms
+    const poll = setInterval(() => {
+        fields.forEach(f => {
+            if (f.value !== lastKnown[f.name]) {
+                addLog('field_filled', `${f.name} → "${f.value}"`);
+                lastKnown[f.name] = f.value;
+            }
+        });
+    }, 500);
 
-    // Log when form is actually submitted (by human or agent)
-    adoptionForm.addEventListener('submit', (e) => {
-        const source = e.agentInvoked ? 'agent' : 'human';
-        const formData = new FormData(adoptionForm);
-        const data = Object.fromEntries(formData.entries());
-        addLog('submit_adoption_form', `Form submitted by ${source}: ${JSON.stringify(data, null, 2)}`);
+    // Log when form is submitted
+    adoptionForm.addEventListener('submit', () => {
+        clearInterval(poll);
+        const data = Object.fromEntries(new FormData(adoptionForm).entries());
+        addLog('form_submitted', JSON.stringify(data, null, 2));
     });
 }
 </script>
