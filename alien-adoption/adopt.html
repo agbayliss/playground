@@ -492,6 +492,40 @@
             font-size: 12px;
         }
 
+        /* ─── Annotations ─── */
+
+        .annotations {
+            margin-top: 48px;
+        }
+
+        .annotations h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        pre {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            overflow-x: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        pre .hl { color: var(--accent); }
+        pre .fn { color: var(--success); }
+        pre .str { color: var(--warning); }
+        pre .kw { color: var(--pink); }
+        pre .cm { color: #555570; }
+        pre .attr { color: var(--success); }
+        pre .val { color: var(--warning); }
+        pre .tag { color: var(--tag-text); }
+
         /* ─── Responsive ─── */
 
         @media (max-width: 500px) {
@@ -654,6 +688,82 @@
                 <div class="log-empty">No tool calls yet. Use an agent to interact with this form.</div>
             </div>
         </div>
+    </div>
+
+    <!-- Code Reference -->
+    <div class="annotations">
+        <h2>&#128196; Declarative Tool Markup</h2>
+        <pre><span class="cm">&lt;!-- The entire tool is defined with HTML attributes — no JS needed --&gt;</span>
+
+<span class="tag">&lt;form</span>
+  <span class="attr">toolname</span>=<span class="val">"submit_adoption_form"</span>
+  <span class="attr">tooldescription</span>=<span class="val">"Fill in the alien pet adoption form with the
+    adopter's personal details. The alien being adopted is already
+    selected. Fill in the adopter's full name, email, phone, home
+    environment type, experience level with exotic pets, and any
+    optional notes. IMPORTANT: This tool ONLY fills in the form
+    fields — it does NOT submit the form. After filling in the
+    fields, tell the user to review the information and click the
+    'Confirm Adoption' button themselves when they are ready."</span>
+<span class="tag">&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="hidden" name="alien_id"
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="text" name="adopter_name" required
+    placeholder="Jane Smith"
+    <span class="attr">toolparamdescription</span>=<span class="val">"The adopter's full legal name"</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="email" name="adopter_email" required
+    placeholder="jane@example.com"
+    <span class="attr">toolparamdescription</span>=<span class="val">"The adopter's email for adoption confirmation
+      and care updates"</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="tel" name="phone"
+    placeholder="+1 (555) 000-0000"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Contact phone number for pickup coordination"</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;select</span>
+    name="home_environment" required
+    <span class="attr">toolparamdescription</span>=<span class="val">"Type of living space: apartment, house,
+      space_station, or underwater_dome"</span>
+  <span class="tag">&gt;</span>
+    <span class="tag">&lt;option</span> value=""<span class="tag">&gt;</span>Select...<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="apartment"<span class="tag">&gt;</span>Apartment<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="house"<span class="tag">&gt;</span>House<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="space_station"<span class="tag">&gt;</span>Space Station<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="underwater_dome"<span class="tag">&gt;</span>Underwater Dome<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;/select&gt;</span>
+
+  <span class="tag">&lt;select</span>
+    name="experience_level" required
+    <span class="attr">toolparamdescription</span>=<span class="val">"Adopter's experience level: none (first time),
+      some (1-2 exotic pets before), experienced (3+ exotic pets),
+      or expert (professional handler)"</span>
+  <span class="tag">&gt;</span>
+    <span class="tag">&lt;option</span> value=""<span class="tag">&gt;</span>Select your experience level...<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="none"<span class="tag">&gt;</span>First time<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="some"<span class="tag">&gt;</span>Some — owned 1-2 exotic pets<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="experienced"<span class="tag">&gt;</span>Experienced — owned 3+<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="expert"<span class="tag">&gt;</span>Expert — professional handler<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;/select&gt;</span>
+
+  <span class="tag">&lt;textarea</span>
+    name="notes"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Optional notes about the adopter's household,
+      other pets, allergies, or special requirements"</span>
+  <span class="tag">&gt;&lt;/textarea&gt;</span>
+
+  <span class="tag">&lt;button</span> type="submit"<span class="tag">&gt;</span>Confirm Adoption<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;/form&gt;</span></pre>
     </div>
 
 </div>
