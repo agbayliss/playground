@@ -712,31 +712,122 @@
             </div>
         </div>
 
-        <h2 style="margin-top: 32px;">&#128196; Example Tool Registration</h2>
-        <pre><span class="cm">// Register a tool with the imperative API</span>
+        <h2 style="margin-top: 32px;">&#128196; Full Tool Registrations</h2>
+        <pre><span class="cm">// ── Tool 1: Search Aliens ──</span>
 <span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
   <span class="hl">name</span>: <span class="str">"search_aliens"</span>,
-  <span class="hl">description</span>: <span class="str">"Search alien pets by planet, size, temperament..."</span>,
+  <span class="hl">description</span>: <span class="str">"Search the alien pet catalog. Filter by planet of origin,
+    size (small/medium/large), temperament (gentle/playful/chaotic/
+    independent), special ability, maximum price in Galactic Credits,
+    or minimum compatibility score (0-100). Returns a list of matching
+    aliens with basic info. Call get_alien_details for full profiles."</span>,
   <span class="hl">inputSchema</span>: {
     type: <span class="str">"object"</span>,
     properties: {
       planet: {
         type: <span class="str">"string"</span>,
-        description: <span class="str">"Planet of origin to filter by"</span>
+        description: <span class="str">"Planet of origin to filter by (e.g., 'Zorbax-7',
+          'Krixos Prime', 'Flimora', 'Vexar Minor', 'Grakka',
+          'Nebula Drift', 'Zynara', 'Paxia Verdant', 'Xelara')"</span>
       },
       size: {
         type: <span class="str">"string"</span>,
-        enum: [<span class="str">"small"</span>, <span class="str">"medium"</span>, <span class="str">"large"</span>]
+        enum: [<span class="str">"small"</span>, <span class="str">"medium"</span>, <span class="str">"large"</span>],
+        description: <span class="str">"Size category to filter by"</span>
+      },
+      temperament: {
+        type: <span class="str">"string"</span>,
+        enum: [<span class="str">"gentle"</span>, <span class="str">"playful"</span>, <span class="str">"chaotic"</span>, <span class="str">"independent"</span>],
+        description: <span class="str">"Temperament to filter by"</span>
+      },
+      ability: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"Special ability to search for (e.g., 'telepathy',
+          'shapeshifting', 'fire breath')"</span>
+      },
+      max_price: {
+        type: <span class="str">"number"</span>,
+        description: <span class="str">"Maximum adoption price in Galactic Credits"</span>
+      },
+      min_compatibility: {
+        type: <span class="str">"number"</span>,
+        description: <span class="str">"Minimum compatibility score (0-100)"</span>
       }
     }
   },
   <span class="kw">async</span> <span class="fn">execute</span>(params) {
-    <span class="kw">const</span> results = filterAliens(params);
+    <span class="kw">const</span> results = searchAliens(params);
+    addLog(<span class="str">'search_aliens'</span>, params, <span class="str">`Found ${results.length} alien(s)`</span>);
     <span class="kw">return</span> {
-      content: [{
-        type: <span class="str">"text"</span>,
-        text: JSON.stringify(results)
-      }]
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify({
+        totalResults: results.length, aliens: results
+      }, <span class="kw">null</span>, 2) }]
+    };
+  }
+});
+
+
+<span class="cm">// ── Tool 2: Get Alien Details ──</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"get_alien_details"</span>,
+  <span class="hl">description</span>: <span class="str">"Get the full profile of a specific alien pet, including
+    detailed bio, diet, care requirements, lifespan, warnings, and
+    adoption fee. Requires the alien's ID (e.g., 'zorb-001').
+    Use search_aliens first to find IDs."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      id: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"The unique alien ID (e.g., 'zorb-001', 'krix-002')"</span>
+      }
+    },
+    required: [<span class="str">"id"</span>]
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> details = getAlienDetails(params.id);
+    addLog(<span class="str">'get_alien_details'</span>, params,
+      details.error || <span class="str">`${details.name} — ${details.species}`</span>);
+    <span class="kw">if</span> (!details.error) showDetail(params.id);
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify(details, <span class="kw">null</span>, 2) }]
+    };
+  }
+});
+
+
+<span class="cm">// ── Tool 3: Adopt Alien ──</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"adopt_alien"</span>,
+  <span class="hl">description</span>: <span class="str">"Begin the adoption process for an alien pet. This
+    navigates to the adoption form page where the adopter's details
+    can be filled in. Requires the alien's ID. Use the
+    submit_adoption_form tool on the next page to complete
+    the adoption."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      id: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"The unique alien ID to adopt (e.g., 'zorb-001')"</span>
+      }
+    },
+    required: [<span class="str">"id"</span>]
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> a = ALIENS.find(x => x.id === params.id);
+    addLog(<span class="str">'adopt_alien'</span>, params,
+      a ? <span class="str">`Navigating to adoption form for ${a.name}...`</span>
+        : <span class="str">'Species not found'</span>);
+    <span class="kw">if</span> (a) window.location.href = <span class="str">`adopt.html?id=${params.id}`</span>;
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify(
+        a ? { status: <span class="str">"navigating_to_form"</span>, alien: a.name,
+              species: a.species, message: <span class="str">"Redirecting to adoption
+              form. Use submit_adoption_form tool on the next
+              page to complete the adoption."</span> }
+          : { error: <span class="str">"Species not found"</span> }
+      ) }]
     };
   }
 });</pre>
