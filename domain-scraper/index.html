@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Scraper — Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0e0e12;
+            --surface: #16161d;
+            --surface-hover: #1e1e28;
+            --border: #2a2a3a;
+            --border-hover: #4338ca;
+            --text: #e2e2e8;
+            --text-muted: #8888a0;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.15);
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.15);
+            --mono: 'DM Mono', monospace;
+            --sans: 'DM Sans', sans-serif;
+            --chatgpt: #10a37f;
+            --perplexity: #22b8cf;
+            --google: #ea4335;
+        }
+
+        body {
+            font-family: var(--sans);
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 80px 24px 120px;
+        }
+
+        /* Back link */
+        .back {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 48px;
+            transition: color 0.2s;
+        }
+        .back:hover { color: var(--accent); }
+
+        /* Header */
+        header { margin-bottom: 56px; }
+
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .eyebrow::before {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 1px;
+        }
+
+        h1 {
+            font-family: var(--sans);
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        /* Sections */
+        section { margin-bottom: 56px; }
+
+        .section-label {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        p { margin-bottom: 14px; color: var(--text-muted); font-size: 15px; line-height: 1.7; }
+        p:last-child { margin-bottom: 0; }
+
+        /* Install zone */
+        .install-zone {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .install-zone p {
+            color: var(--text-muted);
+            font-size: 15px;
+            margin-bottom: 24px;
+        }
+
+        .bookmarklet-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            color: #fff;
+            font-family: var(--sans);
+            font-size: 17px;
+            font-weight: 700;
+            padding: 16px 32px;
+            border-radius: 12px;
+            text-decoration: none;
+            cursor: grab;
+            user-select: none;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 24px rgba(99, 102, 241, 0.35);
+        }
+        .bookmarklet-link:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5);
+        }
+        .bookmarklet-link:active {
+            cursor: grabbing;
+            transform: scale(0.98);
+        }
+
+        .drag-hint {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        /* Steps */
+        .steps {
+            list-style: none;
+            counter-reset: step;
+        }
+        .steps li {
+            counter-increment: step;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+        .steps li::before {
+            content: counter(step);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-family: var(--mono);
+            font-size: 14px;
+            font-weight: 500;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Output example */
+        .output-example {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: var(--mono);
+            font-size: 13px;
+            color: var(--green);
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        /* Platform cards */
+        .platform-cards {
+            display: grid;
+            gap: 16px;
+        }
+
+        .platform-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .platform-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+        }
+        .platform-card.chatgpt::before { background: var(--chatgpt); }
+        .platform-card.perplexity::before { background: var(--perplexity); }
+        .platform-card.google::before { background: var(--google); }
+
+        .platform-tag {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .chatgpt .platform-tag { background: rgba(16, 163, 127, 0.15); color: var(--chatgpt); }
+        .perplexity .platform-tag { background: rgba(34, 184, 207, 0.15); color: var(--perplexity); }
+        .google .platform-tag { background: rgba(234, 67, 53, 0.15); color: var(--google); }
+
+        .platform-card p { margin-bottom: 0; }
+
+        /* Incognito & Troubleshooting */
+        .info-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .info-box h3 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        .info-box p { margin-bottom: 0; }
+
+        kbd {
+            font-family: var(--mono);
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2px 6px;
+            color: var(--text);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 80px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        footer a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover { color: var(--accent); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container { padding: 48px 16px 80px; }
+            header { margin-bottom: 40px; }
+            .install-zone { padding: 28px 20px; }
+            .bookmarklet-link { font-size: 15px; padding: 14px 24px; }
+            footer { flex-direction: column; gap: 8px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../" class="back">&larr; Back to Playground</a>
+
+        <header>
+            <div class="eyebrow">Tool</div>
+            <h1>Domain Scraper</h1>
+            <p class="subtitle">
+                Stop hand-typing source domains from AI answers. One click, every domain, straight to your clipboard.
+            </p>
+        </header>
+
+        <!-- Install -->
+        <section>
+            <div class="section-label">Install</div>
+            <div class="install-zone">
+                <p>Drag this to your bookmarks bar</p>
+                <a class="bookmarklet-link"
+                   href="javascript:void(function(){var h=window.location.hostname,p=null;if(h.includes('chatgpt.com')||h.includes('chat.openai.com'))p='chatgpt';else if(h.includes('perplexity'))p='perplexity';else if(h.includes('google.com'))p='google';if(!p){alert('Domain Scraper: Not on ChatGPT, Perplexity, or Google AI Mode.');return}var int=['chatgpt.com','chat.openai.com','openai.com','perplexity.ai','google.com','accounts.google.com','support.google.com','policies.google.com','play.google.com','maps.google.com','mail.google.com','drive.google.com','docs.google.com'];function isInt(d){for(var i=0;i<int.length;i++)if(d===int[i])return true;if(/^google\.co(\.[a-z]+)?$/i.test(d))return true;if(/^www\.google\./i.test(d))return true;return false}function uw(u){if(u.includes('google.com/url')){var m=u.match(/[?%26](?:url|q)=([^%26]+)/);if(m)return decodeURIComponent(m[1])}return u}function ed(u){try{u=uw(u);var o=new URL(u);if(o.protocol!=='http:'%26%26o.protocol!=='https:')return null;var d=o.hostname.replace(/^www\./,'');return isInt(d)?null:d}catch(e){return null}}function fl(){var lk=[],sc=document.querySelectorAll('[class*=source],[class*=Source],[class*=citation],[class*=Citation],[data-testid*=source],[data-testid*=citation]');sc.forEach(function(el){el.querySelectorAll('a[href]').forEach(function(a){lk.push(a.href)})});if(lk.length>=2)return lk;['[role=dialog]','[role=complementary]','[class*=drawer]','[class*=panel]','[class*=sidebar]','[class*=modal]','[class*=overlay]'].forEach(function(s){document.querySelectorAll(s).forEach(function(el){var an=el.querySelectorAll('a[href]');if(an.length>=2)an.forEach(function(a){lk.push(a.href)})})});if(lk.length>=2)return lk;if(p==='perplexity')document.querySelectorAll('[class*=ref],[class*=web-result],[class*=search-result],[class*=result]').forEach(function(el){el.querySelectorAll('a[href]').forEach(function(a){lk.push(a.href)})});if(p==='google'){document.querySelectorAll('cite').forEach(function(el){var pr=el.closest('a[href]')||el.parentElement;if(pr){if(pr.querySelectorAll)pr.querySelectorAll('a[href]').forEach(function(a){lk.push(a.href)});if(pr.href)lk.push(pr.href)}});document.querySelectorAll('a[data-ved][href]').forEach(function(a){lk.push(a.href)});document.querySelectorAll('img[src*=favicon],img[src*=s2/favicons]').forEach(function(img){var c=img.closest('div')||img.parentElement;if(c)c.querySelectorAll('a[href]').forEach(function(a){lk.push(a.href)})})}if(lk.length>=2)return lk;['article','main','[class*=response]','[class*=answer]','[class*=prose]','[class*=markdown]','[class*=conversation]','[class*=message]','[class*=result]','[class*=content]'].forEach(function(s){document.querySelectorAll(s).forEach(function(el){el.querySelectorAll('a[href]').forEach(function(a){lk.push(a.href)})})});return lk}var rl=fl(),sn={},dm=[];rl.forEach(function(u){var d=ed(u);if(d%26%26!sn[d]){sn[d]=true;dm.push(d)}});if(!dm.length){alert('Domain Scraper: No source domains found.\n\nMake sure the source list is expanded/open before clicking this bookmarklet.');return}var rs=dm.join(', ');function sn2(c){var el=document.createElement('div');el.textContent='\u2713 '+c+' domain'+(c===1?'':'s')+' copied!';el.style.cssText='position:fixed;top:16px;right:16px;z-index:999999;background:%2310b981;color:%23fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:15px;font-weight:700;padding:12px 20px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity 0.4s;opacity:1';document.body.appendChild(el);setTimeout(function(){el.style.opacity='0'},2000);setTimeout(function(){el.remove()},2500)}try{navigator.clipboard.writeText(rs).then(function(){sn2(dm.length)}).catch(function(){window.prompt('Domain Scraper — copy these:',rs)})}catch(e){window.prompt('Domain Scraper — copy these:',rs)}}())"
+                   onclick="alert('Drag this to your bookmarks bar!'); return false;">
+                    &#x26A1; Extract Domains
+                </a>
+            </div>
+            <div class="drag-hint">&uarr; drag to bookmarks bar &middot; don't click</div>
+        </section>
+
+        <!-- How to use -->
+        <section>
+            <div class="section-label">How to use</div>
+            <ol class="steps">
+                <li>Ask your question on ChatGPT, Perplexity, or Google AI Mode</li>
+                <li>Expand the source list — click "Sources," the source count, or "Show all" depending on the platform</li>
+                <li>Click the bookmarklet in your bookmarks bar</li>
+                <li>Domains are copied to your clipboard — paste into your spreadsheet</li>
+            </ol>
+            <div class="output-example">cisco.com, qsfptek.com, arista.com, juniper.net, fs.com, senko.com</div>
+        </section>
+
+        <!-- Platform notes -->
+        <section>
+            <div class="section-label">Platform notes</div>
+            <div class="platform-cards">
+                <div class="platform-card chatgpt">
+                    <span class="platform-tag">ChatGPT</span>
+                    <p>Append "Show your sources" to your query to ensure sources appear. Click the <strong>Sources</strong> button at the bottom of the answer to open the panel before running the bookmarklet.</p>
+                </div>
+                <div class="platform-card perplexity">
+                    <span class="platform-tag">Perplexity</span>
+                    <p>Click the <strong>"X sources"</strong> button to open the full source panel before running the bookmarklet.</p>
+                </div>
+                <div class="platform-card google">
+                    <span class="platform-tag">Google AI Mode</span>
+                    <p>Click to expand the source cards (the "X sites" indicator), then click <strong>Show all</strong> if present before running the bookmarklet.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Incognito -->
+        <section>
+            <div class="section-label">Incognito setup</div>
+            <div class="info-box">
+                <h3>Bookmarklets work in incognito by default</h3>
+                <p>You just need the bookmarks bar visible. Open an incognito window and press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Windows) or <kbd>&#x2318;</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> (Mac) to toggle it on.</p>
+            </div>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section>
+            <div class="section-label">Troubleshooting</div>
+            <div class="info-box">
+                <h3>0 domains found</h3>
+                <p>Make sure the source list panel is fully open and visible. Some platforms lazy-load sources — scroll to the bottom of the source list to ensure all items are rendered.</p>
+            </div>
+            <div class="info-box">
+                <h3>Clipboard not working</h3>
+                <p>Some browsers block clipboard access on certain pages. If this happens, a fallback popup will appear with the domain list for manual copying.</p>
+            </div>
+            <div class="info-box">
+                <h3>Missing some domains</h3>
+                <p>The platforms update their page structure frequently. If the bookmarklet consistently misses sources on a specific platform, the DOM selectors may need updating.</p>
+            </div>
+        </section>
+
+        <footer>
+            <a href="../">&larr; Playground</a>
+            <span>Internal tool &middot; IfThen</span>
+        </footer>
+    </div>
+</body>
+</html>
