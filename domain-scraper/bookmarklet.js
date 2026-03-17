@@ -60,9 +60,52 @@
     }
   }
 
+  // --- Count external (non-internal) domains in a list of hrefs ---
+  function countExternalLinks(hrefs) {
+    var count = 0;
+    for (var i = 0; i < hrefs.length; i++) {
+      if (extractDomain(hrefs[i])) count++;
+    }
+    return count;
+  }
+
   // --- Layered container finding ---
   function findLinks() {
     var links = [];
+
+    // Layer 0: Platform-specific direct targeting
+    if (platform === 'chatgpt') {
+      // Target the Sources panel: a <section> ancestor of the Close button
+      // This catches all source links including those behind the "More" toggle
+      var closeBtns = document.querySelectorAll('button[aria-label="Close"]');
+      closeBtns.forEach(function (btn) {
+        var el = btn;
+        while (el && el.tagName !== 'SECTION') {
+          el = el.parentElement;
+        }
+        if (el && el.tagName === 'SECTION') {
+          el.querySelectorAll('a[href]').forEach(function (a) {
+            links.push(a.href);
+          });
+        }
+      });
+      // Also grab inline citation pills as a supplement
+      document.querySelectorAll('[data-testid="webpage-citation-pill"] a[href]').forEach(function (a) {
+        links.push(a.href);
+      });
+      if (countExternalLinks(links) >= 2) return links;
+    }
+
+    if (platform === 'perplexity') {
+      // Grab all external links from <main> (works on the Links tab where real URLs are present)
+      var mainEl = document.querySelector('main');
+      if (mainEl) {
+        mainEl.querySelectorAll('a[href]').forEach(function (a) {
+          links.push(a.href);
+        });
+      }
+      if (countExternalLinks(links) >= 2) return links;
+    }
 
     // Layer 1: Semantic selectors — elements with source/citation in class or data-testid
     var semanticContainers = document.querySelectorAll(
@@ -74,7 +117,7 @@
       anchors.forEach(function (a) { links.push(a.href); });
     });
 
-    if (links.length >= 2) return links;
+    if (countExternalLinks(links) >= 2) return links;
 
     // Layer 2: Structural selectors — dialogs, panels, drawers, sidebars
     var structuralSelectors = [
@@ -92,7 +135,7 @@
       });
     });
 
-    if (links.length >= 2) return links;
+    if (countExternalLinks(links) >= 2) return links;
 
     // Layer 3: Content-based selectors (platform-specific)
     if (platform === 'perplexity') {
@@ -125,7 +168,7 @@
       });
     }
 
-    if (links.length >= 2) return links;
+    if (countExternalLinks(links) >= 2) return links;
 
     // Layer 4: Broad fallback — main content area external links
     var broadSelectors = [
