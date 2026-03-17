@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/playground/favicon.svg">
+  <title>Era Explorer — ChronoVoyage</title>
+
+  <!-- Google Fonts: DM Sans (body) + DM Mono (code/logs) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ================================================================
+       RESET & BASE
+       ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ================================================================
+       PAGE HEADER
+       ================================================================ */
+    .page-header {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+    .page-header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #e0e0e0;
+      margin-bottom: 8px;
+    }
+    .page-header h1 span {
+      color: #6C63FF;
+    }
+    .page-header p {
+      color: #a0a0b0;
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ================================================================
+       CONTROLS BAR
+       ================================================================ */
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto 32px;
+      padding: 0 24px;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input::placeholder { color: #a0a0b0; }
+    .search-input:focus { border-color: #6C63FF; }
+
+    .btn-clear {
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: transparent;
+      color: #a0a0b0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .btn-clear:hover { background: #22223a; color: #e0e0e0; }
+
+    /* Filter groups */
+    .filter-group {
+      margin-bottom: 14px;
+    }
+    .filter-group-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #a0a0b0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .filter-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #2a2a4a;
+      background: transparent;
+      color: #a0a0b0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .pill:hover { background: #22223a; color: #e0e0e0; }
+    .pill.active {
+      background: rgba(108, 99, 255, 0.15);
+      border-color: #6C63FF;
+      color: #6C63FF;
+      font-weight: 600;
+    }
+
+    .result-count {
+      font-size: 14px;
+      color: #a0a0b0;
+      margin-top: 12px;
+    }
+    .result-count strong { color: #e0e0e0; }
+
+    /* ================================================================
+       ERA CARD GRID
+       ================================================================ */
+    .era-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 120px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .era-card {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 24px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .era-card:hover {
+      border-color: #6C63FF;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(108, 99, 255, 0.1);
+    }
+    .era-card.selected {
+      border-color: #6C63FF;
+      box-shadow: 0 0 0 1px #6C63FF;
+    }
+
+    .era-card-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+    .era-card-period {
+      font-size: 0.85rem;
+      color: #6C63FF;
+      font-family: 'DM Mono', monospace;
+      margin-bottom: 12px;
+    }
+    .era-card-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      color: #a0a0b0;
+    }
+    .era-card-meta .region-badge {
+      background: rgba(108, 99, 255, 0.1);
+      color: #6C63FF;
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    /* Danger dots */
+    .danger-dots {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+    }
+    .danger-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2a2a4a;
+    }
+    .danger-dot.filled-1 { background: #4ECB71; }
+    .danger-dot.filled-2 { background: #a0d060; }
+    .danger-dot.filled-3 { background: #FFB84D; }
+    .danger-dot.filled-4 { background: #FF8C42; }
+    .danger-dot.filled-5 { background: #FF6B6B; }
+
+    .clearance-badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .clearance-1 { background: rgba(78, 203, 113, 0.15); color: #4ECB71; }
+    .clearance-2 { background: rgba(255, 184, 77, 0.15); color: #FFB84D; }
+    .clearance-3 { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; }
+
+    .era-card-desc {
+      font-size: 0.9rem;
+      color: #a0a0b0;
+      line-height: 1.5;
+    }
+
+    /* ================================================================
+       INLINE DETAIL PANEL
+       ================================================================ */
+    .detail-panel-row {
+      grid-column: 1 / -1;
+    }
+    .detail-panel {
+      background: #1a1a2e;
+      border: 1px solid #6C63FF;
+      border-radius: 12px;
+      padding: 32px;
+      animation: slideDown 0.25s ease-out;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; max-height: 0; transform: translateY(-8px); }
+      to   { opacity: 1; max-height: 2000px; transform: translateY(0); }
+    }
+
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .detail-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e0e0e0;
+    }
+    .detail-period {
+      font-size: 0.95rem;
+      color: #6C63FF;
+      font-family: 'DM Mono', monospace;
+      margin-top: 4px;
+    }
+    .detail-close {
+      background: transparent;
+      border: 1px solid #2a2a4a;
+      color: #a0a0b0;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .detail-close:hover { border-color: #FF6B6B; color: #FF6B6B; }
+
+    .detail-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .detail-meta-tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: #a0a0b0;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 768px) {
+      .detail-grid { grid-template-columns: 1fr; }
+    }
+
+    .detail-section {
+      margin-bottom: 20px;
+    }
+    .detail-section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6C63FF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .detail-section ul {
+      list-style: none;
+      padding: 0;
+    }
+    .detail-section li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      color: #e0e0e0;
+    }
+    .detail-section li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: #6C63FF;
+      font-weight: 700;
+    }
+    .detail-section li.risk-item::before {
+      content: '!';
+      color: #FF6B6B;
+    }
+    .detail-section p {
+      font-size: 0.9rem;
+      color: #a0a0b0;
+      line-height: 1.6;
+    }
+
+    /* Packages table in detail */
+    .packages-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .packages-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: #a0a0b0;
+      border-bottom: 1px solid #2a2a4a;
+      font-weight: 500;
+    }
+    .packages-table td {
+      padding: 8px 12px;
+      color: #e0e0e0;
+      border-bottom: 1px solid rgba(42, 42, 74, 0.5);
+    }
+    .packages-table .price {
+      color: #4ECB71;
+      font-family: 'DM Mono', monospace;
+      font-weight: 600;
+    }
+
+    /* Detail action buttons */
+    .detail-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #2a2a4a;
+    }
+    .btn-primary {
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: none;
+      background: #6C63FF;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #7B73FF; }
+    .btn-secondary {
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: transparent;
+      color: #a0a0b0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { background: #22223a; color: #e0e0e0; }
+
+    /* ================================================================
+       COMPARISON TRAY  (sticky bottom bar)
+       ================================================================ */
+    .compare-tray {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #1a1a2e;
+      border-top: 1px solid #2a2a4a;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 900;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      font-size: 14px;
+    }
+    .compare-tray.visible { transform: translateY(0); }
+
+    .compare-tray-label {
+      color: #a0a0b0;
+      font-weight: 500;
+    }
+    .compare-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(108, 99, 255, 0.15);
+      border: 1px solid #6C63FF;
+      border-radius: 20px;
+      padding: 4px 12px;
+      color: #6C63FF;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .compare-chip-remove {
+      background: none;
+      border: none;
+      color: #6C63FF;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      margin-left: 2px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .compare-chip-remove:hover { opacity: 1; }
+
+    .btn-compare {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      background: #6C63FF;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-compare:hover { background: #7B73FF; }
+
+    /* ================================================================
+       COMPARISON OVERLAY
+       ================================================================ */
+    .compare-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 15, 26, 0.85);
+      z-index: 950;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .compare-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .compare-panel {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 32px;
+      max-width: 900px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .compare-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .compare-panel-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #e0e0e0;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .compare-table th {
+      text-align: left;
+      padding: 10px 14px;
+      color: #a0a0b0;
+      border-bottom: 1px solid #2a2a4a;
+      font-weight: 500;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .compare-table td {
+      padding: 10px 14px;
+      color: #e0e0e0;
+      border-bottom: 1px solid rgba(42, 42, 74, 0.5);
+      vertical-align: top;
+    }
+    .compare-table tr:last-child td { border-bottom: none; }
+    .compare-table .attr-label {
+      color: #a0a0b0;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    /* ================================================================
+       TOOL LOG AREA
+       ================================================================ */
+    .tool-log-area {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+
+    /* ================================================================
+       EMPTY STATE
+       ================================================================ */
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: #a0a0b0;
+    }
+    .empty-state p {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .empty-state .hint {
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ================================================================
+       PAGE HEADER
+       ================================================================ -->
+  <div class="page-header">
+    <h1><span>Era</span> Explorer</h1>
+    <p>Search across time and space to find your perfect destination</p>
+  </div>
+
+  <!-- ================================================================
+       SEARCH & FILTER CONTROLS
+       ================================================================ -->
+  <div class="controls">
+    <!-- Search bar row -->
+    <div class="search-row">
+      <input
+        type="text"
+        id="search-input"
+        class="search-input"
+        placeholder="Search eras... e.g. 'peaceful in Asia' or 'ancient civilizations'"
+      />
+      <button id="btn-clear-filters" class="btn-clear">Clear Filters</button>
+    </div>
+
+    <!-- Region filter -->
+    <div class="filter-group">
+      <div class="filter-group-label">Region</div>
+      <div class="filter-pills" id="region-pills"></div>
+    </div>
+
+    <!-- Danger Level filter -->
+    <div class="filter-group">
+      <div class="filter-group-label">Danger Level</div>
+      <div class="filter-pills" id="danger-pills"></div>
+    </div>
+
+    <!-- Clearance Required filter -->
+    <div class="filter-group">
+      <div class="filter-group-label">Clearance Required</div>
+      <div class="filter-pills" id="clearance-pills"></div>
+    </div>
+
+    <!-- Result count -->
+    <div class="result-count" id="result-count"></div>
+  </div>
+
+  <!-- ================================================================
+       ERA CATALOG GRID
+       ================================================================ -->
+  <div class="era-grid" id="era-grid"></div>
+
+  <!-- ================================================================
+       COMPARISON TRAY (sticky bottom)
+       ================================================================ -->
+  <div class="compare-tray" id="compare-tray">
+    <span class="compare-tray-label">Compare:</span>
+    <div id="compare-chips"></div>
+    <button class="btn-compare" id="btn-compare-show">Compare</button>
+  </div>
+
+  <!-- ================================================================
+       COMPARISON OVERLAY
+       ================================================================ -->
+  <div class="compare-overlay" id="compare-overlay">
+    <div class="compare-panel">
+      <div class="compare-panel-header">
+        <span class="compare-panel-title">Era Comparison</span>
+        <button class="detail-close" id="btn-compare-close">&times;</button>
+      </div>
+      <div id="compare-table-container"></div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       TOOL LOG
+       ================================================================ -->
+  <div class="tool-log-area">
+    <div id="tool-log-container"></div>
+  </div>
+
+  <!-- ================================================================
+       SCRIPTS
+       ================================================================ -->
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+
+  <script>
+    /* ==================================================================
+       ERA EXPLORER — Main Application Logic
+       ==================================================================
+       This script implements the Era Explorer page: catalog rendering,
+       filtering, inline detail panels, comparison tray, and WebMCP
+       tool registrations.
+       ================================================================== */
+
+    (function () {
+      "use strict";
+
+      // ================================================================
+      // CONVENIENCE ALIASES
+      // ================================================================
+      var COLORS = ChronoShared.COLORS;
+      var eras = ChronoData.eras;
+      var packages = ChronoData.packageTemplates;
+      var addOns = ChronoData.addOns;
+      var prerequisites = ChronoData.prerequisites;
+
+      // ================================================================
+      // STATE — declared with var at the top to avoid hoisting issues
+      // ================================================================
+
+      /** Currently selected filter values */
+      var activeRegions = [];
+      var activeDangerLevels = [];
+      var activeClearanceLevels = [];
+      var searchQuery = "";
+
+      /** Currently open detail panel era ID (or null) */
+      var openDetailEraId = null;
+
+      /** Eras added to the comparison tray (max 3) */
+      var compareList = [];
+
+      // ================================================================
+      // HELPER: Format year for display
+      // ================================================================
+
+      /**
+       * Formats a { startYear, endYear } time period for display.
+       * Negative years → BCE, positive → CE.
+       * e.g. { -509, -27 } → "509–27 BCE"
+       * e.g. { 1603, 1868 } → "1603–1868 CE"
+       * e.g. { 2145, 2145 } → "2145 CE"
+       */
+      function formatTimePeriod(tp) {
+        var startAbs = Math.abs(tp.startYear);
+        var endAbs = Math.abs(tp.endYear);
+        var startSuffix = tp.startYear < 0 ? " BCE" : " CE";
+        var endSuffix = tp.endYear < 0 ? " BCE" : " CE";
+
+        if (tp.startYear === tp.endYear) {
+          return startAbs + startSuffix;
+        }
+
+        // If both same era (both BCE or both CE), show suffix only on the end
+        if (startSuffix === endSuffix) {
+          return startAbs + "–" + endAbs + endSuffix;
+        }
+        return startAbs + startSuffix + " – " + endAbs + endSuffix;
+      }
+
+      // ================================================================
+      // HELPER: Render danger dots
+      // ================================================================
+
+      function dangerDotsHTML(level) {
+        var html = '<span class="danger-dots">';
+        for (var i = 1; i <= 5; i++) {
+          html += '<span class="danger-dot' + (i <= level ? " filled-" + level : "") + '"></span>';
+        }
+        html += "</span>";
+        return html;
+      }
+
+      // ================================================================
+      // HELPER: Look up names by ID
+      // ================================================================
+
+      function getPrerequisiteName(id) {
+        for (var i = 0; i < prerequisites.length; i++) {
+          if (prerequisites[i].id === id) return prerequisites[i].name;
+        }
+        return id;
+      }
+
+      function getPackageById(id) {
+        for (var i = 0; i < packages.length; i++) {
+          if (packages[i].id === id) return packages[i];
+        }
+        return null;
+      }
+
+      function getAddOnsForEra(eraId) {
+        var result = [];
+        for (var i = 0; i < addOns.length; i++) {
+          var ao = addOns[i];
+          if (ao.applicableEras === "all") {
+            result.push(ao);
+          } else if (Array.isArray(ao.applicableEras) && ao.applicableEras.indexOf(eraId) !== -1) {
+            result.push(ao);
+          }
+        }
+        return result;
+      }
+
+      function getEraById(id) {
+        for (var i = 0; i < eras.length; i++) {
+          if (eras[i].id === id) return eras[i];
+        }
+        return null;
+      }
+
+      function getEraByName(name) {
+        var lower = name.toLowerCase();
+        for (var i = 0; i < eras.length; i++) {
+          if (eras[i].name.toLowerCase().indexOf(lower) !== -1) return eras[i];
+        }
+        return null;
+      }
+
+      function resolveEra(idOrName) {
+        var era = getEraById(idOrName);
+        if (era) return era;
+        return getEraByName(idOrName);
+      }
+
+      // ================================================================
+      // FILTERING LOGIC
+      // ================================================================
+
+      /**
+       * Filters the eras array based on current active filters.
+       * Returns an array of matching era objects.
+       */
+      function filterEras(opts) {
+        var q = (opts && opts.query !== undefined) ? opts.query : searchQuery;
+        var regions = (opts && opts.regions) ? opts.regions : activeRegions;
+        var dangers = (opts && opts.dangers) ? opts.dangers : activeDangerLevels;
+        var clearances = (opts && opts.clearances) ? opts.clearances : activeClearanceLevels;
+        var dangerMax = (opts && opts.dangerMax) ? opts.dangerMax : null;
+        var clearanceMax = (opts && opts.clearanceMax) ? opts.clearanceMax : null;
+
+        return eras.filter(function (era) {
+          // Text search (case-insensitive partial match)
+          if (q) {
+            var searchText = [
+              era.name,
+              era.briefDescription,
+              era.highlights.join(" "),
+              era.culturalNotes,
+              "danger " + era.dangerLevel,
+              era.region
+            ].join(" ").toLowerCase();
+            var terms = q.toLowerCase().split(/\s+/);
+            var allMatch = terms.every(function (term) {
+              return searchText.indexOf(term) !== -1;
+            });
+            if (!allMatch) return false;
+          }
+
+          // Region filter (OR within category)
+          if (regions.length > 0 && regions.indexOf(era.region) === -1) {
+            return false;
+          }
+
+          // Danger level filter — pills use OR; tool param uses max
+          if (dangerMax) {
+            if (era.dangerLevel > dangerMax) return false;
+          } else if (dangers.length > 0 && dangers.indexOf(era.dangerLevel) === -1) {
+            return false;
+          }
+
+          // Clearance level filter — pills use OR; tool param uses max
+          if (clearanceMax) {
+            if (era.requiredClearance > clearanceMax) return false;
+          } else if (clearances.length > 0 && clearances.indexOf(era.requiredClearance) === -1) {
+            return false;
+          }
+
+          return true;
+        });
+      }
+
+      // ================================================================
+      // RENDER: Filter Pills
+      // ================================================================
+
+      function renderFilterPills() {
+        var regionValues = ["Europe", "Asia", "Americas", "Africa", "Middle East", "Oceania"];
+        var dangerValues = [
+          { val: 1, label: "1 (Safe)" },
+          { val: 2, label: "2 (Low)" },
+          { val: 3, label: "3 (Moderate)" },
+          { val: 4, label: "4 (High)" },
+          { val: 5, label: "5 (Extreme)" },
+        ];
+        var clearanceValues = [
+          { val: 1, label: "Level 1" },
+          { val: 2, label: "Level 2" },
+          { val: 3, label: "Level 3" },
+        ];
+
+        // Region pills
+        var regionContainer = document.getElementById("region-pills");
+        regionContainer.innerHTML = "";
+        regionValues.forEach(function (region) {
+          var pill = document.createElement("button");
+          pill.className = "pill" + (activeRegions.indexOf(region) !== -1 ? " active" : "");
+          pill.textContent = region;
+          pill.addEventListener("click", function () {
+            toggleFilter(activeRegions, region);
+            renderFilterPills();
+            renderCatalog();
+          });
+          regionContainer.appendChild(pill);
+        });
+
+        // Danger pills
+        var dangerContainer = document.getElementById("danger-pills");
+        dangerContainer.innerHTML = "";
+        dangerValues.forEach(function (d) {
+          var pill = document.createElement("button");
+          pill.className = "pill" + (activeDangerLevels.indexOf(d.val) !== -1 ? " active" : "");
+          pill.textContent = d.label;
+          pill.addEventListener("click", function () {
+            toggleFilter(activeDangerLevels, d.val);
+            renderFilterPills();
+            renderCatalog();
+          });
+          dangerContainer.appendChild(pill);
+        });
+
+        // Clearance pills
+        var clearanceContainer = document.getElementById("clearance-pills");
+        clearanceContainer.innerHTML = "";
+        clearanceValues.forEach(function (c) {
+          var pill = document.createElement("button");
+          pill.className = "pill" + (activeClearanceLevels.indexOf(c.val) !== -1 ? " active" : "");
+          pill.textContent = c.label;
+          pill.addEventListener("click", function () {
+            toggleFilter(activeClearanceLevels, c.val);
+            renderFilterPills();
+            renderCatalog();
+          });
+          clearanceContainer.appendChild(pill);
+        });
+      }
+
+      /** Toggle a value in an array (add if missing, remove if present) */
+      function toggleFilter(arr, val) {
+        var idx = arr.indexOf(val);
+        if (idx === -1) {
+          arr.push(val);
+        } else {
+          arr.splice(idx, 1);
+        }
+      }
+
+      // ================================================================
+      // RENDER: Era Catalog Grid
+      // ================================================================
+
+      function renderCatalog() {
+        var grid = document.getElementById("era-grid");
+        var filtered = filterEras();
+
+        // Update result count
+        document.getElementById("result-count").innerHTML =
+          "Showing <strong>" + filtered.length + "</strong> of <strong>" + eras.length + "</strong> eras";
+
+        grid.innerHTML = "";
+
+        if (filtered.length === 0) {
+          grid.innerHTML =
+            '<div class="empty-state">' +
+            "<p>No eras match your current filters</p>" +
+            '<p class="hint">Try adjusting your search or clearing some filters</p>' +
+            "</div>";
+          return;
+        }
+
+        filtered.forEach(function (era) {
+          // Era card
+          var card = document.createElement("div");
+          card.className = "era-card" + (openDetailEraId === era.id ? " selected" : "");
+          card.setAttribute("data-era-id", era.id);
+          card.innerHTML =
+            '<div class="era-card-name">' + era.name + "</div>" +
+            '<div class="era-card-period">' + formatTimePeriod(era.timePeriod) + "</div>" +
+            '<div class="era-card-meta">' +
+              '<span class="region-badge">' + era.region + "</span>" +
+              dangerDotsHTML(era.dangerLevel) +
+              '<span class="clearance-badge clearance-' + era.requiredClearance + '">Clearance ' + era.requiredClearance + "</span>" +
+            "</div>" +
+            '<div class="era-card-desc">' + era.briefDescription + "</div>";
+
+          card.addEventListener("click", function () {
+            openDetailPanel(era.id);
+          });
+          grid.appendChild(card);
+
+          // If this era's detail panel is open, render it right after the card
+          if (openDetailEraId === era.id) {
+            var panelRow = document.createElement("div");
+            panelRow.className = "detail-panel-row";
+            panelRow.innerHTML = buildDetailPanelHTML(era);
+            grid.appendChild(panelRow);
+
+            // Attach event listeners after inserting into DOM
+            setTimeout(function () {
+              attachDetailListeners(era);
+            }, 0);
+          }
+        });
+      }
+
+      // ================================================================
+      // INLINE DETAIL PANEL
+      // ================================================================
+
+      function openDetailPanel(eraId) {
+        if (openDetailEraId === eraId) {
+          // Toggle off
+          openDetailEraId = null;
+        } else {
+          openDetailEraId = eraId;
+        }
+        renderCatalog();
+
+        // Scroll to the panel if opening
+        if (openDetailEraId) {
+          setTimeout(function () {
+            var panel = document.querySelector(".detail-panel-row");
+            if (panel) {
+              panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          }, 50);
+        }
+      }
+
+      function buildDetailPanelHTML(era) {
+        // Resolve prerequisites
+        var prereqNames = era.prerequisites.map(function (pid) {
+          return getPrerequisiteName(pid);
+        });
+
+        // Resolve packages with era-adjusted prices
+        var packageRows = "";
+        era.availablePackages.forEach(function (pkgId) {
+          var pkg = getPackageById(pkgId);
+          if (pkg) {
+            var adjustedPrice = Math.round(pkg.basePrice * era.priceMultiplier);
+            packageRows +=
+              "<tr>" +
+              "<td>" + pkg.name + "</td>" +
+              "<td>" + pkg.baseDuration + " days</td>" +
+              "<td>" + pkg.accommodationTier + "</td>" +
+              '<td class="price">$' + adjustedPrice.toLocaleString() + "</td>" +
+              "</tr>";
+          }
+        });
+
+        // Applicable add-ons
+        var eraAddOns = getAddOnsForEra(era.id);
+        var addOnsList = "";
+        eraAddOns.forEach(function (ao) {
+          addOnsList += "<li>" + ao.name + " — $" + ao.price + "</li>";
+        });
+
+        // Is this era in the compare list?
+        var isInCompare = compareList.indexOf(era.id) !== -1;
+        var compareDisabled = !isInCompare && compareList.length >= 3;
+
+        return (
+          '<div class="detail-panel">' +
+            '<div class="detail-header">' +
+              "<div>" +
+                '<div class="detail-title">' + era.name + "</div>" +
+                '<div class="detail-period">' + formatTimePeriod(era.timePeriod) + "</div>" +
+              "</div>" +
+              '<button class="detail-close" id="detail-close-btn">&times;</button>' +
+            "</div>" +
+
+            '<div class="detail-meta-row">' +
+              '<div class="detail-meta-tag"><span class="region-badge">' + era.region + "</span></div>" +
+              '<div class="detail-meta-tag">Danger: ' + dangerDotsHTML(era.dangerLevel) + "</div>" +
+              '<div class="detail-meta-tag"><span class="clearance-badge clearance-' + era.requiredClearance + '">Clearance Level ' + era.requiredClearance + "</span></div>" +
+            "</div>" +
+
+            '<div class="detail-grid">' +
+              '<div>' +
+                '<div class="detail-section">' +
+                  '<div class="detail-section-title">Highlights</div>' +
+                  "<ul>" + era.highlights.map(function (h) { return "<li>" + h + "</li>"; }).join("") + "</ul>" +
+                "</div>" +
+                '<div class="detail-section">' +
+                  '<div class="detail-section-title">Risks</div>' +
+                  "<ul>" + era.risks.map(function (r) { return '<li class="risk-item">' + r + "</li>"; }).join("") + "</ul>" +
+                "</div>" +
+                '<div class="detail-section">' +
+                  '<div class="detail-section-title">Cultural Notes</div>' +
+                  "<p>" + era.culturalNotes + "</p>" +
+                "</div>" +
+              "</div>" +
+
+              '<div>' +
+                '<div class="detail-section">' +
+                  '<div class="detail-section-title">Prerequisites</div>' +
+                  "<ul>" + prereqNames.map(function (n) { return "<li>" + n + "</li>"; }).join("") + "</ul>" +
+                "</div>" +
+                '<div class="detail-section">' +
+                  '<div class="detail-section-title">Available Packages</div>' +
+                  '<table class="packages-table">' +
+                    "<thead><tr><th>Package</th><th>Duration</th><th>Tier</th><th>Price</th></tr></thead>" +
+                    "<tbody>" + packageRows + "</tbody>" +
+                  "</table>" +
+                "</div>" +
+                '<div class="detail-section">' +
+                  '<div class="detail-section-title">Available Add-Ons</div>' +
+                  "<ul>" + addOnsList + "</ul>" +
+                "</div>" +
+              "</div>" +
+            "</div>" +
+
+            '<div class="detail-actions">' +
+              '<button class="btn-primary" id="detail-select-btn">Select This Era</button>' +
+              '<button class="btn-secondary" id="detail-compare-btn"' +
+                (compareDisabled ? ' disabled style="opacity:0.4;cursor:not-allowed;"' : "") +
+                ">" +
+                (isInCompare ? "Remove from Compare" : "Add to Compare") +
+              "</button>" +
+            "</div>" +
+          "</div>"
+        );
+      }
+
+      function attachDetailListeners(era) {
+        var closeBtn = document.getElementById("detail-close-btn");
+        if (closeBtn) {
+          closeBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            openDetailEraId = null;
+            renderCatalog();
+          });
+        }
+
+        var selectBtn = document.getElementById("detail-select-btn");
+        if (selectBtn) {
+          selectBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            ChronoShared.updateState("selectedEra", era.id);
+            selectBtn.textContent = "Era Selected!";
+            selectBtn.style.background = COLORS.success;
+            setTimeout(function () {
+              selectBtn.textContent = "Select This Era";
+              selectBtn.style.background = "";
+            }, 1500);
+          });
+        }
+
+        var compareBtn = document.getElementById("detail-compare-btn");
+        if (compareBtn) {
+          compareBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            toggleCompare(era.id);
+          });
+        }
+      }
+
+      // ================================================================
+      // COMPARISON TRAY
+      // ================================================================
+
+      function toggleCompare(eraId) {
+        var idx = compareList.indexOf(eraId);
+        if (idx !== -1) {
+          compareList.splice(idx, 1);
+        } else if (compareList.length < 3) {
+          compareList.push(eraId);
+        }
+        renderCompareTray();
+        renderCatalog(); // re-render to update the compare button state
+      }
+
+      function renderCompareTray() {
+        var tray = document.getElementById("compare-tray");
+        var chips = document.getElementById("compare-chips");
+
+        if (compareList.length === 0) {
+          tray.classList.remove("visible");
+          return;
+        }
+
+        tray.classList.add("visible");
+        chips.innerHTML = "";
+
+        compareList.forEach(function (eraId) {
+          var era = getEraById(eraId);
+          if (!era) return;
+
+          var chip = document.createElement("span");
+          chip.className = "compare-chip";
+          chip.innerHTML =
+            era.name +
+            ' <button class="compare-chip-remove" data-era-id="' + eraId + '">&times;</button>';
+          chips.appendChild(chip);
+        });
+
+        // Attach remove listeners
+        chips.querySelectorAll(".compare-chip-remove").forEach(function (btn) {
+          btn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            toggleCompare(btn.getAttribute("data-era-id"));
+          });
+        });
+      }
+
+      // ================================================================
+      // COMPARISON TABLE
+      // ================================================================
+
+      function showComparisonTable(eraIds) {
+        var overlay = document.getElementById("compare-overlay");
+        var container = document.getElementById("compare-table-container");
+
+        // Resolve eras
+        var resolvedEras = [];
+        for (var i = 0; i < eraIds.length; i++) {
+          var era = resolveEra(eraIds[i]);
+          if (era) resolvedEras.push(era);
+        }
+
+        if (resolvedEras.length < 2) {
+          container.innerHTML = '<p style="color:#a0a0b0;">Need at least 2 eras to compare.</p>';
+          overlay.classList.add("visible");
+          return;
+        }
+
+        // Build comparison data
+        var attributes = [
+          { label: "Name", fn: function (e) { return e.name; } },
+          { label: "Time Period", fn: function (e) { return formatTimePeriod(e.timePeriod); } },
+          { label: "Region", fn: function (e) { return e.region; } },
+          {
+            label: "Danger Level",
+            fn: function (e) { return dangerDotsHTML(e.dangerLevel) + " (" + e.dangerLevel + "/5)"; },
+          },
+          {
+            label: "Clearance Required",
+            fn: function (e) {
+              return '<span class="clearance-badge clearance-' + e.requiredClearance + '">Level ' + e.requiredClearance + "</span>";
+            },
+          },
+          { label: "Highlights", fn: function (e) { return e.highlights.length; } },
+          { label: "Risks", fn: function (e) { return e.risks.length; } },
+          { label: "Prerequisites", fn: function (e) { return e.prerequisites.length; } },
+          {
+            label: "Price Range",
+            fn: function (e) {
+              var prices = [];
+              e.availablePackages.forEach(function (pkgId) {
+                var pkg = getPackageById(pkgId);
+                if (pkg) prices.push(Math.round(pkg.basePrice * e.priceMultiplier));
+              });
+              prices.sort(function (a, b) { return a - b; });
+              if (prices.length === 0) return "N/A";
+              return '<span style="color:#4ECB71;font-family:DM Mono,monospace;">$' +
+                prices[0].toLocaleString() + " – $" + prices[prices.length - 1].toLocaleString() +
+                "</span>";
+            },
+          },
+        ];
+
+        var headerCells = '<th class="attr-label"></th>';
+        resolvedEras.forEach(function (era) {
+          headerCells += "<th>" + era.name + "</th>";
+        });
+
+        var rows = "";
+        attributes.forEach(function (attr) {
+          rows += '<tr><td class="attr-label">' + attr.label + "</td>";
+          resolvedEras.forEach(function (era) {
+            rows += "<td>" + attr.fn(era) + "</td>";
+          });
+          rows += "</tr>";
+        });
+
+        container.innerHTML =
+          '<table class="compare-table">' +
+          "<thead><tr>" + headerCells + "</tr></thead>" +
+          "<tbody>" + rows + "</tbody>" +
+          "</table>";
+
+        overlay.classList.add("visible");
+      }
+
+      function hideComparisonTable() {
+        document.getElementById("compare-overlay").classList.remove("visible");
+      }
+
+      // ================================================================
+      // EVENT LISTENERS
+      // ================================================================
+
+      function initEventListeners() {
+        // Search input
+        var searchInput = document.getElementById("search-input");
+        var debounceTimer = null;
+        searchInput.addEventListener("input", function () {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(function () {
+            searchQuery = searchInput.value.trim();
+            renderCatalog();
+          }, 200);
+        });
+
+        // Clear filters
+        document.getElementById("btn-clear-filters").addEventListener("click", function () {
+          searchQuery = "";
+          activeRegions = [];
+          activeDangerLevels = [];
+          activeClearanceLevels = [];
+          searchInput.value = "";
+          openDetailEraId = null;
+          renderFilterPills();
+          renderCatalog();
+        });
+
+        // Compare button
+        document.getElementById("btn-compare-show").addEventListener("click", function () {
+          if (compareList.length >= 2) {
+            showComparisonTable(compareList);
+          }
+        });
+
+        // Close comparison overlay
+        document.getElementById("btn-compare-close").addEventListener("click", hideComparisonTable);
+        document.getElementById("compare-overlay").addEventListener("click", function (e) {
+          if (e.target === this) hideComparisonTable();
+        });
+      }
+
+      // ================================================================
+      // WEBMCP TOOL REGISTRATIONS
+      // ================================================================
+      // All tools are registered inside a check for navigator.modelContext
+      // so the page still works without WebMCP enabled.
+
+      function registerWebMCPTools() {
+        if (typeof navigator === "undefined" || !navigator.modelContext) {
+          console.log("[Era Explorer] WebMCP not available — skipping tool registration.");
+          return;
+        }
+
+        console.log("[Era Explorer] WebMCP detected — registering tools...");
+
+        // ----------------------------------------------------------
+        // TOOL 1: search_eras
+        // ----------------------------------------------------------
+        // Searches and filters the era catalog. All parameters are
+        // optional. Updates both the returned data and the visible UI.
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "search_eras",
+          description:
+            "Search and filter the ChronoVoyage era catalog. You can filter by region, danger level, clearance required, and/or free-text query. All filters are optional and combinable (AND logic across categories). Returns a list of matching eras with summary info. If no filters are provided, returns all eras.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              query: {
+                type: "string",
+                description:
+                  "Free-text search query. Matches against era names, descriptions, highlights, and cultural notes. Examples: 'ancient civilizations', 'peaceful', 'samurai', 'futuristic'. Optional — omit to skip text filtering.",
+              },
+              region: {
+                type: "string",
+                enum: ["Europe", "Asia", "Americas", "Africa", "Middle East", "Oceania"],
+                description: "Filter by geographical region. Optional.",
+              },
+              dangerLevel: {
+                type: "number",
+                description:
+                  "Filter by maximum danger level (1=safest, 5=most dangerous). Returns eras at or below this level. Optional.",
+              },
+              clearanceRequired: {
+                type: "number",
+                description:
+                  "Filter by maximum clearance level required (1-3). Returns eras that require this level or lower. Optional.",
+              },
+            },
+            required: [],
+          },
+          execute: function (params) {
+            // Build filter options
+            var opts = {};
+            if (params.query) opts.query = params.query;
+            if (params.region) opts.regions = [params.region];
+            else opts.regions = [];
+            opts.dangers = [];
+            opts.clearances = [];
+            if (params.dangerLevel) opts.dangerMax = params.dangerLevel;
+            if (params.clearanceRequired) opts.clearanceMax = params.clearanceRequired;
+
+            var results = filterEras(opts);
+
+            // --- Update the UI so the human sees the same results ---
+            searchQuery = params.query || "";
+            document.getElementById("search-input").value = searchQuery;
+            activeRegions = params.region ? [params.region] : [];
+            activeDangerLevels = [];
+            activeClearanceLevels = [];
+            // For pill UI, we don't activate pill selections for max-based filters;
+            // the text search + region pills are sufficient visual feedback.
+            renderFilterPills();
+            renderCatalog();
+
+            // --- Build return payload ---
+            var resultData = results.map(function (era) {
+              return {
+                id: era.id,
+                name: era.name,
+                timePeriod: formatTimePeriod(era.timePeriod),
+                region: era.region,
+                dangerLevel: era.dangerLevel,
+                requiredClearance: era.requiredClearance,
+                briefDescription: era.briefDescription,
+              };
+            });
+
+            var summary = "Found " + results.length + " matching era" + (results.length !== 1 ? "s" : "");
+            ChronoShared.addLog("search_eras", params, summary);
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify({
+                    matchCount: results.length,
+                    eras: resultData,
+                  }),
+                },
+              ],
+            };
+          },
+        });
+
+        // ----------------------------------------------------------
+        // TOOL 2: get_era_details
+        // ----------------------------------------------------------
+        // Returns full details about a specific era. Accepts either
+        // an era ID or a name (partial match). Also opens the inline
+        // detail panel in the UI.
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "get_era_details",
+          description:
+            "Get full details about a specific era. Accepts an era ID (e.g. 'ancient-rome') or an era name (e.g. 'Ancient Rome: Republic Era'). Use search_eras first to find matching eras if you don't have an ID or name. Returns complete era information including highlights, risks, prerequisites, available packages with pricing, and cultural notes.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              id: {
+                type: "string",
+                description:
+                  "The era's unique ID (e.g. 'ancient-rome', 'edo-japan'). Use this if you have it.",
+              },
+              name: {
+                type: "string",
+                description:
+                  "The era's display name or a partial match (e.g. 'Rome', 'Jazz Age'). Used as fallback if id is not provided.",
+              },
+            },
+            required: [],
+          },
+          execute: function (params) {
+            // Resolve the era: try ID first, then name
+            var era = null;
+            if (params.id) {
+              era = getEraById(params.id);
+            }
+            if (!era && params.name) {
+              era = getEraByName(params.name);
+            }
+
+            // If no match, return an error
+            if (!era) {
+              var errMsg = "No era found matching " +
+                (params.id ? 'id "' + params.id + '"' : "") +
+                (params.id && params.name ? " or " : "") +
+                (params.name ? 'name "' + params.name + '"' : "") +
+                '. Try using search_eras to find the correct ID or name.';
+              ChronoShared.addLog("get_era_details", params, "Error: " + errMsg);
+              return {
+                content: [{ type: "text", text: JSON.stringify({ error: errMsg }) }],
+              };
+            }
+
+            // --- Update the UI — open the detail panel ---
+            openDetailEraId = era.id;
+            renderCatalog();
+            setTimeout(function () {
+              var panel = document.querySelector(".detail-panel-row");
+              if (panel) panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }, 50);
+
+            // --- Build the full detail response ---
+            var prereqs = era.prerequisites.map(function (pid) {
+              for (var i = 0; i < prerequisites.length; i++) {
+                if (prerequisites[i].id === pid) return { id: pid, name: prerequisites[i].name, type: prerequisites[i].type };
+              }
+              return { id: pid, name: pid, type: "unknown" };
+            });
+
+            var pkgs = era.availablePackages.map(function (pkgId) {
+              var pkg = getPackageById(pkgId);
+              if (!pkg) return { id: pkgId, name: "Unknown", eraAdjustedPrice: 0 };
+              return {
+                id: pkg.id,
+                name: pkg.name,
+                baseDuration: pkg.baseDuration,
+                accommodationTier: pkg.accommodationTier,
+                basePrice: pkg.basePrice,
+                eraAdjustedPrice: Math.round(pkg.basePrice * era.priceMultiplier),
+              };
+            });
+
+            var applicableAddOns = getAddOnsForEra(era.id).map(function (ao) {
+              return { id: ao.id, name: ao.name, description: ao.description, price: ao.price };
+            });
+
+            var fullData = {
+              id: era.id,
+              name: era.name,
+              timePeriod: formatTimePeriod(era.timePeriod),
+              timePeriodRaw: era.timePeriod,
+              region: era.region,
+              dangerLevel: era.dangerLevel,
+              requiredClearance: era.requiredClearance,
+              briefDescription: era.briefDescription,
+              highlights: era.highlights,
+              risks: era.risks,
+              culturalNotes: era.culturalNotes,
+              prerequisites: prereqs,
+              availablePackages: pkgs,
+              applicableAddOns: applicableAddOns,
+              priceMultiplier: era.priceMultiplier,
+            };
+
+            var summary = "Showing details for " + era.name;
+            ChronoShared.addLog("get_era_details", params, summary);
+
+            return {
+              content: [{ type: "text", text: JSON.stringify(fullData) }],
+            };
+          },
+        });
+
+        // ----------------------------------------------------------
+        // TOOL 3: compare_eras
+        // ----------------------------------------------------------
+        // Compares 2–3 eras side by side. Accepts an array of era
+        // IDs or names. Also updates the comparison tray and shows
+        // the comparison table in the UI.
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "compare_eras",
+          description:
+            "Compare 2-3 eras side by side. Accepts era IDs or names. Returns a structured comparison object with attributes for each era so you can reason about the differences and make recommendations. Use search_eras or get_era_details first if you need to identify which eras to compare.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              eras: {
+                type: "array",
+                items: { type: "string" },
+                description:
+                  "An array of 2-3 era IDs or names to compare. Example: ['ancient-rome', 'edo-japan'] or ['Rome', 'Edo Japan'].",
+                minItems: 2,
+                maxItems: 3,
+              },
+            },
+            required: ["eras"],
+          },
+          execute: function (params) {
+            var eraInputs = params.eras || [];
+
+            // Resolve each era
+            var resolved = [];
+            var failed = [];
+            for (var i = 0; i < eraInputs.length; i++) {
+              var era = resolveEra(eraInputs[i]);
+              if (era) {
+                resolved.push(era);
+              } else {
+                failed.push(eraInputs[i]);
+              }
+            }
+
+            // If any couldn't be found, return an error
+            if (failed.length > 0) {
+              var errMsg = "Could not find era(s): " + failed.join(", ") +
+                ". Use search_eras to find valid IDs or names.";
+              ChronoShared.addLog("compare_eras", params, "Error: " + errMsg);
+              return {
+                content: [{ type: "text", text: JSON.stringify({ error: errMsg }) }],
+              };
+            }
+
+            if (resolved.length < 2) {
+              var errMsg2 = "Need at least 2 valid eras to compare.";
+              ChronoShared.addLog("compare_eras", params, "Error: " + errMsg2);
+              return {
+                content: [{ type: "text", text: JSON.stringify({ error: errMsg2 }) }],
+              };
+            }
+
+            // --- Update the UI — populate compare tray and show table ---
+            compareList = resolved.map(function (e) { return e.id; });
+            renderCompareTray();
+            showComparisonTable(compareList);
+
+            // --- Build comparison data ---
+            var comparison = resolved.map(function (era) {
+              var prices = [];
+              era.availablePackages.forEach(function (pkgId) {
+                var pkg = getPackageById(pkgId);
+                if (pkg) prices.push(Math.round(pkg.basePrice * era.priceMultiplier));
+              });
+              prices.sort(function (a, b) { return a - b; });
+
+              return {
+                id: era.id,
+                name: era.name,
+                timePeriod: formatTimePeriod(era.timePeriod),
+                region: era.region,
+                dangerLevel: era.dangerLevel,
+                requiredClearance: era.requiredClearance,
+                highlightCount: era.highlights.length,
+                riskCount: era.risks.length,
+                prerequisiteCount: era.prerequisites.length,
+                prerequisites: era.prerequisites.map(getPrerequisiteName),
+                priceRange: {
+                  lowest: prices[0] || 0,
+                  highest: prices[prices.length - 1] || 0,
+                },
+              };
+            });
+
+            var summary = "Comparing " + resolved.map(function (e) { return e.name; }).join(" vs ");
+            ChronoShared.addLog("compare_eras", params, summary);
+
+            return {
+              content: [{ type: "text", text: JSON.stringify({ comparison: comparison }) }],
+            };
+          },
+        });
+
+        console.log("[Era Explorer] All 3 WebMCP tools registered successfully.");
+      }
+
+      // ================================================================
+      // INITIALIZATION
+      // ================================================================
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Render nav and check WebMCP availability
+        ChronoShared.renderNav("explore");
+        ChronoShared.checkWebMCP();
+
+        // Initialize the tool log panel
+        ChronoShared.initToolLog("tool-log-container");
+
+        // Render filter pills and the full catalog
+        renderFilterPills();
+        renderCatalog();
+        renderCompareTray();
+
+        // Set up event listeners
+        initEventListeners();
+
+        // Register WebMCP tools (only if navigator.modelContext exists)
+        registerWebMCPTools();
+      });
+    })();
+  </script>
+</body>
+</html>
