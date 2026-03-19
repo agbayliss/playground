@@ -60,6 +60,10 @@
       padding: 0 24px 40px;
     }
 
+    #profile-form {
+      scroll-margin-top: 80px;
+    }
+
     .form-section {
       background: #1a1a2e;
       border: 1px solid #2a2a4a;
@@ -241,6 +245,7 @@
       padding: 28px;
       margin-top: 24px;
       display: none;
+      scroll-margin-top: 80px;
     }
     .clearance-panel.visible {
       display: block;
@@ -886,16 +891,18 @@
        * Hides the form. Stops declarative tool polling since the form
        * is no longer in view.
        */
-      function showSavedView(profile) {
+      function showSavedView(profile, skipScroll) {
         document.getElementById("profile-form").style.display = "none";
         renderClearancePanel(profile.clearanceLevel);
         renderProfileSummary(profile);
         document.getElementById("profile-saved-view").classList.add("visible");
         stopFormPolling();
-        // Smooth-scroll to the top of the clearance panel
-        setTimeout(function () {
-          document.getElementById("clearance-panel").scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 50);
+        // Smooth-scroll to the top of the clearance panel (only on state transitions, not page load)
+        if (!skipScroll) {
+          setTimeout(function () {
+            document.getElementById("clearance-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 50);
+        }
       }
 
       // ================================================================
@@ -1109,8 +1116,9 @@
         }
 
         // If profile has a clearance level, go directly to State 2
+        // Skip scroll — user is arriving at the page, not transitioning between states
         if (profile.clearanceLevel) {
-          showSavedView(profile);
+          showSavedView(profile, true);
         }
       }
 
