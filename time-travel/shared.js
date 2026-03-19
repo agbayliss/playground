@@ -338,7 +338,44 @@ window.ChronoShared = (function () {
    * @param {string} currentPage — the `id` of the active page (e.g. "explore")
    */
   function renderNav(currentPage) {
+    // ------------------------------------------------------------------
+    // Inject responsive styles (once)
+    // ------------------------------------------------------------------
+    if (!document.getElementById("cv-nav-responsive-styles")) {
+      var styleEl = document.createElement("style");
+      styleEl.id = "cv-nav-responsive-styles";
+      styleEl.textContent =
+        /* Desktop: hamburger hidden, links visible inline */
+        "#cv-nav-hamburger { display:none; }" +
+        "#cv-nav-links { " +
+          "display:flex; align-items:center; gap:4px;" +
+        "}" +
+
+        /* Mobile ≤768px: hamburger visible, links become dropdown */
+        "@media (max-width:768px) {" +
+          "#cv-nav { flex-wrap:wrap; justify-content:space-between; padding:12px 16px; }" +
+          "#cv-nav > a:first-child { margin-right:auto; }" +  /* push logo left */
+          "#cv-nav-hamburger { " +
+            "display:flex; align-items:center; justify-content:center;" +
+            "width:40px; height:40px; background:transparent; border:1px solid " + COLORS.border + ";" +
+            "border-radius:8px; cursor:pointer; padding:0;" +
+          "}" +
+          "#cv-nav-links { " +
+            "display:none; flex-direction:column; width:100%;" +
+            "padding-top:12px; margin-top:12px;" +
+            "border-top:1px solid " + COLORS.border + ";" +
+            "gap:4px;" +
+          "}" +
+          "#cv-nav-links.cv-nav-open { display:flex; }" +
+          "#cv-nav-links .cv-nav-line { display:none; }" +
+          "#cv-nav-links a { width:100%; box-sizing:border-box; }" +
+        "}";
+      document.head.appendChild(styleEl);
+    }
+
+    // ------------------------------------------------------------------
     // Create the nav element
+    // ------------------------------------------------------------------
     var nav = document.createElement("nav");
     nav.id = "cv-nav";
     nav.style.cssText =
@@ -367,6 +404,27 @@ window.ChronoShared = (function () {
     logo.textContent = "ChronoVoyage";
     nav.appendChild(logo);
 
+    // ------------------------------------------------------------------
+    // Hamburger button (visible only on mobile via CSS)
+    // ------------------------------------------------------------------
+    var hamburger = document.createElement("button");
+    hamburger.id = "cv-nav-hamburger";
+    hamburger.setAttribute("aria-label", "Toggle navigation menu");
+    // Three-line hamburger icon via SVG
+    hamburger.innerHTML =
+      '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<line x1="3" y1="5.5" x2="19" y2="5.5" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+        '<line x1="3" y1="11" x2="19" y2="11" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+        '<line x1="3" y1="16.5" x2="19" y2="16.5" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+      '</svg>';
+    nav.appendChild(hamburger);
+
+    // ------------------------------------------------------------------
+    // Links container (wraps step indicators + connecting lines)
+    // ------------------------------------------------------------------
+    var linksContainer = document.createElement("div");
+    linksContainer.id = "cv-nav-links";
+
     // Step indicators with connecting lines
     for (var i = 0; i < NAV_PAGES.length; i++) {
       var page = NAV_PAGES[i];
@@ -376,11 +434,12 @@ window.ChronoShared = (function () {
       // Connecting line (between steps, not before first)
       if (i > 0) {
         var line = document.createElement("div");
+        line.className = "cv-nav-line";
         line.style.cssText =
           "width:32px;" +
           "height:2px;" +
           "background:" + COLORS.border + ";";
-        nav.appendChild(line);
+        linksContainer.appendChild(line);
       }
 
       // Step link
@@ -437,8 +496,37 @@ window.ChronoShared = (function () {
         });
       })(link, isActive);
 
-      nav.appendChild(link);
+      linksContainer.appendChild(link);
     }
+
+    nav.appendChild(linksContainer);
+
+    // ------------------------------------------------------------------
+    // Hamburger toggle behavior
+    // ------------------------------------------------------------------
+    hamburger.addEventListener("click", function () {
+      var isOpen = linksContainer.classList.contains("cv-nav-open");
+      if (isOpen) {
+        linksContainer.classList.remove("cv-nav-open");
+        hamburger.setAttribute("aria-expanded", "false");
+        // Restore hamburger icon
+        hamburger.innerHTML =
+          '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+            '<line x1="3" y1="5.5" x2="19" y2="5.5" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+            '<line x1="3" y1="11" x2="19" y2="11" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+            '<line x1="3" y1="16.5" x2="19" y2="16.5" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+          '</svg>';
+      } else {
+        linksContainer.classList.add("cv-nav-open");
+        hamburger.setAttribute("aria-expanded", "true");
+        // Switch to X icon
+        hamburger.innerHTML =
+          '<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+            '<line x1="5" y1="5" x2="17" y2="17" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+            '<line x1="17" y1="5" x2="5" y2="17" stroke="' + COLORS.text + '" stroke-width="2" stroke-linecap="round"/>' +
+          '</svg>';
+      }
+    });
 
     // Insert at the very top of the body
     document.body.insertBefore(nav, document.body.firstChild);

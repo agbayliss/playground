@@ -49,6 +49,15 @@ After cloning with placeholder username, remote URL was wrong. Fix: `git remote 
 #### Cowork can't `git push`
 The Cowork sandbox doesn't have cached GitHub credentials, so `git push` fails with "could not read Username." Commits are made locally but you need to run `git push` from your own terminal to deploy. Always check `git status` after committing — "Your branch is ahead of origin/main" means it hasn't been pushed yet.
 
+#### Git lock files left behind by Cowork
+When Cowork runs git commands (commit, add, etc.), they sometimes crash or get interrupted due to how the sandbox mounts the user's filesystem. Git creates temporary `.lock` files (e.g., `index.lock`, `HEAD.lock`) during operations and removes them on completion — but if the process crashes, the lock files get stranded. Cowork then can't delete them either due to the same filesystem permission constraints. This creates a cycle where git refuses to run ("Another git process seems to be running...") and Cowork can't self-heal.
+
+**Workaround:** Before running git commands from the terminal, proactively sweep out any stale lock files:
+```
+cd ~/Desktop/claude/playground && find .git -name "*.lock" -delete && git add -A && git commit -m "your message" && git push origin main
+```
+The `find .git -name "*.lock" -delete` part clears any stale locks before git tries to acquire new ones. This is safe because the locks are only meaningful while a git process is actively running — if no process is running, any remaining `.lock` files are stale artifacts.
+
 ## Bookmarklets
 
 ### Encoding a bookmarklet in an HTML `href`
