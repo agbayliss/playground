@@ -62,10 +62,16 @@ A one-click bookmarklet that extracts source/citation domains from AI answer pag
 
 **How it works:**
 - Detects platform from `window.location.hostname`
-- Uses a 4-layer DOM selector strategy to find source links: semantic selectors (class/data-testid containing "source"/"citation"), structural selectors (dialogs, panels, drawers), platform-specific selectors (Perplexity refs, Google cite/data-ved/favicon patterns), broad content-area fallback
+- Uses a 5-layer DOM selector strategy: Layer 0 (platform-specific direct targeting — ChatGPT Sources panel via `button[aria-label="Close"]` → `<section>` walk, Perplexity `<main>` on Links tab), then semantic selectors, structural selectors, platform-specific content selectors (Google cite/data-ved/favicon), broad content-area fallback
+- All early-return checks use `countExternalLinks()` to count only non-internal domains, preventing internal nav links from causing premature short-circuits
 - Unwraps Google redirect URLs (`google.com/url?q=...`)
 - Strips `www.`, filters out platform-internal domains, deduplicates while preserving page order
 - Copies result to clipboard with a green toast notification; falls back to `window.prompt` if clipboard API is blocked
+
+**Platform usage notes:**
+- ChatGPT: Open the Sources panel before running. Append "Show your sources" to queries to ensure sources appear.
+- Perplexity: Switch to the **Links** tab before running. The Answer tab's inline citations are text-only spans without extractable URLs.
+- Google AI Mode: Expand source cards and click "Show all" before running.
 
 **Files:**
 - `index.html` — Installer page with drag-to-install button, usage steps, platform cards, and troubleshooting

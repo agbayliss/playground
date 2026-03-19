@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/playground/favicon.svg">
+  <title>Traveler Profile — ChronoVoyage</title>
+
+  <!-- Google Fonts: DM Sans (body) + DM Mono (code/logs) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ================================================================
+       RESET & BASE
+       ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'DM Sans', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ================================================================
+       PAGE HEADER
+       ================================================================ */
+    .page-header {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+    .page-header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #e0e0e0;
+      margin-bottom: 8px;
+    }
+    .page-header h1 span {
+      color: #6C63FF;
+    }
+    .page-header p {
+      color: #a0a0b0;
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ================================================================
+       FORM LAYOUT
+       ================================================================ */
+    .profile-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+
+    .form-section {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+
+    .form-section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6C63FF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e0e0e0;
+      margin-bottom: 6px;
+    }
+    .form-hint {
+      font-size: 0.8rem;
+      color: #a0a0b0;
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input::placeholder,
+    .form-textarea::placeholder { color: #a0a0b0; }
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus { border-color: #6C63FF; }
+
+    .form-select {
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a0a0b0' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .form-textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+
+    /* ================================================================
+       ERA INTEREST PILLS (checkboxes styled as pills)
+       ================================================================ */
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pill-checkbox {
+      display: none;
+    }
+    .pill-label {
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid #2a2a4a;
+      background: transparent;
+      color: #a0a0b0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .pill-label:hover { background: #22223a; color: #e0e0e0; }
+    .pill-checkbox:checked + .pill-label {
+      background: rgba(108, 99, 255, 0.15);
+      border-color: #6C63FF;
+      color: #6C63FF;
+      font-weight: 600;
+    }
+
+    /* ================================================================
+       RADIO GROUP (styled cards for risk / fitness)
+       ================================================================ */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .radio-option {
+      display: none;
+    }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: #0f0f1a;
+      color: #a0a0b0;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .radio-label::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #2a2a4a;
+      background: transparent;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+    .radio-label:hover { border-color: #6C63FF; color: #e0e0e0; }
+    .radio-label:hover::before { border-color: #6C63FF; }
+    .radio-option:checked + .radio-label {
+      border-color: #6C63FF;
+      background: rgba(108, 99, 255, 0.1);
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+    .radio-option:checked + .radio-label::before {
+      border-color: #6C63FF;
+      background: #6C63FF;
+      box-shadow: inset 0 0 0 3px #0f0f1a;
+    }
+
+    /* ================================================================
+       SUBMIT BUTTON
+       ================================================================ */
+    .btn-primary {
+      padding: 14px 32px;
+      border-radius: 8px;
+      border: none;
+      background: #6C63FF;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-primary:hover { background: #7B73FF; }
+
+    /* ================================================================
+       CLEARANCE LEVEL PANEL
+       ================================================================ */
+    .clearance-panel {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 28px;
+      margin-top: 24px;
+      display: none;
+    }
+    .clearance-panel.visible {
+      display: block;
+    }
+
+    .clearance-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .clearance-level-badge {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .clearance-level-badge.level-1 {
+      background: rgba(78, 203, 113, 0.15);
+      color: #4ECB71;
+      border: 2px solid #4ECB71;
+    }
+    .clearance-level-badge.level-2 {
+      background: rgba(255, 184, 77, 0.15);
+      color: #FFB84D;
+      border: 2px solid #FFB84D;
+    }
+    .clearance-level-badge.level-3 {
+      background: rgba(255, 107, 107, 0.15);
+      color: #FF6B6B;
+      border: 2px solid #FF6B6B;
+    }
+
+    .clearance-info h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+    .clearance-info p {
+      font-size: 0.9rem;
+      color: #a0a0b0;
+    }
+
+    .clearance-section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6C63FF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    .era-access-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+    }
+
+    .era-access-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: #0f0f1a;
+      font-size: 0.85rem;
+    }
+    .era-access-item.unlocked {
+      border-color: rgba(78, 203, 113, 0.3);
+    }
+    .era-access-item.locked {
+      opacity: 0.5;
+    }
+
+    .era-access-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+    .era-access-item.unlocked .era-access-icon { color: #4ECB71; }
+    .era-access-item.locked .era-access-icon { color: #FF6B6B; }
+
+    .era-access-name {
+      color: #e0e0e0;
+      font-weight: 500;
+      flex: 1;
+    }
+    .era-access-item.locked .era-access-name {
+      color: #a0a0b0;
+    }
+
+    .clearance-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .clearance-1 { background: rgba(78, 203, 113, 0.15); color: #4ECB71; }
+    .clearance-2 { background: rgba(255, 184, 77, 0.15); color: #FFB84D; }
+    .clearance-3 { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; }
+
+    /* ================================================================
+       PROFILE SUMMARY (State 2 — shown after form submission)
+       ================================================================ */
+    .profile-saved-view {
+      display: none;
+    }
+    .profile-saved-view.visible {
+      display: block;
+    }
+
+    .profile-summary {
+      background: #1a1a2e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 28px;
+      margin-top: 20px;
+    }
+
+    .profile-summary-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6C63FF;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 600px) {
+      .summary-grid { grid-template-columns: 1fr; }
+    }
+
+    .summary-item {
+      padding: 0;
+    }
+    .summary-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #a0a0b0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .summary-value {
+      font-size: 0.9rem;
+      color: #e0e0e0;
+    }
+    .summary-value .pill-display {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      background: rgba(108, 99, 255, 0.1);
+      color: #6C63FF;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-right: 4px;
+      margin-bottom: 4px;
+    }
+
+    .btn-edit {
+      padding: 14px 32px;
+      border-radius: 8px;
+      border: 1px solid #2a2a4a;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 20px;
+    }
+    .btn-edit:hover {
+      border-color: #6C63FF;
+      background: #22223a;
+      color: #fff;
+    }
+
+    /* ================================================================
+       TOOL LOG AREA
+       ================================================================ */
+    .tool-log-area {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ================================================================
+       PAGE HEADER
+       ================================================================ -->
+  <div class="page-header">
+    <h1><span>Traveler</span> Profile</h1>
+    <p>Create your temporal identity and find out where — and when — you're cleared to go</p>
+  </div>
+
+  <!-- ================================================================
+       PROFILE FORM (Declarative WebMCP tool: submit_profile)
+       ================================================================ -->
+  <div class="profile-container">
+    <form
+      id="profile-form"
+      toolname="submit_profile"
+      tooldescription="Fill out the traveler profile form to create or update a temporal traveler identity. This sets the traveler's name, travel preferences (era interests, risk tolerance, budget), and health/fitness information. After the form is filled, the user must review and click 'Save Profile &amp; Calculate Clearance' to submit — this tool ONLY fills the form fields, it does NOT submit. Once submitted, the traveler's clearance level is calculated based on their risk tolerance and fitness level, which determines which eras they can visit."
+    >
+
+      <!-- ============================================================
+           SECTION 1: Personal Info
+           ============================================================ -->
+      <div class="form-section">
+        <div class="form-section-title">Personal Information</div>
+
+        <div class="form-group">
+          <label class="form-label" for="full-name">Full Name</label>
+          <input
+            type="text"
+            id="full-name"
+            name="fullName"
+            class="form-input"
+            placeholder="Enter your full name"
+            toolparamdescription="The traveler's full legal name."
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="preferred-name">
+            Preferred Name / Alias
+            <span class="form-hint">— What should your guide call you?</span>
+          </label>
+          <input
+            type="text"
+            id="preferred-name"
+            name="preferredName"
+            class="form-input"
+            placeholder="e.g. 'Captain Chrono' or just your first name"
+            toolparamdescription="A nickname or alias the traveler prefers to be called by their temporal guide."
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="home-era">Home Era</label>
+          <select
+            id="home-era"
+            name="homeEra"
+            class="form-select"
+            toolparamdescription="The traveler's home era — the time period they originate from. Defaults to 'present-2026'. Options include present day and several other origin eras."
+          >
+            <option value="present-2026" selected>Present Day (2026 CE)</option>
+            <option value="near-future-2045">Near Future (2045 CE)</option>
+            <option value="retro-1980s">Retro Era (1980s CE)</option>
+            <option value="mid-century-1950s">Mid-Century (1950s CE)</option>
+            <option value="victorian-1890s">Victorian Era (1890s CE)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SECTION 2: Travel Preferences
+           ============================================================ -->
+      <div class="form-section">
+        <div class="form-section-title">Travel Preferences</div>
+
+        <div class="form-group">
+          <label class="form-label">Era Interests</label>
+          <div class="pill-group" id="era-interests-group">
+            <input type="checkbox" class="pill-checkbox" id="interest-ancient" name="eraInterests" value="ancient-civilizations" toolparamdescription="Select 'ancient-civilizations' if the traveler is interested in Ancient Civilizations (e.g. Egypt, Rome, Maya)." />
+            <label class="pill-label" for="interest-ancient">Ancient Civilizations</label>
+
+            <input type="checkbox" class="pill-checkbox" id="interest-medieval" name="eraInterests" value="medieval-renaissance" toolparamdescription="Select 'medieval-renaissance' if the traveler is interested in Medieval &amp; Renaissance eras." />
+            <label class="pill-label" for="interest-medieval">Medieval & Renaissance</label>
+
+            <input type="checkbox" class="pill-checkbox" id="interest-early-modern" name="eraInterests" value="early-modern" toolparamdescription="Select 'early-modern' if the traveler is interested in Early Modern eras (e.g. Edo Japan, Mughal India)." />
+            <label class="pill-label" for="interest-early-modern">Early Modern</label>
+
+            <input type="checkbox" class="pill-checkbox" id="interest-modern" name="eraInterests" value="modern-industrial" toolparamdescription="Select 'modern-industrial' if the traveler is interested in Modern &amp; Industrial eras (e.g. Jazz Age, Wild West)." />
+            <label class="pill-label" for="interest-modern">Modern & Industrial</label>
+
+            <input type="checkbox" class="pill-checkbox" id="interest-future" name="eraInterests" value="speculative-future" toolparamdescription="Select 'speculative-future' if the traveler is interested in Speculative Future eras (e.g. Neo-Tokyo 2145, Orbital Colonies)." />
+            <label class="pill-label" for="interest-future">Speculative Future</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Risk Tolerance</label>
+          <div class="radio-group">
+            <input type="radio" class="radio-option" id="risk-low" name="riskTolerance" value="low" toolparamdescription="Set risk tolerance to 'low' — the traveler prefers safe, well-documented eras." />
+            <label class="radio-label" for="risk-low">Low — I prefer safe, well-documented eras</label>
+
+            <input type="radio" class="radio-option" id="risk-medium" name="riskTolerance" value="medium" toolparamdescription="Set risk tolerance to 'medium' — some danger is fine if the experience is worth it." />
+            <label class="radio-label" for="risk-medium">Medium — Some danger is fine if the experience is worth it</label>
+
+            <input type="radio" class="radio-option" id="risk-high" name="riskTolerance" value="high" toolparamdescription="Set risk tolerance to 'high' — the more dangerous, the better." />
+            <label class="radio-label" for="risk-high">High — The more dangerous, the better</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="budget-range">Budget Range</label>
+          <select
+            id="budget-range"
+            name="budgetRange"
+            class="form-select"
+            toolparamdescription="The traveler's budget range for their trip. Options: 'budget' ($1,000-$3,000), 'standard' ($3,000-$10,000), 'premium' ($8,000-$15,000), 'luxury' ($15,000+)."
+          >
+            <option value="" disabled selected>Select your budget range</option>
+            <option value="budget">Budget ($1,000–$3,000)</option>
+            <option value="standard">Standard ($3,000–$10,000)</option>
+            <option value="premium">Premium ($8,000–$15,000)</option>
+            <option value="luxury">Luxury ($15,000+)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SECTION 3: Health & Fitness
+           ============================================================ -->
+      <div class="form-section">
+        <div class="form-section-title">Health & Fitness</div>
+
+        <div class="form-group">
+          <label class="form-label">Fitness Level</label>
+          <div class="radio-group">
+            <input type="radio" class="radio-option" id="fitness-sedentary" name="fitnessLevel" value="sedentary" toolparamdescription="Set fitness level to 'sedentary' — traveler prefers comfort over adventure." />
+            <label class="radio-label" for="fitness-sedentary">Sedentary — I prefer comfort over adventure</label>
+
+            <input type="radio" class="radio-option" id="fitness-moderate" name="fitnessLevel" value="moderate" toolparamdescription="Set fitness level to 'moderate' — traveler can handle some physical activity." />
+            <label class="radio-label" for="fitness-moderate">Moderate — I can handle some physical activity</label>
+
+            <input type="radio" class="radio-option" id="fitness-active" name="fitnessLevel" value="active" toolparamdescription="Set fitness level to 'active' — traveler is fit and ready for anything." />
+            <label class="radio-label" for="fitness-active">Active — I'm fit and ready for anything</label>
+
+            <input type="radio" class="radio-option" id="fitness-athletic" name="fitnessLevel" value="athletic" toolparamdescription="Set fitness level to 'athletic' — extreme conditions don't faze the traveler." />
+            <label class="radio-label" for="fitness-athletic">Athletic — Extreme conditions don't faze me</label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="medical-notes">
+            Medical Conditions or Concerns
+            <span class="form-hint">— Optional</span>
+          </label>
+          <textarea
+            id="medical-notes"
+            name="medicalNotes"
+            class="form-textarea"
+            placeholder="Any conditions that might affect temporal travel? e.g., motion sickness, claustrophobia..."
+            toolparamdescription="Any medical conditions or concerns that might affect temporal travel. Optional free-text field."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           SUBMIT BUTTON
+           ============================================================ -->
+      <button type="submit" class="btn-primary" id="submit-btn">
+        Save Profile & Calculate Clearance
+      </button>
+    </form>
+
+    <!-- ================================================================
+         SAVED PROFILE VIEW (State 2 — replaces form after submission)
+         ================================================================ -->
+    <div class="profile-saved-view" id="profile-saved-view">
+
+      <!-- Clearance Level Panel -->
+      <div class="clearance-panel visible" id="clearance-panel">
+        <div class="clearance-header">
+          <div class="clearance-level-badge" id="clearance-badge"></div>
+          <div class="clearance-info">
+            <h3 id="clearance-title"></h3>
+            <p id="clearance-description"></p>
+          </div>
+        </div>
+
+        <div class="clearance-section-title">Era Access</div>
+        <div class="era-access-list" id="era-access-list"></div>
+      </div>
+
+      <!-- Profile Summary -->
+      <div class="profile-summary" id="profile-summary">
+        <div class="profile-summary-title">Your Profile</div>
+        <div class="summary-grid" id="summary-grid"></div>
+      </div>
+
+      <!-- Edit Button -->
+      <button
+        class="btn-edit"
+        id="edit-profile-btn"
+        aria-label="Edit your traveler profile to update personal info, travel preferences, and fitness level"
+      >Edit Profile Info</button>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       TOOL LOG
+       ================================================================ -->
+  <div class="tool-log-area">
+    <div id="tool-log-container"></div>
+  </div>
+
+  <!-- ================================================================
+       SCRIPTS
+       ================================================================ -->
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+
+  <script>
+    /* ==================================================================
+       TRAVELER PROFILE — Main Application Logic
+       ==================================================================
+       This script implements the Traveler Profile page: multi-section
+       form, clearance level calculation, state management, and WebMCP
+       tool registrations (declarative form + imperative check_clearance).
+       ================================================================== */
+
+    (function () {
+      "use strict";
+
+      // ================================================================
+      // CONVENIENCE ALIASES
+      // ================================================================
+      var COLORS = ChronoShared.COLORS;
+      var eras = ChronoData.eras;
+      var prerequisites = ChronoData.prerequisites;
+
+      // ================================================================
+      // STATE — declared with var at the top to avoid hoisting issues
+      // ================================================================
+
+      /** Snapshot of form field values for declarative tool change detection */
+      var formSnapshot = {};
+
+      /** Polling interval ID for declarative tool logging */
+      var pollIntervalId = null;
+
+      /** Display-friendly labels for select/radio values */
+      var HOME_ERA_LABELS = {
+        "present-2026": "Present Day (2026 CE)",
+        "near-future-2045": "Near Future (2045 CE)",
+        "retro-1980s": "Retro Era (1980s CE)",
+        "mid-century-1950s": "Mid-Century (1950s CE)",
+        "victorian-1890s": "Victorian Era (1890s CE)"
+      };
+      var RISK_LABELS = {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High"
+      };
+      var FITNESS_LABELS = {
+        "sedentary": "Sedentary",
+        "moderate": "Moderate",
+        "active": "Active",
+        "athletic": "Athletic"
+      };
+      var BUDGET_LABELS = {
+        "budget": "Budget ($1,000\u2013$3,000)",
+        "standard": "Standard ($3,000\u2013$10,000)",
+        "premium": "Premium ($8,000\u2013$15,000)",
+        "luxury": "Luxury ($15,000+)"
+      };
+      var ERA_INTEREST_LABELS = {
+        "ancient-civilizations": "Ancient Civilizations",
+        "medieval-renaissance": "Medieval & Renaissance",
+        "early-modern": "Early Modern",
+        "modern-industrial": "Modern & Industrial",
+        "speculative-future": "Speculative Future"
+      };
+
+      // ================================================================
+      // CLEARANCE LEVEL LABELS
+      // ================================================================
+
+      var CLEARANCE_LABELS = {
+        1: { title: "Standard Temporal Access", color: "#4ECB71", cssClass: "level-1" },
+        2: { title: "Advanced Temporal Access", color: "#FFB84D", cssClass: "level-2" },
+        3: { title: "Unrestricted Temporal Access", color: "#FF6B6B", cssClass: "level-3" }
+      };
+
+      var CLEARANCE_DESCRIPTIONS = {
+        1: "You're cleared for safe, well-documented eras with low risk. Perfect for first-time travelers.",
+        2: "You qualify for medium-risk eras with significant cultural complexity. More destinations, more adventure.",
+        3: "Maximum clearance — you can visit any era, including high-danger destinations with active conflict."
+      };
+
+      // ================================================================
+      // CLEARANCE CALCULATION LOGIC
+      // ================================================================
+
+      /**
+       * Calculates the clearance level based on risk tolerance and fitness level.
+       *
+       * Logic:
+       *   Low risk + any fitness = Level 1
+       *   Medium risk + Sedentary or Moderate = Level 1
+       *   Medium risk + Active or Athletic = Level 2
+       *   High risk + Sedentary = Level 1
+       *   High risk + Moderate = Level 2
+       *   High risk + Active or Athletic = Level 3
+       *
+       * @param {string} risk — "low", "medium", or "high"
+       * @param {string} fitness — "sedentary", "moderate", "active", or "athletic"
+       * @returns {number} 1, 2, or 3
+       */
+      function calculateClearance(risk, fitness) {
+        if (risk === "low") return 1;
+
+        if (risk === "medium") {
+          if (fitness === "active" || fitness === "athletic") return 2;
+          return 1;
+        }
+
+        if (risk === "high") {
+          if (fitness === "active" || fitness === "athletic") return 3;
+          if (fitness === "moderate") return 2;
+          return 1;
+        }
+
+        return 1;
+      }
+
+      // ================================================================
+      // ERA ACCESS HELPERS
+      // ================================================================
+
+      /**
+       * Groups eras by whether they're unlocked or locked at the given clearance level.
+       * @param {number} level — 1, 2, or 3
+       * @returns {{ unlocked: Array, locked: Array }}
+       */
+      function getEraAccessByLevel(level) {
+        var unlocked = [];
+        var locked = [];
+
+        for (var i = 0; i < eras.length; i++) {
+          var era = eras[i];
+          if (era.requiredClearance <= level) {
+            unlocked.push(era);
+          } else {
+            locked.push(era);
+          }
+        }
+
+        // Sort each group by required clearance, then by name
+        function sortFn(a, b) {
+          if (a.requiredClearance !== b.requiredClearance) return a.requiredClearance - b.requiredClearance;
+          return a.name.localeCompare(b.name);
+        }
+        unlocked.sort(sortFn);
+        locked.sort(sortFn);
+
+        return { unlocked: unlocked, locked: locked };
+      }
+
+      // ================================================================
+      // RENDER: Clearance Panel
+      // ================================================================
+
+      /**
+       * Updates the clearance panel UI with the given level.
+       * @param {number} level — 1, 2, or 3
+       */
+      function renderClearancePanel(level) {
+        var panel = document.getElementById("clearance-panel");
+        var badge = document.getElementById("clearance-badge");
+        var title = document.getElementById("clearance-title");
+        var desc = document.getElementById("clearance-description");
+        var accessList = document.getElementById("era-access-list");
+
+        var labelInfo = CLEARANCE_LABELS[level];
+
+        // Update badge
+        badge.textContent = level;
+        badge.className = "clearance-level-badge " + labelInfo.cssClass;
+
+        // Update title and description
+        title.textContent = "Level " + level + " — " + labelInfo.title;
+        desc.textContent = CLEARANCE_DESCRIPTIONS[level];
+
+        // Build era access list
+        var access = getEraAccessByLevel(level);
+        var html = "";
+
+        for (var i = 0; i < access.unlocked.length; i++) {
+          var era = access.unlocked[i];
+          html +=
+            '<div class="era-access-item unlocked">' +
+              '<span class="era-access-icon">&#10003;</span>' +
+              '<span class="era-access-name">' + era.name + '</span>' +
+              '<span class="clearance-badge clearance-' + era.requiredClearance + '">Lvl ' + era.requiredClearance + '</span>' +
+            '</div>';
+        }
+
+        for (var j = 0; j < access.locked.length; j++) {
+          var lockedEra = access.locked[j];
+          html +=
+            '<div class="era-access-item locked">' +
+              '<span class="era-access-icon">&#10007;</span>' +
+              '<span class="era-access-name">' + lockedEra.name + '</span>' +
+              '<span class="clearance-badge clearance-' + lockedEra.requiredClearance + '">Lvl ' + lockedEra.requiredClearance + '</span>' +
+            '</div>';
+        }
+
+        accessList.innerHTML = html;
+
+        // Show the panel
+        panel.classList.add("visible");
+      }
+
+      // ================================================================
+      // VIEW SWITCHING: State 1 (form) ↔ State 2 (saved profile)
+      // ================================================================
+
+      /**
+       * Shows State 1: the editable form. Hides the saved-profile view.
+       * Restarts declarative tool polling since the form is now visible.
+       */
+      function showFormView() {
+        document.getElementById("profile-form").style.display = "";
+        document.getElementById("profile-saved-view").classList.remove("visible");
+        startFormPolling();
+      }
+
+      /**
+       * Shows State 2: clearance panel + profile summary + edit button.
+       * Hides the form. Stops declarative tool polling since the form
+       * is no longer in view.
+       */
+      function showSavedView(profile) {
+        document.getElementById("profile-form").style.display = "none";
+        renderClearancePanel(profile.clearanceLevel);
+        renderProfileSummary(profile);
+        document.getElementById("profile-saved-view").classList.add("visible");
+        stopFormPolling();
+        // Smooth-scroll to the top of the clearance panel
+        setTimeout(function () {
+          document.getElementById("clearance-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 50);
+      }
+
+      // ================================================================
+      // RENDER: Profile Summary
+      // ================================================================
+
+      /**
+       * Populates the profile summary grid with the saved profile data.
+       */
+      function renderProfileSummary(profile) {
+        var grid = document.getElementById("summary-grid");
+        var items = [];
+
+        items.push({ label: "Name", value: profile.name || "—" });
+        items.push({ label: "Preferred Name", value: profile.preferredName || "—" });
+        items.push({ label: "Home Era", value: HOME_ERA_LABELS[profile.homeEra] || profile.homeEra || "—" });
+        items.push({ label: "Risk Tolerance", value: RISK_LABELS[profile.riskTolerance] || "—" });
+        items.push({ label: "Fitness Level", value: FITNESS_LABELS[profile.fitnessLevel] || "—" });
+        items.push({ label: "Budget Range", value: BUDGET_LABELS[profile.budgetRange] || "—" });
+
+        // Era interests as pills
+        var interestHTML = "";
+        if (profile.eraInterests && profile.eraInterests.length > 0) {
+          for (var i = 0; i < profile.eraInterests.length; i++) {
+            var label = ERA_INTEREST_LABELS[profile.eraInterests[i]] || profile.eraInterests[i];
+            interestHTML += '<span class="pill-display">' + label + '</span>';
+          }
+        } else {
+          interestHTML = "None selected";
+        }
+        items.push({ label: "Era Interests", value: interestHTML, isHTML: true });
+
+        // Medical notes (span full width if present)
+        if (profile.medicalNotes) {
+          items.push({ label: "Medical Notes", value: profile.medicalNotes });
+        }
+
+        var html = "";
+        for (var j = 0; j < items.length; j++) {
+          var item = items[j];
+          html +=
+            '<div class="summary-item">' +
+              '<div class="summary-label">' + item.label + '</div>' +
+              '<div class="summary-value">' + (item.isHTML ? item.value : escapeHTML(item.value)) + '</div>' +
+            '</div>';
+        }
+
+        grid.innerHTML = html;
+      }
+
+      /**
+       * Simple HTML escaper for summary text values.
+       */
+      function escapeHTML(str) {
+        var div = document.createElement("div");
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+      }
+
+      // ================================================================
+      // FORM READING HELPERS
+      // ================================================================
+
+      /**
+       * Reads all current form field values into a plain object.
+       * @returns {object}
+       */
+      function readFormValues() {
+        var fullName = document.getElementById("full-name").value.trim();
+        var preferredName = document.getElementById("preferred-name").value.trim();
+        var homeEra = document.getElementById("home-era").value;
+        var budgetRange = document.getElementById("budget-range").value;
+        var medicalNotes = document.getElementById("medical-notes").value.trim();
+
+        // Era interests (checkboxes)
+        var eraInterests = [];
+        var checkboxes = document.querySelectorAll('input[name="eraInterests"]:checked');
+        for (var i = 0; i < checkboxes.length; i++) {
+          eraInterests.push(checkboxes[i].value);
+        }
+
+        // Risk tolerance (radio)
+        var riskEl = document.querySelector('input[name="riskTolerance"]:checked');
+        var riskTolerance = riskEl ? riskEl.value : "";
+
+        // Fitness level (radio)
+        var fitnessEl = document.querySelector('input[name="fitnessLevel"]:checked');
+        var fitnessLevel = fitnessEl ? fitnessEl.value : "";
+
+        return {
+          fullName: fullName,
+          preferredName: preferredName,
+          homeEra: homeEra,
+          eraInterests: eraInterests,
+          riskTolerance: riskTolerance,
+          budgetRange: budgetRange,
+          fitnessLevel: fitnessLevel,
+          medicalNotes: medicalNotes
+        };
+      }
+
+      /**
+       * Serializes form values into a string for snapshot comparison.
+       */
+      function serializeFormValues(vals) {
+        return JSON.stringify(vals);
+      }
+
+      // ================================================================
+      // FORM SUBMISSION HANDLER
+      // ================================================================
+
+      function handleFormSubmit(e) {
+        if (e) e.preventDefault();
+
+        var vals = readFormValues();
+
+        // Validate required fields
+        if (!vals.fullName) {
+          alert("Please enter your full name.");
+          return;
+        }
+        if (!vals.riskTolerance) {
+          alert("Please select a risk tolerance level.");
+          return;
+        }
+        if (!vals.fitnessLevel) {
+          alert("Please select a fitness level.");
+          return;
+        }
+
+        // Calculate clearance
+        var clearanceLevel = calculateClearance(vals.riskTolerance, vals.fitnessLevel);
+
+        // Build profile object
+        var existingProfile = ChronoShared.getTravelerProfile();
+        var travelerId = (existingProfile && existingProfile.id) ? existingProfile.id : "traveler-" + Date.now();
+
+        var profile = {
+          id: travelerId,
+          name: vals.fullName,
+          preferredName: vals.preferredName,
+          homeEra: vals.homeEra,
+          eraInterests: vals.eraInterests,
+          riskTolerance: vals.riskTolerance,
+          budgetRange: vals.budgetRange,
+          fitnessLevel: vals.fitnessLevel,
+          medicalNotes: vals.medicalNotes,
+          clearanceLevel: clearanceLevel
+        };
+
+        // Save to state
+        ChronoShared.updateState("travelerProfile", profile);
+
+        // Initialize clearance statuses for prerequisites (if not already set)
+        var statuses = ChronoShared.getClearanceStatus();
+        ChronoData.prerequisites.forEach(function (prereq) {
+          if (!statuses[prereq.id]) {
+            statuses[prereq.id] = "not_started";
+          }
+        });
+        ChronoShared.updateState("clearanceStatus", statuses);
+
+        // Log the submission
+        ChronoShared.addLog("submit_profile", vals, "Profile saved. Clearance Level: " + clearanceLevel);
+
+        // Switch to State 2 (saved profile view)
+        showSavedView(profile);
+      }
+
+      // ================================================================
+      // PRE-FILL FROM STATE
+      // ================================================================
+
+      /**
+       * If a profile already exists in state, pre-fill all form fields
+       * and show the clearance panel.
+       */
+      function prefillFromState() {
+        var profile = ChronoShared.getTravelerProfile();
+        if (!profile) return;
+
+        // Always pre-fill the form fields (needed for when user clicks Edit)
+        if (profile.name) document.getElementById("full-name").value = profile.name;
+        if (profile.preferredName) document.getElementById("preferred-name").value = profile.preferredName;
+        if (profile.homeEra) document.getElementById("home-era").value = profile.homeEra;
+
+        if (profile.eraInterests && profile.eraInterests.length > 0) {
+          profile.eraInterests.forEach(function (interest) {
+            var cb = document.querySelector('input[name="eraInterests"][value="' + interest + '"]');
+            if (cb) cb.checked = true;
+          });
+        }
+
+        if (profile.riskTolerance) {
+          var riskEl = document.querySelector('input[name="riskTolerance"][value="' + profile.riskTolerance + '"]');
+          if (riskEl) riskEl.checked = true;
+        }
+
+        if (profile.budgetRange) {
+          document.getElementById("budget-range").value = profile.budgetRange;
+        }
+
+        if (profile.fitnessLevel) {
+          var fitnessEl = document.querySelector('input[name="fitnessLevel"][value="' + profile.fitnessLevel + '"]');
+          if (fitnessEl) fitnessEl.checked = true;
+        }
+
+        if (profile.medicalNotes) {
+          document.getElementById("medical-notes").value = profile.medicalNotes;
+        }
+
+        // If profile has a clearance level, go directly to State 2
+        if (profile.clearanceLevel) {
+          showSavedView(profile);
+        }
+      }
+
+      // ================================================================
+      // DECLARATIVE TOOL CHANGE DETECTION (Polling Workaround)
+      // ================================================================
+      // Since declarative tools don't have an execute function, we use
+      // a polling approach: snapshot form values on load, then check
+      // every 500ms for changes. When detected, log via ChronoShared.addLog().
+
+      function startFormPolling() {
+        formSnapshot = serializeFormValues(readFormValues());
+
+        pollIntervalId = setInterval(function () {
+          var currentValues = readFormValues();
+          var currentSerialized = serializeFormValues(currentValues);
+
+          if (currentSerialized !== formSnapshot) {
+            // Detect which fields changed
+            var oldValues = {};
+            try { oldValues = JSON.parse(formSnapshot); } catch (e) { /* ignore */ }
+
+            var changes = {};
+            var keys = Object.keys(currentValues);
+            for (var i = 0; i < keys.length; i++) {
+              var key = keys[i];
+              var oldVal = JSON.stringify(oldValues[key]);
+              var newVal = JSON.stringify(currentValues[key]);
+              if (oldVal !== newVal) {
+                changes[key] = currentValues[key];
+              }
+            }
+
+            ChronoShared.addLog("submit_profile (form changed)", changes, "Form fields updated by agent or user.");
+            formSnapshot = currentSerialized;
+          }
+        }, 500);
+      }
+
+      function stopFormPolling() {
+        if (pollIntervalId) {
+          clearInterval(pollIntervalId);
+          pollIntervalId = null;
+        }
+      }
+
+      // ================================================================
+      // WEBMCP TOOL REGISTRATIONS
+      // ================================================================
+      // The form itself is declarative (attributes on the <form> tag).
+      // check_clearance is imperative, registered below.
+
+      function registerWebMCPTools() {
+        if (typeof navigator === "undefined" || !navigator.modelContext) {
+          console.log("[Traveler Profile] WebMCP not available — skipping tool registration.");
+          return;
+        }
+
+        console.log("[Traveler Profile] WebMCP detected — registering tools...");
+
+        // ----------------------------------------------------------
+        // TOOL: check_clearance (Imperative)
+        // ----------------------------------------------------------
+        // Checks what clearance level a traveler would receive based
+        // on risk tolerance and fitness level. Read-only preview —
+        // does not require submitting the profile form.
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "check_clearance",
+          description:
+            "Check what clearance level a traveler would receive based on their risk tolerance and fitness level, and see which eras they'd be cleared for. You can pass specific values to check hypothetical combinations, or omit parameters to check the currently saved profile. This does NOT require submitting the profile form — it's a read-only check. Use this to help travelers understand what they'd qualify for before committing to a profile.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              riskTolerance: {
+                type: "string",
+                enum: ["low", "medium", "high"],
+                description: "The traveler's risk tolerance. Optional — if omitted, uses the value from the saved profile."
+              },
+              fitnessLevel: {
+                type: "string",
+                enum: ["sedentary", "moderate", "active", "athletic"],
+                description: "The traveler's fitness level. Optional — if omitted, uses the value from the saved profile."
+              }
+            },
+            required: []
+          },
+          execute: function (params) {
+            // Determine risk and fitness values
+            var risk = params.riskTolerance || null;
+            var fitness = params.fitnessLevel || null;
+
+            // Fall back to saved profile if params not provided
+            if (!risk || !fitness) {
+              var savedProfile = ChronoShared.getTravelerProfile();
+              if (savedProfile) {
+                if (!risk) risk = savedProfile.riskTolerance;
+                if (!fitness) fitness = savedProfile.fitnessLevel;
+              }
+            }
+
+            // If we still don't have both values, return an error
+            if (!risk || !fitness) {
+              var errMsg = "No profile found. Please fill out the traveler profile form first, or provide riskTolerance and fitnessLevel parameters.";
+              ChronoShared.addLog("check_clearance", params, "Error: " + errMsg);
+              return {
+                content: [{ type: "text", text: JSON.stringify({ error: errMsg }) }]
+              };
+            }
+
+            // Calculate clearance
+            var level = calculateClearance(risk, fitness);
+            var access = getEraAccessByLevel(level);
+
+            // Update the UI — show the clearance panel as a preview
+            // If a saved profile exists, switch to State 2 to show the panel;
+            // otherwise just render the panel inline (it's a hypothetical check)
+            var currentProfile = ChronoShared.getTravelerProfile();
+            if (currentProfile && currentProfile.clearanceLevel) {
+              // Temporarily override clearance for display
+              var displayProfile = {};
+              for (var k in currentProfile) {
+                if (currentProfile.hasOwnProperty(k)) displayProfile[k] = currentProfile[k];
+              }
+              displayProfile.clearanceLevel = level;
+              showSavedView(displayProfile);
+            } else {
+              renderClearancePanel(level);
+            }
+
+            // Build response
+            var result = {
+              clearanceLevel: level,
+              clearanceName: CLEARANCE_LABELS[level].title,
+              riskTolerance: risk,
+              fitnessLevel: fitness,
+              unlockedEras: access.unlocked.map(function (era) {
+                return {
+                  id: era.id,
+                  name: era.name,
+                  requiredClearance: era.requiredClearance
+                };
+              }),
+              lockedEras: access.locked.map(function (era) {
+                return {
+                  id: era.id,
+                  name: era.name,
+                  requiredClearance: era.requiredClearance
+                };
+              })
+            };
+
+            var summary = "Clearance Level " + level + " (" + CLEARANCE_LABELS[level].title + ") — " +
+              access.unlocked.length + " eras unlocked, " + access.locked.length + " locked.";
+            ChronoShared.addLog("check_clearance", params, summary);
+
+            return {
+              content: [{ type: "text", text: JSON.stringify(result) }]
+            };
+          }
+        });
+
+        console.log("[Traveler Profile] All WebMCP tools registered successfully.");
+      }
+
+      // ================================================================
+      // EVENT LISTENERS
+      // ================================================================
+
+      function initEventListeners() {
+        document.getElementById("profile-form").addEventListener("submit", handleFormSubmit);
+
+        document.getElementById("edit-profile-btn").addEventListener("click", function () {
+          showFormView();
+          // Scroll to the top of the form
+          document.getElementById("profile-form").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
+
+      // ================================================================
+      // INITIALIZATION
+      // ================================================================
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Render nav and check WebMCP availability
+        ChronoShared.renderNav("profile");
+        ChronoShared.checkWebMCP();
+
+        // Initialize the tool log panel
+        ChronoShared.initToolLog("tool-log-container");
+
+        // Pre-fill form from saved state (if profile exists)
+        prefillFromState();
+
+        // Set up event listeners
+        initEventListeners();
+
+        // Start polling for declarative tool changes
+        startFormPolling();
+
+        // Register WebMCP tools (only if navigator.modelContext exists)
+        registerWebMCPTools();
+      });
+    })();
+  </script>
+</body>
+</html>

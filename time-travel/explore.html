@@ -846,7 +846,7 @@
       // ================================================================
 
       function renderFilterPills() {
-        var regionValues = ["Europe", "Asia", "Americas", "Africa", "Middle East", "Oceania"];
+        var regionValues = ["Europe", "Asia", "Americas", "Africa", "Oceania"];
         var dangerValues = [
           { val: 1, label: "1 (Safe)" },
           { val: 2, label: "2 (Low)" },
@@ -1139,7 +1139,21 @@
           compareList.push(eraId);
         }
         renderCompareTray();
-        renderCatalog(); // re-render to update the compare button state
+        // Update the compare button in-place instead of re-rendering the
+        // entire catalog, which would nuke the DOM and cause a scroll jump.
+        updateCompareButtonState(eraId);
+      }
+
+      /** Update just the compare button text/state without a full re-render */
+      function updateCompareButtonState(eraId) {
+        var btn = document.getElementById("detail-compare-btn");
+        if (!btn) return;
+        var isInCompare = compareList.indexOf(eraId) !== -1;
+        var compareDisabled = !isInCompare && compareList.length >= 3;
+        btn.textContent = isInCompare ? "Remove from Compare" : "Add to Compare";
+        btn.disabled = compareDisabled;
+        btn.style.opacity = compareDisabled ? "0.4" : "";
+        btn.style.cursor = compareDisabled ? "not-allowed" : "";
       }
 
       function renderCompareTray() {
@@ -1334,7 +1348,7 @@
               },
               region: {
                 type: "string",
-                enum: ["Europe", "Asia", "Americas", "Africa", "Middle East", "Oceania"],
+                enum: ["Europe", "Asia", "Americas", "Africa", "Oceania"],
                 description: "Filter by geographical region. Optional.",
               },
               dangerLevel: {

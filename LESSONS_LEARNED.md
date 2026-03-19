@@ -56,3 +56,15 @@ Bookmarklet code lives inside `href="javascript:..."` on an `<a>` tag. Key const
 
 ### Layered DOM selector strategy
 AI platforms change their markup frequently. Rather than relying on a single fragile selector, use a layered fallback approach: try the most specific selectors first (semantic class names like "source"/"citation"), then structural selectors (role="dialog", panels, drawers), then platform-specific patterns, then a broad content-area sweep. Stop as soon as you get ≥2 results to avoid noise from the broader layers.
+
+### Early-return checks must count *external* links, not total links
+The original bookmarklet checked `links.length >= 2` to decide when it had found enough results. This caused silent failures — internal navigation links (perplexity.ai sidebar, chatgpt.com chrome) would trigger premature short-circuits before reaching layers that find actual source URLs. Fix: use a `countExternalLinks()` helper that runs `extractDomain()` (which filters out internal domains) before counting. Only external domains count toward the threshold.
+
+### Platform-specific Layer 0 targeting
+Generic semantic/structural selectors missed key containers on ChatGPT and Perplexity. ChatGPT's Sources panel is a plain `<section>` with no distinguishing class — targeted by walking up from `button[aria-label="Close"]` to the nearest `<section>`. Perplexity's inline citations (`span.citation`) are text-only spans, not links — the real URLs live on the separate Links tab, so the bookmarklet pulls from `<main>` there. These platform-specific selectors run first as "Layer 0" before the generic fallback layers.
+
+### Don't guess TLDs from partial domain text
+Perplexity's Answer tab shows shortened domain names (e.g., "vitextech") as citation text. It's tempting to synthesize URLs by appending `.com`, but domains could be `.io`, `.net`, `.org`, etc. Better to direct users to a view with real URLs (the Links tab) than to guess and produce plausible-looking but incorrect results.
+
+### Chrome bookmarklet favicon limitation
+Chrome shows a generic globe favicon for bookmarklets because `javascript:` URLs have no server to fetch a favicon from. This is browser-controlled and cannot be overridden from the bookmarklet code. Users can manually change the icon via right-click → Edit on the bookmarks bar.
