@@ -1,0 +1,59 @@
+/* ================================================================
+   Playground — Shared Design Tokens
+   ================================================================
+   Single source of truth for colors, typography, and base reset.
+   Individual pages keep component-specific styles inline.
+   ================================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Backgrounds */
+  --bg: #0a0a0c;
+  --surface: #13131a;
+  --surface-hover: #1a1a24;
+
+  /* Borders */
+  --border: #2a2a3a;
+  --border-focus: #6366f1;
+  --border-hover: #4338ca;
+
+  /* Text */
+  --text: #e4e4ed;
+  --text-muted: #8888a4;
+
+  /* Accent */
+  --accent: #6366f1;
+  --accent-soft: rgba(99, 102, 241, 0.12);
+  --accent-glow: rgba(99, 102, 241, 0.15);
+
+  /* Semantic */
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --pink: #f472b6;
+  --cyan: #22d3ee;
+
+  /* Tags */
+  --tag-bg: #1e1e2e;
+  --tag-text: #a5b4fc;
+
+  /* Layout */
+  --radius: 10px;
+
+  /* Fonts */
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}

@@ -14,12 +14,12 @@
  *   3. Navigation Helper  — consistent nav bar across all pages
  *   4. WebMCP Check       — banner when navigator.modelContext is unavailable
  *
- * Design system:
- *   - Background:  #0f0f1a (deep dark navy)
- *   - Surface:     #1a1a2e (card / panel background)
- *   - Border:      #2a2a4a (subtle dividers)
- *   - Text:        #e0e0e0 (primary), #a0a0b0 (secondary)
- *   - Accent:      #6C63FF (indigo)
+ * Design system (canonical values in /tokens.css):
+ *   - Background:  #0a0a0c (deep dark)
+ *   - Surface:     #13131a (card / panel background)
+ *   - Border:      #2a2a3a (subtle dividers)
+ *   - Text:        #e4e4ed (primary), #8888a4 (secondary)
+ *   - Accent:      #6366f1 (indigo)
  *   - Accent hover: #7B73FF
  *   - Danger:      #FF6B6B
  *   - Success:     #4ECB71
@@ -39,15 +39,15 @@ window.ChronoShared = (function () {
   // Centralized so every component stays consistent.
 
   const COLORS = {
-    bg: "#0f0f1a",
-    surface: "#1a1a2e",
-    surfaceHover: "#22223a",
-    border: "#2a2a4a",
-    text: "#e0e0e0",
-    textSecondary: "#a0a0b0",
-    accent: "#6C63FF",
+    bg: "#0a0a0c",
+    surface: "#13131a",
+    surfaceHover: "#1a1a24",
+    border: "#2a2a3a",
+    text: "#e4e4ed",
+    textSecondary: "#8888a4",
+    accent: "#6366f1",
     accentHover: "#7B73FF",
-    accentMuted: "rgba(108, 99, 255, 0.15)",
+    accentMuted: "rgba(99, 102, 241, 0.15)",
     danger: "#FF6B6B",
     success: "#4ECB71",
     warning: "#FFB84D",

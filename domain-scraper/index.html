@@ -8,34 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../tokens.css">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
+        /* Page-specific tokens */
         :root {
-            --bg: #0e0e12;
-            --surface: #16161d;
-            --surface-hover: #1e1e28;
-            --border: #2a2a3a;
-            --border-hover: #4338ca;
-            --text: #e2e2e8;
-            --text-muted: #8888a0;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.15);
             --green: #10b981;
             --green-glow: rgba(16, 185, 129, 0.15);
-            --mono: 'DM Mono', monospace;
-            --sans: 'DM Sans', sans-serif;
             --chatgpt: #10a37f;
             --perplexity: #22b8cf;
             --google: #ea4335;
-        }
-
-        body {
-            font-family: var(--sans);
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
         }
 
         body::before {
