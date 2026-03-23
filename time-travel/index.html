@@ -435,6 +435,83 @@
       margin: 0 auto;
       padding: 0 24px 40px;
     }
+
+    /* ================================================================
+       ANNOTATIONS / CODE REFERENCE
+       ================================================================ */
+    .annotations {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    .annotations h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .annotation-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .annotation-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--tag-text);
+      background: var(--tag-bg);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .annotation-label .fn { color: var(--success); }
+
+    .annotation-desc {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .annotation-desc code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .annotation-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .annotations pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .annotations pre .hl { color: var(--accent); }
+    .annotations pre .fn { color: var(--success); }
+    .annotations pre .str { color: var(--warning); }
+    .annotations pre .kw { color: var(--pink); }
+    .annotations pre .cm { color: #555570; }
+    .annotations pre .attr { color: var(--success); }
+    .annotations pre .val { color: var(--warning); }
+    .annotations pre .tag { color: var(--tag-text); }
   </style>
 </head>
 
@@ -650,6 +727,192 @@
        ================================================================ -->
   <div class="tool-log-area">
     <div id="tool-log-container"></div>
+  </div>
+
+  <!-- ================================================================
+       CODE REFERENCE — WebMCP Tool Configuration
+       ================================================================ -->
+  <div class="annotations">
+    <h2>&#128196; Declarative Tool Markup</h2>
+    <pre><span class="cm">&lt;!-- The form tool is defined entirely with HTML attributes — no JS needed --&gt;</span>
+
+<span class="tag">&lt;form</span>
+  <span class="attr">toolname</span>=<span class="val">"submit_profile"</span>
+  <span class="attr">tooldescription</span>=<span class="val">"Fill out the traveler profile form to create or
+    update a temporal traveler identity. This sets the traveler's name,
+    travel preferences (era interests, risk tolerance, budget), and
+    health/fitness information. After the form is filled, the user must
+    review and click 'Save Profile &amp; Calculate Clearance' to submit —
+    this tool ONLY fills the form fields, it does NOT submit. Once
+    submitted, the traveler's clearance level is calculated based on
+    their risk tolerance and fitness level."</span>
+<span class="tag">&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="text" name="fullName" required
+    placeholder="Enter your full name"
+    <span class="attr">toolparamdescription</span>=<span class="val">"The traveler's full legal name."</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;input</span>
+    type="text" name="preferredName"
+    placeholder="e.g. 'Captain Chrono'"
+    <span class="attr">toolparamdescription</span>=<span class="val">"A nickname or alias the traveler prefers to be
+      called by their temporal guide."</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;select</span>
+    name="homeEra"
+    <span class="attr">toolparamdescription</span>=<span class="val">"The traveler's home era — the time period they
+      originate from. Defaults to 'present-2026'."</span>
+  <span class="tag">&gt;</span>
+    <span class="tag">&lt;option</span> value="present-2026" selected<span class="tag">&gt;</span>Present Day (2026 CE)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="near-future-2045"<span class="tag">&gt;</span>Near Future (2045 CE)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="retro-1980s"<span class="tag">&gt;</span>Retro Era (1980s CE)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="mid-century-1950s"<span class="tag">&gt;</span>Mid-Century (1950s CE)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="victorian-1890s"<span class="tag">&gt;</span>Victorian Era (1890s CE)<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;/select&gt;</span>
+
+  <span class="cm">&lt;!-- Era Interests — checkboxes with individual toolparamdescriptions --&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="checkbox" name="eraInterests" value="ancient-civilizations"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Select 'ancient-civilizations' if interested in
+      Ancient Civilizations (e.g. Egypt, Rome, Maya)."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="checkbox" name="eraInterests" value="medieval-renaissance"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Select 'medieval-renaissance' if interested in
+      Medieval &amp; Renaissance eras."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="checkbox" name="eraInterests" value="early-modern"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Select 'early-modern' if interested in Early
+      Modern eras (e.g. Edo Japan, Mughal India)."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="checkbox" name="eraInterests" value="modern-industrial"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Select 'modern-industrial' if interested in
+      Modern &amp; Industrial eras (e.g. Jazz Age, Wild West)."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="checkbox" name="eraInterests" value="speculative-future"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Select 'speculative-future' if interested in
+      Speculative Future eras (e.g. Neo-Tokyo 2145)."</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="cm">&lt;!-- Risk Tolerance — radio group --&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="riskTolerance" value="low"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set risk tolerance to 'low' — prefers safe,
+      well-documented eras."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="riskTolerance" value="medium"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set risk tolerance to 'medium' — some danger is
+      fine if the experience is worth it."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="riskTolerance" value="high"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set risk tolerance to 'high' — the more dangerous,
+      the better."</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;select</span>
+    name="budgetRange"
+    <span class="attr">toolparamdescription</span>=<span class="val">"The traveler's budget range. Options: 'budget'
+      ($1,000-$3,000), 'standard' ($3,000-$10,000), 'premium'
+      ($8,000-$15,000), 'luxury' ($15,000+)."</span>
+  <span class="tag">&gt;</span>
+    <span class="tag">&lt;option</span> value="budget"<span class="tag">&gt;</span>Budget ($1,000–$3,000)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="standard"<span class="tag">&gt;</span>Standard ($3,000–$10,000)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="premium"<span class="tag">&gt;</span>Premium ($8,000–$15,000)<span class="tag">&lt;/option&gt;</span>
+    <span class="tag">&lt;option</span> value="luxury"<span class="tag">&gt;</span>Luxury ($15,000+)<span class="tag">&lt;/option&gt;</span>
+  <span class="tag">&lt;/select&gt;</span>
+
+  <span class="cm">&lt;!-- Fitness Level — radio group --&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="fitnessLevel" value="sedentary"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set fitness level to 'sedentary'."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="fitnessLevel" value="moderate"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set fitness level to 'moderate'."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="fitnessLevel" value="active"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set fitness level to 'active'."</span>
+  <span class="tag">/&gt;</span>
+  <span class="tag">&lt;input</span>
+    type="radio" name="fitnessLevel" value="athletic"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Set fitness level to 'athletic'."</span>
+  <span class="tag">/&gt;</span>
+
+  <span class="tag">&lt;textarea</span>
+    name="medicalNotes"
+    <span class="attr">toolparamdescription</span>=<span class="val">"Any medical conditions or concerns that might
+      affect temporal travel. Optional free-text field."</span>
+  <span class="tag">&gt;&lt;/textarea&gt;</span>
+
+  <span class="tag">&lt;button</span> type="submit"<span class="tag">&gt;</span>Save Profile &amp; Calculate Clearance<span class="tag">&lt;/button&gt;</span>
+
+<span class="tag">&lt;/form&gt;</span></pre>
+
+    <h2 style="margin-top: 32px;">&#128270; Imperative Tool Registration</h2>
+
+    <div class="annotation-block">
+      <div class="annotation-label">
+        <span class="fn">navigator.modelContext.registerTool()</span> — check_clearance
+      </div>
+      <div class="annotation-desc">
+        A read-only tool that checks what clearance level a traveler would receive based on
+        <code>riskTolerance</code> and <code>fitnessLevel</code>. Can be called with specific
+        values to test hypothetical combinations, or without parameters to check the currently
+        saved profile. <strong>Does not require submitting the form.</strong>
+      </div>
+    </div>
+
+    <pre><span class="cm">// ── Imperative Tool: check_clearance ──</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"check_clearance"</span>,
+  <span class="hl">description</span>: <span class="str">"Check what clearance level a traveler would receive
+    based on their risk tolerance and fitness level, and see which
+    eras they'd be cleared for. You can pass specific values to check
+    hypothetical combinations, or omit parameters to check the
+    currently saved profile. This does NOT require submitting the
+    profile form — it's a read-only check."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      riskTolerance: {
+        type: <span class="str">"string"</span>,
+        enum: [<span class="str">"low"</span>, <span class="str">"medium"</span>, <span class="str">"high"</span>],
+        description: <span class="str">"The traveler's risk tolerance. Optional —
+          if omitted, uses the value from the saved profile."</span>
+      },
+      fitnessLevel: {
+        type: <span class="str">"string"</span>,
+        enum: [<span class="str">"sedentary"</span>, <span class="str">"moderate"</span>, <span class="str">"active"</span>, <span class="str">"athletic"</span>],
+        description: <span class="str">"The traveler's fitness level. Optional —
+          if omitted, uses the value from the saved profile."</span>
+      }
+    },
+    required: []
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> level = calculateClearance(risk, fitness);
+    <span class="kw">const</span> access = getEraAccessByLevel(level);
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify({
+        clearanceLevel: level,
+        clearanceName: CLEARANCE_LABELS[level].title,
+        riskTolerance: risk,
+        fitnessLevel: fitness,
+        unlockedEras: access.unlocked,
+        lockedEras: access.locked
+      }) }]
+    };
+  }
+});</pre>
   </div>
 
   <!-- ================================================================

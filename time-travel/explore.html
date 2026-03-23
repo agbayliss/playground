@@ -553,6 +553,80 @@
       font-size: 0.9rem;
       color: #666;
     }
+
+    /* ================================================================
+       ANNOTATIONS / CODE REFERENCE
+       ================================================================ */
+    .annotations {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    .annotations h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .annotation-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .annotation-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--tag-text);
+      background: var(--tag-bg);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .annotation-label .fn { color: var(--success); }
+
+    .annotation-desc {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .annotation-desc code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .annotation-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .annotations pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      overflow-x: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-top: 12px;
+    }
+
+    .annotations pre .hl { color: var(--accent); }
+    .annotations pre .fn { color: var(--success); }
+    .annotations pre .str { color: var(--warning); }
+    .annotations pre .kw { color: var(--pink); }
+    .annotations pre .cm { color: #555570; }
   </style>
 </head>
 
@@ -634,6 +708,159 @@
        ================================================================ -->
   <div class="tool-log-area">
     <div id="tool-log-container"></div>
+  </div>
+
+  <!-- ================================================================
+       CODE REFERENCE — WebMCP Tool Configuration
+       ================================================================ -->
+  <div class="annotations">
+    <h2>&#128270; Imperative API — Tool Registrations</h2>
+
+    <div class="annotation-block">
+      <div class="annotation-label">
+        Tool chaining pattern
+      </div>
+      <div class="annotation-desc">
+        This page registers three tools that form a natural workflow:
+        <code>search_eras</code> → <code>get_era_details</code> → <code>compare_eras</code>.
+        The agent can search the catalog, drill into a specific era, and then compare
+        multiple candidates side by side. Each tool returns structured data and also
+        updates the visible UI so the human sees the same results.
+      </div>
+    </div>
+
+    <h2 style="margin-top: 32px;">&#128196; Full Tool Registrations</h2>
+    <pre><span class="cm">// ── Tool 1: search_eras ──</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"search_eras"</span>,
+  <span class="hl">description</span>: <span class="str">"Search and filter the ChronoVoyage era catalog. You can
+    filter by region, danger level, clearance required, and/or free-text
+    query. All filters are optional and combinable (AND logic across
+    categories). Returns a list of matching eras with summary info.
+    If no filters are provided, returns all eras."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      query: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"Free-text search query. Matches against era names,
+          descriptions, highlights, and cultural notes. Examples:
+          'ancient civilizations', 'peaceful', 'samurai', 'futuristic'.
+          Optional — omit to skip text filtering."</span>
+      },
+      region: {
+        type: <span class="str">"string"</span>,
+        enum: [<span class="str">"Europe"</span>, <span class="str">"Asia"</span>, <span class="str">"Americas"</span>, <span class="str">"Africa"</span>, <span class="str">"Oceania"</span>],
+        description: <span class="str">"Filter by geographical region. Optional."</span>
+      },
+      dangerLevel: {
+        type: <span class="str">"number"</span>,
+        description: <span class="str">"Filter by maximum danger level (1=safest, 5=most
+          dangerous). Returns eras at or below this level. Optional."</span>
+      },
+      clearanceRequired: {
+        type: <span class="str">"number"</span>,
+        description: <span class="str">"Filter by maximum clearance level required (1-3).
+          Returns eras that require this level or lower. Optional."</span>
+      }
+    },
+    required: []
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> results = filterEras(params);
+    <span class="cm">// Updates both the returned data and the visible UI</span>
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify({
+        matchCount: results.length,
+        eras: results.map(era => ({
+          id: era.id, name: era.name,
+          timePeriod, region, dangerLevel, requiredClearance,
+          briefDescription
+        }))
+      }) }]
+    };
+  }
+});
+
+
+<span class="cm">// ── Tool 2: get_era_details ──</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"get_era_details"</span>,
+  <span class="hl">description</span>: <span class="str">"Get full details about a specific era. Accepts an era ID
+    (e.g. 'ancient-rome') or an era name (e.g. 'Ancient Rome').
+    Use search_eras first to find matching eras if you don't have
+    an ID or name. Returns complete era information including
+    highlights, risks, prerequisites, available packages with
+    pricing, and cultural notes."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      id: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"The era's unique ID (e.g. 'ancient-rome',
+          'edo-japan'). Use this if you have it."</span>
+      },
+      name: {
+        type: <span class="str">"string"</span>,
+        description: <span class="str">"The era's display name or a partial match
+          (e.g. 'Rome', 'Jazz Age'). Used as fallback if id
+          is not provided."</span>
+      }
+    },
+    required: []
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> era = resolveEra(params);
+    <span class="cm">// Opens the inline detail panel in the UI</span>
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify({
+        id, name, timePeriod, region, dangerLevel,
+        requiredClearance, briefDescription, highlights,
+        risks, culturalNotes, prerequisites,
+        availablePackages, applicableAddOns, priceMultiplier
+      }) }]
+    };
+  }
+});
+
+
+<span class="cm">// ── Tool 3: compare_eras ──</span>
+<span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
+  <span class="hl">name</span>: <span class="str">"compare_eras"</span>,
+  <span class="hl">description</span>: <span class="str">"Compare 2-3 eras side by side. Accepts era IDs or names.
+    Returns a structured comparison object with attributes for each
+    era so you can reason about the differences and make
+    recommendations. Use search_eras or get_era_details first if
+    you need to identify which eras to compare."</span>,
+  <span class="hl">inputSchema</span>: {
+    type: <span class="str">"object"</span>,
+    properties: {
+      eras: {
+        type: <span class="str">"array"</span>,
+        items: { type: <span class="str">"string"</span> },
+        description: <span class="str">"An array of 2-3 era IDs or names to compare.
+          Example: ['ancient-rome', 'edo-japan'] or
+          ['Rome', 'Edo Japan']."</span>,
+        minItems: 2,
+        maxItems: 3
+      }
+    },
+    required: [<span class="str">"eras"</span>]
+  },
+  <span class="kw">async</span> <span class="fn">execute</span>(params) {
+    <span class="kw">const</span> resolved = resolveAllEras(params.eras);
+    <span class="cm">// Populates the comparison tray and shows the table in the UI</span>
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: JSON.stringify({
+        comparison: resolved.map(era => ({
+          id, name, timePeriod, region, dangerLevel,
+          requiredClearance, highlightCount, riskCount,
+          prerequisiteCount, prerequisites, priceRange
+        }))
+      }) }]
+    };
+  }
+});</pre>
   </div>
 
   <!-- ================================================================
