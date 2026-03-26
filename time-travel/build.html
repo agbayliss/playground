@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/svg+xml" href="/playground/favicon.svg">
+  <title>Package Builder — ChronoVoyage</title>
+
+  <!-- Google Fonts: DM Sans (body) + DM Mono (code/logs) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="../tokens.css">
+
+  <style>
+    /* ================================================================
+       PAGE HEADER
+       ================================================================ */
+    .page-header {
+      text-align: center;
+      padding: 48px 24px 32px;
+    }
+    .page-header h1 {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .page-header h1 span {
+      color: var(--accent);
+    }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    /* ================================================================
+       EMPTY STATE (no era selected)
+       ================================================================ */
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.6;
+    }
+    .empty-state h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .empty-state p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* ================================================================
+       MAIN LAYOUT
+       ================================================================ */
+    .build-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+
+    .build-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .build-layout { grid-template-columns: 1fr; }
+    }
+
+    /* ================================================================
+       ERA SUMMARY BANNER
+       ================================================================ */
+    .era-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .era-banner { flex-direction: column; }
+    }
+    .era-banner-info h2 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .era-banner-period {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-family: var(--mono);
+      margin-bottom: 10px;
+    }
+    .era-banner-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+    .era-banner-meta .region-badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+    .era-banner-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .era-banner-actions {
+      flex-shrink: 0;
+    }
+
+    /* Danger dots (same as explore.html) */
+    .danger-dots {
+      display: inline-flex;
+      gap: 3px;
+      align-items: center;
+    }
+    .danger-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .danger-dot.filled-1 { background: #4ECB71; }
+    .danger-dot.filled-2 { background: #a0d060; }
+    .danger-dot.filled-3 { background: #FFB84D; }
+    .danger-dot.filled-4 { background: #FF8C42; }
+    .danger-dot.filled-5 { background: #FF6B6B; }
+
+    .clearance-badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .clearance-1 { background: rgba(78, 203, 113, 0.15); color: #4ECB71; }
+    .clearance-2 { background: rgba(255, 184, 77, 0.15); color: #FFB84D; }
+    .clearance-3 { background: rgba(255, 107, 107, 0.15); color: #FF6B6B; }
+
+    /* ================================================================
+       SECTION TITLES
+       ================================================================ */
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+
+    /* ================================================================
+       PACKAGE TEMPLATE CARDS
+       ================================================================ */
+    .config-section {
+      margin-bottom: 28px;
+    }
+    .package-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .package-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .package-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .package-card.selected {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent);
+      background: rgba(99, 102, 241, 0.06);
+    }
+    .package-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .package-card-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .package-card-price {
+      font-family: var(--mono);
+      font-weight: 600;
+      color: #4ECB71;
+      font-size: 1rem;
+      white-space: nowrap;
+    }
+    .package-card-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .package-card-meta span {
+      margin-right: 14px;
+    }
+    .package-card-addons {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .package-card-addons strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .included-addon-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(78, 203, 113, 0.12);
+      color: #4ECB71;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-right: 4px;
+      margin-top: 4px;
+    }
+
+    /* ================================================================
+       DURATION SELECTOR
+       ================================================================ */
+    .duration-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .duration-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      font-family: var(--sans);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    .duration-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+    .duration-btn.selected {
+      background: var(--accent-glow);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ================================================================
+       ADD-ON CARDS
+       ================================================================ */
+    .addon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .addon-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .addon-card:hover {
+      border-color: var(--accent);
+    }
+    .addon-card.active {
+      border-color: var(--accent);
+      background: rgba(99, 102, 241, 0.06);
+    }
+    .addon-card.included {
+      border-color: rgba(78, 203, 113, 0.4);
+      background: rgba(78, 203, 113, 0.06);
+      cursor: default;
+    }
+    .addon-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .addon-card-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .addon-card-price {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #4ECB71;
+      white-space: nowrap;
+    }
+    .addon-card-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .addon-included-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #4ECB71;
+      background: rgba(78, 203, 113, 0.15);
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+
+    /* ================================================================
+       SIDEBAR — PRICE BREAKDOWN
+       ================================================================ */
+    .sidebar {
+      position: sticky;
+      top: 80px;
+    }
+    .price-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .price-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 0.9rem;
+    }
+    .price-line-label {
+      color: var(--text-muted);
+    }
+    .price-line-value {
+      font-family: var(--mono);
+      font-weight: 500;
+      color: var(--text);
+    }
+    .price-line.addon-line {
+      font-size: 0.85rem;
+      padding: 4px 0 4px 12px;
+    }
+    .price-line.addon-line .price-line-label {
+      font-size: 0.8rem;
+    }
+    .price-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+    .price-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .price-total-label {
+      color: var(--text);
+    }
+    .price-total-value {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: #4ECB71;
+      font-size: 1.2rem;
+    }
+
+    /* ================================================================
+       SIDEBAR — PREREQUISITES PANEL
+       ================================================================ */
+    .prereq-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .prereq-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      font-size: 0.88rem;
+    }
+    .prereq-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      width: 20px;
+      text-align: center;
+    }
+    .prereq-icon.approved { color: #4ECB71; }
+    .prereq-icon.pending { color: #FFB84D; }
+    .prereq-icon.not-started { color: #FF6B6B; }
+    .prereq-name {
+      flex: 1;
+      color: var(--text);
+    }
+    .prereq-status {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+    .prereq-status.approved {
+      background: rgba(78, 203, 113, 0.15);
+      color: #4ECB71;
+    }
+    .prereq-status.pending {
+      background: rgba(255, 184, 77, 0.15);
+      color: #FFB84D;
+    }
+    .prereq-status.not-started {
+      background: rgba(255, 107, 107, 0.15);
+      color: #FF6B6B;
+    }
+    .prereq-message {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 8px;
+      line-height: 1.5;
+    }
+    .prereq-message a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .prereq-message a:hover {
+      text-decoration: underline;
+    }
+
+    /* ================================================================
+       BUTTONS
+       ================================================================ */
+    .btn-primary {
+      padding: 14px 32px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-primary:hover { background: #7B73FF; }
+    .btn-primary:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: var(--accent);
+    }
+
+    .btn-secondary {
+      padding: 10px 24px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--sans);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
+    .btn-secondary:hover { background: var(--surface-hover); color: var(--text); }
+
+    .checkout-disabled-msg {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    /* ================================================================
+       ANNOTATIONS / CODE REFERENCE
+       ================================================================ */
+    .annotations {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 60px;
+    }
+
+    .annotations h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .annotation-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .annotation-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--tag-text);
+      background: var(--tag-bg);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .annotation-label .fn { color: var(--success); }
+
+    .annotation-desc {
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .annotation-desc code {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .annotation-desc strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ================================================================
+       TOOL LOG AREA
+       ================================================================ */
+    .tool-log-area {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ================================================================
+       PAGE HEADER
+       ================================================================ -->
+  <div class="page-header">
+    <h1><span>Package</span> Builder</h1>
+    <p>Configure your perfect trip through time</p>
+  </div>
+
+  <!-- ================================================================
+       MAIN CONTENT (rendered by JS)
+       ================================================================ -->
+  <div class="build-container" id="build-container"></div>
+
+  <!-- ================================================================
+       TOOL LOG
+       ================================================================ -->
+  <div class="tool-log-area">
+    <div id="tool-log-container"></div>
+  </div>
+
+  <!-- ================================================================
+       CODE REFERENCE — WebMCP Tool Configuration
+       ================================================================ -->
+  <div class="annotations">
+    <h2>&#128270; Imperative API — Tool Registrations</h2>
+
+    <div class="annotation-block">
+      <div class="annotation-label">
+        Tool workflow pattern
+      </div>
+      <div class="annotation-desc">
+        This page registers three tools that support iterative trip configuration:
+        <code>configure_package</code> updates both the UI and state with each call,
+        <code>check_prerequisites</code> verifies booking readiness, and
+        <code>get_price_estimate</code> provides read-only "what if" pricing.
+        The agent can call <code>configure_package</code> multiple times as the
+        traveler refines their options — each call cleanly replaces the previous configuration.
+      </div>
+    </div>
+
+    <div class="annotation-block">
+      <div class="annotation-label">
+        <span class="fn">configure_package</span> — primary configuration tool
+      </div>
+      <div class="annotation-desc">
+        Accepts era, package template, duration, and add-ons (all optional with sensible defaults).
+        Resolves by ID or name, calculates pricing with era multiplier and duration adjustment,
+        updates the visible UI, and saves to <code>ChronoShared.updateState("packageConfig", ...)</code>.
+        Designed for iterative use — each call fully replaces the prior configuration.
+      </div>
+    </div>
+
+    <div class="annotation-block">
+      <div class="annotation-label">
+        <span class="fn">check_prerequisites</span> — readiness verification
+      </div>
+      <div class="annotation-desc">
+        Checks each prerequisite's status against <code>ChronoShared.getClearanceStatus()</code>
+        and the traveler's clearance level vs. the era's requirement. Returns structured guidance
+        directing the agent to suggest the Clearance page or Profile page as needed.
+      </div>
+    </div>
+
+    <div class="annotation-block">
+      <div class="annotation-label">
+        <span class="fn">get_price_estimate</span> — read-only pricing
+      </div>
+      <div class="annotation-desc">
+        Same calculation logic as <code>configure_package</code> but does <strong>not</strong>
+        update the UI or save to state. Use for hypothetical comparisons like
+        "what's the price difference between 7 and 14 days?"
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================
+       SCRIPTS
+       ================================================================ -->
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+
+  <script>
+    /* ==================================================================
+       PACKAGE BUILDER — Main Application Logic
+       ==================================================================
+       This script implements the Package Builder page: era summary,
+       package template selection, duration picker, add-on toggles,
+       live pricing, prerequisites check, and WebMCP tool registrations.
+       ================================================================== */
+
+    (function () {
+      "use strict";
+
+      // ================================================================
+      // CONVENIENCE ALIASES
+      // ================================================================
+      var COLORS = ChronoShared.COLORS;
+      var eras = ChronoData.eras;
+      var packages = ChronoData.packageTemplates;
+      var addOns = ChronoData.addOns;
+      var prerequisites = ChronoData.prerequisites;
+      var durations = ChronoData.durations;
+
+      // ================================================================
+      // STATE — declared with var at the top to avoid hoisting issues
+      // ================================================================
+
+      /** The resolved era object for the current configuration */
+      var currentEra = null;
+
+      /** Currently selected package template ID */
+      var selectedTemplateId = null;
+
+      /** Currently selected duration in days */
+      var selectedDuration = null;
+
+      /** Set of toggled extra add-on IDs (not package-included) */
+      var selectedExtraAddOns = [];
+
+      // ================================================================
+      // HELPERS: Resolve by ID or name
+      // ================================================================
+
+      function getEraById(id) {
+        for (var i = 0; i < eras.length; i++) {
+          if (eras[i].id === id) return eras[i];
+        }
+        return null;
+      }
+
+      function getEraByName(name) {
+        var lower = name.toLowerCase();
+        for (var i = 0; i < eras.length; i++) {
+          if (eras[i].name.toLowerCase().indexOf(lower) !== -1) return eras[i];
+        }
+        return null;
+      }
+
+      function resolveEra(idOrName) {
+        if (!idOrName) return null;
+        var era = getEraById(idOrName);
+        if (era) return era;
+        return getEraByName(idOrName);
+      }
+
+      function getPackageById(id) {
+        for (var i = 0; i < packages.length; i++) {
+          if (packages[i].id === id) return packages[i];
+        }
+        return null;
+      }
+
+      function getPackageByName(name) {
+        var lower = name.toLowerCase();
+        for (var i = 0; i < packages.length; i++) {
+          if (packages[i].name.toLowerCase().indexOf(lower) !== -1) return packages[i];
+        }
+        return null;
+      }
+
+      function resolvePackage(idOrName) {
+        if (!idOrName) return null;
+        var pkg = getPackageById(idOrName);
+        if (pkg) return pkg;
+        return getPackageByName(idOrName);
+      }
+
+      function getAddOnById(id) {
+        for (var i = 0; i < addOns.length; i++) {
+          if (addOns[i].id === id) return addOns[i];
+        }
+        return null;
+      }
+
+      function getAddOnByName(name) {
+        var lower = name.toLowerCase();
+        for (var i = 0; i < addOns.length; i++) {
+          if (addOns[i].name.toLowerCase().indexOf(lower) !== -1) return addOns[i];
+        }
+        return null;
+      }
+
+      function resolveAddOn(idOrName) {
+        if (!idOrName) return null;
+        var ao = getAddOnById(idOrName);
+        if (ao) return ao;
+        return getAddOnByName(idOrName);
+      }
+
+      function getPrerequisiteById(id) {
+        for (var i = 0; i < prerequisites.length; i++) {
+          if (prerequisites[i].id === id) return prerequisites[i];
+        }
+        return null;
+      }
+
+      function getAddOnsForEra(eraId) {
+        var result = [];
+        for (var i = 0; i < addOns.length; i++) {
+          var ao = addOns[i];
+          if (ao.applicableEras === "all") {
+            result.push(ao);
+          } else if (Array.isArray(ao.applicableEras) && ao.applicableEras.indexOf(eraId) !== -1) {
+            result.push(ao);
+          }
+        }
+        return result;
+      }
+
+      // ================================================================
+      // HELPER: Format year for display
+      // ================================================================
+
+      function formatTimePeriod(tp) {
+        var startAbs = Math.abs(tp.startYear);
+        var endAbs = Math.abs(tp.endYear);
+        var startSuffix = tp.startYear < 0 ? " BCE" : " CE";
+        var endSuffix = tp.endYear < 0 ? " BCE" : " CE";
+
+        if (tp.startYear === tp.endYear) {
+          return startAbs + startSuffix;
+        }
+        if (startSuffix === endSuffix) {
+          return startAbs + "–" + endAbs + endSuffix;
+        }
+        return startAbs + startSuffix + " – " + endAbs + endSuffix;
+      }
+
+      // ================================================================
+      // HELPER: Danger dots
+      // ================================================================
+
+      function dangerDotsHTML(level) {
+        var html = '<span class="danger-dots">';
+        for (var i = 1; i <= 5; i++) {
+          html += '<span class="danger-dot' + (i <= level ? " filled-" + level : "") + '"></span>';
+        }
+        html += "</span>";
+        return html;
+      }
+
+      // ================================================================
+      // PRICING CALCULATION
+      // ================================================================
+
+      /**
+       * Calculates the full price breakdown for a given configuration.
+       * Returns { basePrice, durationAdjusted, extraAddOns: [...], total }
+       */
+      function calculatePricing(era, template, duration, extraAddOnIds) {
+        var basePrice = Math.round(template.basePrice * era.priceMultiplier);
+        var durationMultiplier = duration / template.baseDuration;
+        var durationAdjusted = Math.round(basePrice * durationMultiplier);
+
+        var extraAddOnItems = [];
+        var addOnTotal = 0;
+        for (var i = 0; i < extraAddOnIds.length; i++) {
+          var ao = getAddOnById(extraAddOnIds[i]);
+          if (ao) {
+            extraAddOnItems.push({ id: ao.id, name: ao.name, price: ao.price });
+            addOnTotal += ao.price;
+          }
+        }
+
+        return {
+          basePrice: basePrice,
+          baseDuration: template.baseDuration,
+          selectedDuration: duration,
+          durationMultiplier: durationMultiplier,
+          durationAdjusted: durationAdjusted,
+          extraAddOns: extraAddOnItems,
+          addOnTotal: addOnTotal,
+          total: durationAdjusted + addOnTotal
+        };
+      }
+
+      // ================================================================
+      // RENDER: Main page
+      // ================================================================
+
+      function renderPage() {
+        var container = document.getElementById("build-container");
+        var state = ChronoShared.getState();
+        var selectedEraId = state.selectedEra;
+
+        // No era selected — show empty state
+        if (!selectedEraId) {
+          container.innerHTML =
+            '<div class="empty-state">' +
+              '<div class="empty-state-icon">&#128205;</div>' +
+              '<h2>No era selected yet</h2>' +
+              '<p>Head to the Era Explorer to browse and choose your destination</p>' +
+              '<a href="explore.html" class="btn-secondary">Browse Eras</a>' +
+            '</div>';
+          return;
+        }
+
+        // Resolve the era
+        currentEra = getEraById(selectedEraId);
+        if (!currentEra) {
+          container.innerHTML =
+            '<div class="empty-state">' +
+              '<div class="empty-state-icon">&#9888;&#65039;</div>' +
+              '<h2>Era not found</h2>' +
+              '<p>The selected era ID "' + selectedEraId + '" doesn\'t match any known era.</p>' +
+              '<a href="explore.html" class="btn-secondary">Browse Eras</a>' +
+            '</div>';
+          return;
+        }
+
+        // Set defaults if not already set
+        if (!selectedTemplateId) {
+          selectedTemplateId = currentEra.availablePackages[0] || null;
+        }
+        var currentTemplate = getPackageById(selectedTemplateId);
+        if (!selectedDuration && currentTemplate) {
+          selectedDuration = currentTemplate.baseDuration;
+        }
+
+        // Build main HTML
+        container.innerHTML = renderEraBanner() + '<div class="build-layout">' +
+          '<div class="config-main">' +
+            renderPackageSelector() +
+            renderDurationSelector() +
+            renderAddOnSelector() +
+          '</div>' +
+          '<div class="sidebar">' +
+            renderPriceBreakdown() +
+            renderPrerequisites() +
+            renderCheckoutButton() +
+          '</div>' +
+        '</div>';
+
+        // Attach event listeners
+        attachListeners();
+      }
+
+      // ================================================================
+      // RENDER: Era banner
+      // ================================================================
+
+      function renderEraBanner() {
+        var era = currentEra;
+        return (
+          '<div class="era-banner">' +
+            '<div class="era-banner-info">' +
+              '<h2>' + era.name + '</h2>' +
+              '<div class="era-banner-period">' + formatTimePeriod(era.timePeriod) + '</div>' +
+              '<div class="era-banner-meta">' +
+                '<span class="region-badge">' + era.region + '</span>' +
+                dangerDotsHTML(era.dangerLevel) +
+                '<span class="clearance-badge clearance-' + era.requiredClearance + '">Clearance ' + era.requiredClearance + '</span>' +
+              '</div>' +
+              '<div class="era-banner-desc">' + era.briefDescription + '</div>' +
+            '</div>' +
+            '<div class="era-banner-actions">' +
+              '<a href="explore.html" class="btn-secondary">Change Era</a>' +
+            '</div>' +
+          '</div>'
+        );
+      }
+
+      // ================================================================
+      // RENDER: Package template selector
+      // ================================================================
+
+      function renderPackageSelector() {
+        var html = '<div class="config-section">' +
+          '<div class="section-title">Package Template</div>' +
+          '<div class="package-cards">';
+
+        for (var i = 0; i < currentEra.availablePackages.length; i++) {
+          var pkgId = currentEra.availablePackages[i];
+          var pkg = getPackageById(pkgId);
+          if (!pkg) continue;
+
+          var adjustedPrice = Math.round(pkg.basePrice * currentEra.priceMultiplier);
+          var isSelected = pkgId === selectedTemplateId;
+
+          // Resolve included add-on names
+          var includedHtml = "";
+          for (var j = 0; j < pkg.includedAddOns.length; j++) {
+            var ao = getAddOnById(pkg.includedAddOns[j]);
+            if (ao) {
+              includedHtml += '<span class="included-addon-pill">' + ao.name + '</span>';
+            }
+          }
+
+          html +=
+            '<div class="package-card' + (isSelected ? ' selected' : '') + '" data-package-id="' + pkgId + '">' +
+              '<div class="package-card-header">' +
+                '<div class="package-card-name">' + pkg.name + '</div>' +
+                '<div class="package-card-price">$' + adjustedPrice.toLocaleString() + '</div>' +
+              '</div>' +
+              '<div class="package-card-meta">' +
+                '<span>' + pkg.accommodationTier.charAt(0).toUpperCase() + pkg.accommodationTier.slice(1) + ' tier</span>' +
+                '<span>' + pkg.baseDuration + '-day base</span>' +
+              '</div>' +
+              '<div class="package-card-addons">' +
+                '<strong>Included:</strong><br>' + includedHtml +
+              '</div>' +
+            '</div>';
+        }
+
+        html += '</div></div>';
+        return html;
+      }
+
+      // ================================================================
+      // RENDER: Duration selector
+      // ================================================================
+
+      function renderDurationSelector() {
+        var html = '<div class="config-section">' +
+          '<div class="section-title">Trip Duration</div>' +
+          '<div class="duration-buttons">';
+
+        for (var i = 0; i < durations.length; i++) {
+          var d = durations[i];
+          var isSelected = d === selectedDuration;
+          html += '<button class="duration-btn' + (isSelected ? ' selected' : '') +
+            '" data-duration="' + d + '">' + d + ' days</button>';
+        }
+
+        html += '</div></div>';
+        return html;
+      }
+
+      // ================================================================
+      // RENDER: Add-on selector
+      // ================================================================
+
+      function renderAddOnSelector() {
+        var eraAddOns = getAddOnsForEra(currentEra.id);
+        var currentTemplate = getPackageById(selectedTemplateId);
+        var includedIds = currentTemplate ? currentTemplate.includedAddOns : [];
+
+        var html = '<div class="config-section">' +
+          '<div class="section-title">Add-Ons</div>' +
+          '<div class="addon-grid">';
+
+        for (var i = 0; i < eraAddOns.length; i++) {
+          var ao = eraAddOns[i];
+          var isIncluded = includedIds.indexOf(ao.id) !== -1;
+          var isActive = selectedExtraAddOns.indexOf(ao.id) !== -1;
+
+          var cardClass = "addon-card";
+          if (isIncluded) cardClass += " included";
+          else if (isActive) cardClass += " active";
+
+          html +=
+            '<div class="' + cardClass + '" data-addon-id="' + ao.id + '"' + (isIncluded ? '' : '') + '>' +
+              '<div class="addon-card-header">' +
+                '<div class="addon-card-name">' + ao.name + '</div>' +
+                (isIncluded
+                  ? '<span class="addon-included-badge">Included</span>'
+                  : '<div class="addon-card-price">+$' + ao.price + '</div>') +
+              '</div>' +
+              '<div class="addon-card-desc">' + ao.description + '</div>' +
+            '</div>';
+        }
+
+        html += '</div></div>';
+        return html;
+      }
+
+      // ================================================================
+      // RENDER: Price breakdown
+      // ================================================================
+
+      function renderPriceBreakdown() {
+        var currentTemplate = getPackageById(selectedTemplateId);
+        if (!currentTemplate) return '';
+
+        var pricing = calculatePricing(currentEra, currentTemplate, selectedDuration, selectedExtraAddOns);
+
+        var html = '<div class="price-panel">' +
+          '<div class="section-title">Price Breakdown</div>';
+
+        // Base price
+        html += '<div class="price-line">' +
+          '<span class="price-line-label">' + currentTemplate.name + '</span>' +
+          '<span class="price-line-value">$' + pricing.basePrice.toLocaleString() + '</span>' +
+          '</div>';
+
+        // Duration adjustment
+        if (pricing.selectedDuration !== pricing.baseDuration) {
+          var durationLabel = pricing.selectedDuration + ' days (' +
+            (pricing.durationMultiplier > 1 ? '+' : '') +
+            Math.round((pricing.durationMultiplier - 1) * 100) + '%)';
+          html += '<div class="price-line">' +
+            '<span class="price-line-label">' + durationLabel + '</span>' +
+            '<span class="price-line-value">$' + pricing.durationAdjusted.toLocaleString() + '</span>' +
+            '</div>';
+        }
+
+        // Extra add-ons
+        if (pricing.extraAddOns.length > 0) {
+          html += '<hr class="price-divider">';
+          for (var i = 0; i < pricing.extraAddOns.length; i++) {
+            var ao = pricing.extraAddOns[i];
+            html += '<div class="price-line addon-line">' +
+              '<span class="price-line-label">+ ' + ao.name + '</span>' +
+              '<span class="price-line-value">$' + ao.price.toLocaleString() + '</span>' +
+              '</div>';
+          }
+        }
+
+        // Total
+        html += '<hr class="price-divider">' +
+          '<div class="price-total">' +
+            '<span class="price-total-label">Total</span>' +
+            '<span class="price-total-value">$' + pricing.total.toLocaleString() + '</span>' +
+          '</div>';
+
+        html += '</div>';
+        return html;
+      }
+
+      // ================================================================
+      // RENDER: Prerequisites panel
+      // ================================================================
+
+      function renderPrerequisites() {
+        var profile = ChronoShared.getTravelerProfile();
+        var clearanceStatus = ChronoShared.getClearanceStatus();
+
+        var html = '<div class="prereq-panel" id="prereq-panel">' +
+          '<div class="section-title">Prerequisites</div>';
+
+        // No profile check
+        if (!profile) {
+          html += '<div class="prereq-message">' +
+            'No traveler profile found — <a href="index.html">create one on the Profile page</a>.' +
+            '</div></div>';
+          return html;
+        }
+
+        // Clearance level check
+        var travelerClearance = profile.clearanceLevel || 1;
+        var requiredClearance = currentEra.requiredClearance;
+        var clearanceMet = travelerClearance >= requiredClearance;
+
+        if (!clearanceMet) {
+          html += '<div class="prereq-message">' +
+            'Your clearance level (' + travelerClearance + ') is below the required level (' +
+            requiredClearance + ') for this era. <a href="index.html">Update your profile</a> to increase your clearance.' +
+            '</div>';
+        }
+
+        // Individual prerequisites
+        var allMet = clearanceMet;
+        for (var i = 0; i < currentEra.prerequisites.length; i++) {
+          var prereqId = currentEra.prerequisites[i];
+          var prereq = getPrerequisiteById(prereqId);
+          if (!prereq) continue;
+
+          var status = clearanceStatus[prereqId] || "not_started";
+          if (status !== "approved") allMet = false;
+
+          var iconHtml = "";
+          var statusLabel = "";
+          if (status === "approved") {
+            iconHtml = '<span class="prereq-icon approved">&#10003;</span>';
+            statusLabel = '<span class="prereq-status approved">Approved</span>';
+          } else if (status === "pending") {
+            iconHtml = '<span class="prereq-icon pending">&#9203;</span>';
+            statusLabel = '<span class="prereq-status pending">Pending</span>';
+          } else {
+            iconHtml = '<span class="prereq-icon not-started">&#10007;</span>';
+            statusLabel = '<span class="prereq-status not-started">Not Started</span>';
+          }
+
+          html += '<div class="prereq-item">' +
+            iconHtml +
+            '<span class="prereq-name">' + prereq.name + '</span>' +
+            statusLabel +
+          '</div>';
+        }
+
+        if (!allMet) {
+          html += '<div class="prereq-message">' +
+            'Some prerequisites are not yet complete. ' +
+            '<a href="clearance.html">Visit the Temporal Clearance page</a> to handle them before booking.' +
+          '</div>';
+        }
+
+        html += '</div>';
+        return html;
+      }
+
+      // ================================================================
+      // RENDER: Checkout button
+      // ================================================================
+
+      function renderCheckoutButton() {
+        var canCheckout = checkReadyToBook();
+
+        var html = '<button class="btn-primary" id="checkout-btn"' +
+          (!canCheckout ? ' disabled' : '') + '>Proceed to Checkout</button>';
+
+        if (!canCheckout) {
+          html += '<div class="checkout-disabled-msg">Complete all prerequisites and ensure your clearance level meets the requirement to proceed.</div>';
+        }
+
+        return html;
+      }
+
+      // ================================================================
+      // CHECK: Ready to book?
+      // ================================================================
+
+      function checkReadyToBook() {
+        var profile = ChronoShared.getTravelerProfile();
+        if (!profile) return false;
+
+        var travelerClearance = profile.clearanceLevel || 1;
+        if (travelerClearance < currentEra.requiredClearance) return false;
+
+        var clearanceStatus = ChronoShared.getClearanceStatus();
+        for (var i = 0; i < currentEra.prerequisites.length; i++) {
+          var status = clearanceStatus[currentEra.prerequisites[i]] || "not_started";
+          if (status !== "approved") return false;
+        }
+
+        return true;
+      }
+
+      // ================================================================
+      // ATTACH EVENT LISTENERS
+      // ================================================================
+
+      function attachListeners() {
+        // Package card selection
+        var packageCards = document.querySelectorAll(".package-card");
+        for (var i = 0; i < packageCards.length; i++) {
+          (function (card) {
+            card.addEventListener("click", function () {
+              var newId = card.getAttribute("data-package-id");
+              if (newId !== selectedTemplateId) {
+                selectedTemplateId = newId;
+                // Reset duration to new package's base
+                var newPkg = getPackageById(newId);
+                if (newPkg) selectedDuration = newPkg.baseDuration;
+                // Clear extra add-ons that are now included
+                cleanupExtraAddOns();
+                renderPage();
+              }
+            });
+          })(packageCards[i]);
+        }
+
+        // Duration buttons
+        var durationBtns = document.querySelectorAll(".duration-btn");
+        for (var j = 0; j < durationBtns.length; j++) {
+          (function (btn) {
+            btn.addEventListener("click", function () {
+              selectedDuration = parseInt(btn.getAttribute("data-duration"), 10);
+              renderPage();
+            });
+          })(durationBtns[j]);
+        }
+
+        // Add-on toggle
+        var addonCards = document.querySelectorAll(".addon-card:not(.included)");
+        for (var k = 0; k < addonCards.length; k++) {
+          (function (card) {
+            card.addEventListener("click", function () {
+              var addonId = card.getAttribute("data-addon-id");
+              var idx = selectedExtraAddOns.indexOf(addonId);
+              if (idx === -1) {
+                selectedExtraAddOns.push(addonId);
+              } else {
+                selectedExtraAddOns.splice(idx, 1);
+              }
+              renderPage();
+            });
+          })(addonCards[k]);
+        }
+
+        // Checkout button
+        var checkoutBtn = document.getElementById("checkout-btn");
+        if (checkoutBtn) {
+          checkoutBtn.addEventListener("click", function () {
+            if (!checkReadyToBook()) return;
+            var currentTemplate = getPackageById(selectedTemplateId);
+            if (!currentTemplate) return;
+
+            // Combine package-included + extra add-ons
+            var allAddOnIds = currentTemplate.includedAddOns.slice();
+            for (var m = 0; m < selectedExtraAddOns.length; m++) {
+              if (allAddOnIds.indexOf(selectedExtraAddOns[m]) === -1) {
+                allAddOnIds.push(selectedExtraAddOns[m]);
+              }
+            }
+
+            var pricing = calculatePricing(currentEra, currentTemplate, selectedDuration, selectedExtraAddOns);
+
+            ChronoShared.updateState("packageConfig", {
+              eraId: currentEra.id,
+              templateId: selectedTemplateId,
+              duration: selectedDuration,
+              addOns: allAddOnIds,
+              totalPrice: pricing.total
+            });
+
+            window.location.href = "checkout.html";
+          });
+        }
+      }
+
+      /**
+       * Remove from selectedExtraAddOns any that are now included in the
+       * current template (e.g. user switched to a higher-tier package).
+       */
+      function cleanupExtraAddOns() {
+        var currentTemplate = getPackageById(selectedTemplateId);
+        if (!currentTemplate) return;
+        var includedIds = currentTemplate.includedAddOns;
+        selectedExtraAddOns = selectedExtraAddOns.filter(function (id) {
+          return includedIds.indexOf(id) === -1;
+        });
+      }
+
+      // ================================================================
+      // UI UPDATE HELPERS (for tool calls)
+      // ================================================================
+
+      /**
+       * Programmatically update the UI to reflect a tool-driven configuration.
+       * Sets state vars and re-renders the page.
+       */
+      function applyConfiguration(eraId, templateId, duration, extraAddOnIds) {
+        // Update era if changed
+        var era = getEraById(eraId);
+        if (!era) return;
+        currentEra = era;
+        ChronoShared.updateState("selectedEra", eraId);
+
+        selectedTemplateId = templateId;
+        selectedDuration = duration;
+        selectedExtraAddOns = extraAddOnIds.slice();
+
+        renderPage();
+      }
+
+      // ================================================================
+      // WEBMCP TOOL REGISTRATIONS
+      // ================================================================
+
+      function registerWebMCPTools() {
+        if (typeof navigator === "undefined" || !navigator.modelContext) {
+          console.log("[Package Builder] WebMCP not available — skipping tool registration.");
+          return;
+        }
+
+        console.log("[Package Builder] WebMCP detected — registering tools...");
+
+        // ----------------------------------------------------------
+        // TOOL 1: configure_package
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "configure_package",
+          description:
+            "Configure a trip package for a specific era. Accepts the era (by ID or name), a package template, trip duration, and optional add-ons. Returns the full configured package with itemized pricing. This tool can be called multiple times as the traveler adjusts their options — each call updates the configuration. If no era is specified, uses the currently selected era from state. If prerequisite parameters are omitted, sensible defaults are used (first available package, its base duration, no extra add-ons).",
+          inputSchema: {
+            type: "object",
+            properties: {
+              era: {
+                type: "string",
+                description:
+                  "Era ID or name. Optional — defaults to the currently selected era from state. Example: 'ancient-rome' or 'Viking Age Scandinavia'.",
+              },
+              packageTemplate: {
+                type: "string",
+                description:
+                  "Package template ID or name. Optional — defaults to the first available package for the era. Example: 'premium-voyager' or 'Premium ChronoVoyager'.",
+              },
+              duration: {
+                type: "number",
+                description:
+                  "Trip duration in days. Must be one of: 3, 7, 14, 30. Optional — defaults to the selected package's base duration.",
+              },
+              addOns: {
+                type: "array",
+                items: { type: "string" },
+                description:
+                  "Array of add-on IDs or names to include. Optional — defaults to no extra add-ons (package-included ones are always applied). Example: ['gladiator-training', 'temporal-photography'].",
+              },
+            },
+            required: [],
+          },
+          execute: function (params) {
+            // Resolve era
+            var era = null;
+            if (params.era) {
+              era = resolveEra(params.era);
+            }
+            if (!era) {
+              var stateEraId = ChronoShared.getState().selectedEra;
+              if (stateEraId) era = getEraById(stateEraId);
+            }
+            if (!era) {
+              ChronoShared.addLog("configure_package", params, "Error: No era found");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "No era could be determined. Please specify an era by ID or name, or visit the Era Explorer (explore.html) to select one first."
+                }) }]
+              };
+            }
+
+            // Resolve package template
+            var template = null;
+            if (params.packageTemplate) {
+              template = resolvePackage(params.packageTemplate);
+              // Verify it's available for this era
+              if (template && era.availablePackages.indexOf(template.id) === -1) {
+                template = null;
+              }
+            }
+            if (!template) {
+              if (params.packageTemplate) {
+                // They specified one but it wasn't found/available
+                var availableNames = era.availablePackages.map(function (id) {
+                  var p = getPackageById(id);
+                  return p ? p.name + " (" + id + ")" : id;
+                });
+                ChronoShared.addLog("configure_package", params, "Error: Package not found");
+                return {
+                  content: [{ type: "text", text: JSON.stringify({
+                    error: true,
+                    message: "Package template '" + params.packageTemplate + "' is not available for " + era.name + ". Available packages: " + availableNames.join(", ")
+                  }) }]
+                };
+              }
+              // Default to first available
+              template = getPackageById(era.availablePackages[0]);
+            }
+            if (!template) {
+              ChronoShared.addLog("configure_package", params, "Error: No packages available");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "No package templates are available for " + era.name + "."
+                }) }]
+              };
+            }
+
+            // Validate duration
+            var dur = params.duration || template.baseDuration;
+            if (durations.indexOf(dur) === -1) {
+              ChronoShared.addLog("configure_package", params, "Error: Invalid duration");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "Invalid duration: " + dur + ". Must be one of: " + durations.join(", ") + " days."
+                }) }]
+              };
+            }
+
+            // Resolve add-ons
+            var requestedAddOns = params.addOns || [];
+            var resolvedExtraIds = [];
+            var resolvedAllIds = template.includedAddOns.slice();
+            var includedNames = [];
+            var extraNames = [];
+
+            // Package-included add-ons
+            for (var i = 0; i < template.includedAddOns.length; i++) {
+              var inc = getAddOnById(template.includedAddOns[i]);
+              if (inc) includedNames.push(inc.name);
+            }
+
+            // Requested add-ons
+            for (var j = 0; j < requestedAddOns.length; j++) {
+              var ao = resolveAddOn(requestedAddOns[j]);
+              if (ao) {
+                if (template.includedAddOns.indexOf(ao.id) === -1) {
+                  resolvedExtraIds.push(ao.id);
+                  extraNames.push(ao.name);
+                  if (resolvedAllIds.indexOf(ao.id) === -1) {
+                    resolvedAllIds.push(ao.id);
+                  }
+                }
+              }
+            }
+
+            // Calculate pricing
+            var pricing = calculatePricing(era, template, dur, resolvedExtraIds);
+
+            // Update the UI
+            applyConfiguration(era.id, template.id, dur, resolvedExtraIds);
+
+            // Save to state
+            ChronoShared.updateState("packageConfig", {
+              eraId: era.id,
+              templateId: template.id,
+              duration: dur,
+              addOns: resolvedAllIds,
+              totalPrice: pricing.total
+            });
+            ChronoShared.updateState("selectedEra", era.id);
+
+            // Build result
+            var result = {
+              configured: true,
+              era: { id: era.id, name: era.name },
+              packageTemplate: { id: template.id, name: template.name, tier: template.accommodationTier },
+              duration: dur,
+              pricing: {
+                basePrice: pricing.basePrice,
+                priceMultiplier: era.priceMultiplier,
+                baseDuration: pricing.baseDuration,
+                selectedDuration: dur,
+                durationMultiplier: pricing.durationMultiplier,
+                durationAdjusted: pricing.durationAdjusted,
+                includedAddOns: includedNames,
+                extraAddOns: pricing.extraAddOns,
+                addOnTotal: pricing.addOnTotal,
+                total: pricing.total
+              },
+              allAddOnIds: resolvedAllIds
+            };
+
+            ChronoShared.addLog("configure_package", params, result);
+
+            return {
+              content: [{ type: "text", text: JSON.stringify(result) }]
+            };
+          }
+        });
+
+        // ----------------------------------------------------------
+        // TOOL 2: check_prerequisites
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "check_prerequisites",
+          description:
+            "Check whether a traveler meets all prerequisites for a specific era. Returns the status of each prerequisite (approved, pending, or not started) and the traveler's clearance level vs. the required level. Call this before booking to verify readiness. If any prerequisites are unmet, direct the user to the Temporal Clearance page (clearance.html). If the traveler's clearance level is too low, suggest updating their profile on the Profile page (index.html).",
+          inputSchema: {
+            type: "object",
+            properties: {
+              era: {
+                type: "string",
+                description:
+                  "Era ID or name to check prerequisites for. Optional — defaults to the currently selected era from state.",
+              },
+            },
+            required: [],
+          },
+          execute: function (params) {
+            // Resolve era
+            var era = null;
+            if (params.era) {
+              era = resolveEra(params.era);
+            }
+            if (!era) {
+              var stateEraId = ChronoShared.getState().selectedEra;
+              if (stateEraId) era = getEraById(stateEraId);
+            }
+            if (!era) {
+              ChronoShared.addLog("check_prerequisites", params, "Error: No era found");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "No era could be determined. Specify an era or select one via the Era Explorer."
+                }) }]
+              };
+            }
+
+            // Get profile
+            var profile = ChronoShared.getTravelerProfile();
+            if (!profile) {
+              ChronoShared.addLog("check_prerequisites", params, "Error: No profile");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "No traveler profile found. Please create one on the Profile page (index.html) first."
+                }) }]
+              };
+            }
+
+            var travelerClearance = profile.clearanceLevel || 1;
+            var requiredClearance = era.requiredClearance;
+            var clearanceMet = travelerClearance >= requiredClearance;
+
+            var clearanceStatus = ChronoShared.getClearanceStatus();
+            var prereqResults = [];
+            var allPrereqsMet = true;
+            var unmetNames = [];
+
+            for (var i = 0; i < era.prerequisites.length; i++) {
+              var prereqId = era.prerequisites[i];
+              var prereq = getPrerequisiteById(prereqId);
+              var status = clearanceStatus[prereqId] || "not_started";
+              if (status !== "approved") {
+                allPrereqsMet = false;
+                if (prereq) unmetNames.push(prereq.name);
+              }
+              prereqResults.push({
+                id: prereqId,
+                name: prereq ? prereq.name : prereqId,
+                type: prereq ? prereq.type : "unknown",
+                status: status
+              });
+            }
+
+            var readyToBook = clearanceMet && allPrereqsMet;
+
+            // Build guidance
+            var guidance = "";
+            if (!clearanceMet) {
+              guidance += "Your clearance level is " + travelerClearance + " but this era requires level " + requiredClearance + ". Update your profile at index.html.";
+            }
+            if (!allPrereqsMet) {
+              if (guidance) guidance += " ";
+              guidance += "You also need to complete: " + unmetNames.join(", ") + ". Visit clearance.html to handle these.";
+            }
+            if (readyToBook) {
+              guidance = "All prerequisites met and clearance level is sufficient. You're ready to book!";
+            }
+
+            // Refresh the prerequisites panel in the UI
+            if (currentEra && currentEra.id === era.id) {
+              var prereqPanel = document.getElementById("prereq-panel");
+              if (prereqPanel) {
+                prereqPanel.outerHTML = renderPrerequisites();
+                // Also refresh checkout button
+                var checkoutBtn = document.getElementById("checkout-btn");
+                if (checkoutBtn) {
+                  var canCheckout = checkReadyToBook();
+                  checkoutBtn.disabled = !canCheckout;
+                  var msgEl = checkoutBtn.nextElementSibling;
+                  if (canCheckout && msgEl && msgEl.classList.contains("checkout-disabled-msg")) {
+                    msgEl.remove();
+                  }
+                }
+              }
+            }
+
+            var result = {
+              eraName: era.name,
+              requiredClearance: requiredClearance,
+              travelerClearance: travelerClearance,
+              clearanceMet: clearanceMet,
+              prerequisites: prereqResults,
+              allPrerequisitesMet: allPrereqsMet,
+              readyToBook: readyToBook,
+              guidance: guidance
+            };
+
+            ChronoShared.addLog("check_prerequisites", params, result);
+
+            return {
+              content: [{ type: "text", text: JSON.stringify(result) }]
+            };
+          }
+        });
+
+        // ----------------------------------------------------------
+        // TOOL 3: get_price_estimate
+        // ----------------------------------------------------------
+        navigator.modelContext.registerTool({
+          name: "get_price_estimate",
+          description:
+            "Get a quick price estimate for a trip configuration without saving anything to state. Use this for hypothetical 'what if' pricing — e.g., 'how much would it cost if I upgraded to the luxury package?' or 'what's the price difference between 7 and 14 days?'. For actually configuring and saving a package, use configure_package instead.",
+          inputSchema: {
+            type: "object",
+            properties: {
+              era: {
+                type: "string",
+                description:
+                  "Era ID or name. Optional — defaults to the currently selected era.",
+              },
+              packageTemplate: {
+                type: "string",
+                description:
+                  "Package template ID or name. Optional — defaults to first available.",
+              },
+              duration: {
+                type: "number",
+                description:
+                  "Trip duration in days (3, 7, 14, or 30). Optional — defaults to the package's base duration.",
+              },
+              addOns: {
+                type: "array",
+                items: { type: "string" },
+                description:
+                  "Array of add-on IDs or names. Optional — defaults to no extras.",
+              },
+            },
+            required: [],
+          },
+          execute: function (params) {
+            // Resolve era
+            var era = null;
+            if (params.era) {
+              era = resolveEra(params.era);
+            }
+            if (!era) {
+              var stateEraId = ChronoShared.getState().selectedEra;
+              if (stateEraId) era = getEraById(stateEraId);
+            }
+            if (!era) {
+              ChronoShared.addLog("get_price_estimate", params, "Error: No era found");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "No era could be determined. Please specify an era by ID or name."
+                }) }]
+              };
+            }
+
+            // Resolve package template
+            var template = null;
+            if (params.packageTemplate) {
+              template = resolvePackage(params.packageTemplate);
+              if (template && era.availablePackages.indexOf(template.id) === -1) {
+                template = null;
+              }
+            }
+            if (!template) {
+              template = getPackageById(era.availablePackages[0]);
+            }
+            if (!template) {
+              ChronoShared.addLog("get_price_estimate", params, "Error: No packages");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "No packages available for " + era.name + "."
+                }) }]
+              };
+            }
+
+            // Validate duration
+            var dur = params.duration || template.baseDuration;
+            if (durations.indexOf(dur) === -1) {
+              ChronoShared.addLog("get_price_estimate", params, "Error: Invalid duration");
+              return {
+                content: [{ type: "text", text: JSON.stringify({
+                  error: true,
+                  message: "Invalid duration: " + dur + ". Must be one of: " + durations.join(", ") + "."
+                }) }]
+              };
+            }
+
+            // Resolve extra add-ons
+            var requestedAddOns = params.addOns || [];
+            var resolvedExtraIds = [];
+            for (var i = 0; i < requestedAddOns.length; i++) {
+              var ao = resolveAddOn(requestedAddOns[i]);
+              if (ao && template.includedAddOns.indexOf(ao.id) === -1) {
+                resolvedExtraIds.push(ao.id);
+              }
+            }
+
+            // Calculate
+            var pricing = calculatePricing(era, template, dur, resolvedExtraIds);
+
+            // Included add-on names
+            var includedNames = template.includedAddOns.map(function (id) {
+              var a = getAddOnById(id);
+              return a ? a.name : id;
+            });
+
+            var result = {
+              estimate: true,
+              note: "This is a read-only estimate — no changes were saved to your configuration.",
+              era: { id: era.id, name: era.name },
+              packageTemplate: { id: template.id, name: template.name, tier: template.accommodationTier },
+              duration: dur,
+              pricing: {
+                basePrice: pricing.basePrice,
+                priceMultiplier: era.priceMultiplier,
+                baseDuration: pricing.baseDuration,
+                selectedDuration: dur,
+                durationMultiplier: pricing.durationMultiplier,
+                durationAdjusted: pricing.durationAdjusted,
+                includedAddOns: includedNames,
+                extraAddOns: pricing.extraAddOns,
+                addOnTotal: pricing.addOnTotal,
+                total: pricing.total
+              }
+            };
+
+            ChronoShared.addLog("get_price_estimate", params, "(Estimate only) " + JSON.stringify(result));
+
+            return {
+              content: [{ type: "text", text: JSON.stringify(result) }]
+            };
+          }
+        });
+      }
+
+      // ================================================================
+      // INIT
+      // ================================================================
+
+      document.addEventListener("DOMContentLoaded", function () {
+        ChronoShared.renderNav("build");
+        ChronoShared.checkWebMCP();
+        ChronoShared.initToolLog("tool-log-container");
+        renderPage();
+        registerWebMCPTools();
+      });
+
+    })();
+  </script>
+</body>
+</html>
