@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneXP GEO Audit Tool — IfThen</title>
+  <link rel="preload" href="assets/fonts/Sohne-Buch.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- STATE 1: Welcome Screen                                                 -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="welcome-screen" class="view">
+    <div class="welcome-card">
+
+      <div class="welcome-header">
+        <img src="assets/logo.svg" alt="IfThen" class="welcome-logo">
+      </div>
+
+      <h1 class="welcome-title">OneXP GEO Audit</h1>
+      <p class="welcome-subtitle">
+        Audit a OneXP page against SEO and GEO best practices.
+      </p>
+
+      <!-- Page Name input -->
+      <div class="form-group">
+        <label for="page-name">Page Name</label>
+        <input
+          type="text"
+          id="page-name"
+          placeholder="e.g., Coca‑Cola Zero Sugar Products"
+          autocomplete="off"
+        >
+      </div>
+
+      <!-- Page URL input -->
+      <div class="form-group">
+        <label for="page-url">Page URL</label>
+        <input
+          type="url"
+          id="page-url"
+          placeholder="e.g., https://www.coca-cola.com/us/en/brands/..."
+          autocomplete="off"
+        >
+      </div>
+
+      <!-- Page Type selector — rendered as styled cards by script.js -->
+      <fieldset class="form-group page-type-fieldset">
+        <legend>Page Type</legend>
+        <div class="page-type-options" id="page-type-options">
+          <!-- JS renders a <label class="page-type-card"> for each page type -->
+        </div>
+      </fieldset>
+
+      <!-- Begin button — disabled until all three inputs are filled -->
+      <button id="begin-audit-btn" class="btn btn-primary" disabled>
+        Begin Audit
+      </button>
+
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <!-- STATE 2: Audit Flow                                                     -->
+  <!-- ═══════════════════════════════════════════════════════════════════════ -->
+  <div id="audit-flow" class="view hidden">
+
+    <!-- Skip to main content (accessibility) -->
+    <a href="#audit-content" class="skip-link">Skip to main content</a>
+
+    <!-- HEADER -->
+    <header class="audit-header" id="audit-header">
+      <div class="header-content">
+        <span class="header-tool-label">OneXP GEO Audit</span>
+        <div class="header-center">
+          <h1 class="header-page-name" id="header-page-name"><!-- JS fills --></h1>
+          <a
+            class="header-page-url"
+            id="header-page-url"
+            href="#"
+            target="_blank"
+            rel="noopener noreferrer"
+          ><!-- JS fills --></a>
+        </div>
+        <img src="assets/logo.svg" alt="IfThen" class="header-logo">
+      </div>
+      <div
+        class="progress-bar-track"
+        role="progressbar"
+        aria-valuenow="0"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-label="Audit progress"
+        id="progress-bar-track"
+      >
+        <div class="progress-bar-fill" id="progress-bar-fill"></div>
+      </div>
+    </header>
+
+    <!-- THREE-COLUMN LAYOUT -->
+    <div class="audit-layout">
+
+      <!-- LEFT COLUMN: Audit Outline (desktop only) -->
+      <nav class="audit-outline" id="audit-outline" aria-label="Audit sections">
+        <!-- JS renders a <ul> of section buttons with completion indicators -->
+      </nav>
+
+      <!-- CENTER COLUMN: Section Content -->
+      <main class="audit-content" id="audit-content" tabindex="-1">
+        <!-- JS renders: part label, section heading (<h2>), body copy -->
+      </main>
+
+      <!-- RIGHT COLUMN: Checklist -->
+      <aside class="audit-checklist" id="audit-checklist" aria-label="Section checklist">
+        <!-- JS renders: "Checklist" <h3> + checkbox list, or Part 3 info panel -->
+      </aside>
+
+    </div>
+
+    <!-- NAVIGATION BUTTONS -->
+    <div class="audit-nav" id="audit-nav">
+      <button id="btn-prev" class="btn btn-outline">&#8593; Previous Section</button>
+      <button id="btn-next" class="btn btn-primary">Next Section &#8595;</button>
+    </div>
+
+    <!-- EXPORT AREA — visible only after the final section is reached -->
+    <div class="export-area hidden" id="export-area">
+      <p class="export-message">You've completed the audit. Export your results as a PDF report.</p>
+      <button id="btn-export" class="btn btn-primary">Export Audit Report</button>
+    </div>
+
+  </div><!-- /#audit-flow -->
+
+
+  <!-- Scripts — load order is critical -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+  <script src="content.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
