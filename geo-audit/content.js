@@ -78,8 +78,7 @@ window.AUDIT_CONTENT = {
           "URLs are descriptive and keyword-rich (e.g., /coca-cola/products/original rather than /p/123)",
           "URLs use hyphens (not underscores) to separate words",
           "URLs are concise and generally stay within 3\u20134 levels of nesting",
-          "URL patterns are consistent across similar content types",
-          "The page is positioned correctly in the content tree so that breadcrumbs display accurately"
+          "URL patterns are consistent across similar content types"
         ]
       },
 
@@ -117,10 +116,8 @@ window.AUDIT_CONTENT = {
 
 <p>An alternative solution, if the gradient is a concern, is to author the headline and CTA as a separate rich text component positioned above or below the hero image on the page. This allows the image to be displayed without a gradient, while keeping the important text live and crawlable.</p>`,
         checklist: [
-          "No images on the page contain essential text (headlines, CTAs, product names, etc.) baked into the image file",
-          "All headlines and copy are rendered as live text via OneXP components, not embedded in images",
-          "Button labels and CTAs are live interactive elements, not part of an image",
-          "Creative assets are designed to work as backgrounds with overlaid text where needed, not as standalone graphics containing copy"
+          "All essential headlines and copy are rendered as live text via OneXP components, not embedded in images",
+          "All buttons/CTAs are live interactive elements, not embedded in images"
         ]
       },
 
