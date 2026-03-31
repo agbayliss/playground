@@ -62,7 +62,7 @@
 :root {
   /* Brand colors */
   --color-text-primary: #ffffff;
-  --color-text-secondary: #999999;
+  --color-text-secondary: #D1D1D1;
   --color-bg-primary: #000000;
 
   /* Derived colors */
@@ -641,6 +641,7 @@ legend {
   font-size: 1.0625rem;
   font-weight: 600;
   margin: 1.5rem 0 0.5rem 0;
+  color: var(--color-text-primary);
 }
 
 /* Body lists */

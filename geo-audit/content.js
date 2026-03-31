@@ -56,7 +56,7 @@ window.AUDIT_CONTENT = {
   <li><strong>Navigation Title</strong> controls how the page appears in navigational components on OneXP, such as the Breadcrumb component. It can differ from the Page Title, but should still be clear and descriptive.</li>
 </ul>
 
-<p>The Page Title and Description are easy to check on live pages using the <a href="https://chromewebstore.google.com/detail/detailed-seo-extension/pfjdepjjfjjahkjfpkcgfmfhmnakjfba" target="_blank" rel="noopener" class="ext-link">Detailed SEO Extension</a>. The Navigation Title is verified as part of the <a href="#breadcrumbs" class="internal-ref">Breadcrumbs section</a> of this audit, since the Breadcrumb component is where it surfaces in the UI.</p>`,
+<p>The Page Title and Description are easy to check on live pages using the <a href="https://chromewebstore.google.com/detail/detailed-seo-extension/pfjdepjjfjjahkjfpkcgfmfhmnakjfba" target="_blank" rel="noopener" class="ext-link">Detailed SEO Extension</a>. The Navigation Title is verified as part of the Breadcrumbs section of this audit, since the Breadcrumb component is where it surfaces in the UI.</p>`,
         checklist: [
           "Page Title is authored and is 50\u201360 characters, with primary keywords included naturally",
           "Meta Description is authored and is 150\u2013160 characters, clearly describing what the page contains"
@@ -138,7 +138,7 @@ window.AUDIT_CONTENT = {
 
 <p>In OneXP's AEM environment, alt text should be authored on the asset itself where it lives in the <strong>DAM</strong> (Digital Asset Manager). When alt text is written at the asset level, it will automatically populate wherever that asset is used across the site — ensuring consistency and reducing the risk of images being published without alt text.</p>
 
-<p>To verify alt text on a live page, the <a href="https://chromewebstore.google.com/detail/image-alt-text-viewer/aahimedagfocpnpjhmchhkfhailnbmkj" target="_blank" rel="noopener" class="ext-link">Image Alt Text Viewer</a> Chrome extension is an easy way to view the alt text on all images on a single web page at a glance.</p>`,
+<p>To verify alt text on a live page, the <a href="https://chromewebstore.google.com/detail/image-alt-text-viewer/nhmihbneenlkbjjpbimhegikadfleccd" target="_blank" rel="noopener" class="ext-link">Image Alt Text Viewer</a> Chrome extension is an easy way to view the alt text on all images on a single web page at a glance.</p>`,
         checklist: [
           "All meaningful images on the page have alt text authored",
           "Alt text is concise, accurate, and describes what's actually in the image",
