@@ -67,43 +67,10 @@ function stripHtml(str) {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Body Copy Parser
-// Converts raw text from content.js into HTML (p and ul elements).
-// Conventions:
-//   \n\n  → paragraph break (each block is a separate element)
-//   • … → unordered list item (a block where every non-empty line starts with •)
-// Inline formatting within blocks is preserved via sanitizeInline.
+// Body Copy Renderer
+// The body field in content.js now contains pre-structured HTML.
+// Inject it directly as innerHTML — no parsing needed.
 // ─────────────────────────────────────────────────────────────────────────────
-
-function parseBodyCopy(text) {
-  var blocks = text.split('\n\n');
-  var html = '';
-
-  blocks.forEach(function(block) {
-    var trimmed = block.trim();
-    if (!trimmed) return;
-
-    var lines = trimmed.split('\n');
-    var isList = lines.every(function(line) {
-      return line.trim() === '' || line.trimStart().startsWith('\u2022 ');
-    });
-
-    if (isList) {
-      html += '<ul>';
-      lines.forEach(function(line) {
-        var item = line.trim();
-        if (item.startsWith('\u2022 ')) {
-          html += '<li>' + sanitizeInline(item.slice(2)) + '</li>';
-        }
-      });
-      html += '</ul>';
-    } else {
-      html += '<p>' + sanitizeInline(trimmed) + '</p>';
-    }
-  });
-
-  return html;
-}
 
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -246,8 +213,8 @@ function renderSection(index) {
 
   var bodyDiv = document.createElement('div');
   bodyDiv.className = 'section-body';
-  // All sections rendered the same way — no special Part 3 wrapper
-  bodyDiv.innerHTML = parseBodyCopy(section.body);
+  // Body field contains pre-structured HTML — inject directly
+  bodyDiv.innerHTML = section.body;
 
   contentEl.appendChild(heading);
   contentEl.appendChild(bodyDiv);
