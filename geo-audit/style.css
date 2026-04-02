@@ -313,35 +313,54 @@ legend {
   border-color: var(--color-text-primary);
 }
 
-/* Page Type fieldset */
+/* Page Type fieldset — question-style legend (sentence case, conversational) */
 
 .page-type-fieldset legend {
   display: block;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--space-sm);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  text-transform: none;
+  letter-spacing: normal;
+  margin-bottom: var(--space-md);
 }
 
 .page-type-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-sm);
 }
 
+/* Radio-row style — replaces the old card grid */
 .page-type-card {
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--space-md) var(--space-sm);
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s;
-  min-height: 52px;
+  min-height: 48px;
+  /* Override .form-group label uppercase/tracking */
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  margin-bottom: 0;
+}
+
+/* Radio circle indicator */
+.page-type-card::before {
+  content: '';
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--color-checkbox-border);
+  border-radius: 50%;
+  background: transparent;
+  transition: border-color 0.15s, background 0.15s;
 }
 
 .page-type-card:hover {
@@ -349,14 +368,28 @@ legend {
   background: var(--color-bg-hover);
 }
 
+.page-type-card:hover::before {
+  border-color: var(--color-text-secondary);
+}
+
 .page-type-card.active {
   border-color: var(--color-text-primary);
-  background: var(--color-bg-hover);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+/* Selected radio circle — white outer ring with dark gap and white center dot */
+.page-type-card.active::before {
+  border-color: var(--color-text-primary);
+  background: radial-gradient(
+    circle,
+    var(--color-text-primary) 38%,
+    transparent 38%
+  );
 }
 
 .page-type-label {
-  font-size: 0.875rem;
-  line-height: 1.3;
+  font-size: 0.9375rem;
+  line-height: 1.4;
   pointer-events: none;
 }
 
@@ -1008,13 +1041,6 @@ legend {
     width: 100%;
     justify-content: center;
     margin-left: 0; /* override the desktop margin-left: auto on #btn-next */
-  }
-
-  /* Page type cards 1-column on very small screens */
-  @media (max-width: 420px) {
-    .page-type-options {
-      grid-template-columns: 1fr;
-    }
   }
 
   /* Welcome card tighter padding on mobile */
