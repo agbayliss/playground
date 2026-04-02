@@ -6,16 +6,16 @@ window.AUDIT_CONTENT = {
   pageTypes: [
     { id: "onexp-homepage",  label: "OneXP Homepage" },
     { id: "brand-landing",   label: "Brand Landing Page" },
-    { id: "plp",             label: "Product Landing Page (PLP)" },
+    { id: "plp-categories",  label: "Product Landing Page (PLP) with Categories" },
+    { id: "plp-skus",        label: "Product Landing Page (PLP) with Individual SKUs" },
     { id: "pcp",             label: "Product Category Page (PCP)" },
-    { id: "campaign",        label: "Campaign Page" },
-    { id: "offer-promo",     label: "Offer & Promotional Page" }
+    { id: "other",           label: "Other" }
   ],
 
   parts: {
 
     // ─────────────────────────────────────────────────────────────────────────
-    // PART 1 — 8 sections shown to all users
+    // PART 1 — 9 sections shown to all users
     // ─────────────────────────────────────────────────────────────────────────
     part1: [
 
@@ -164,32 +164,38 @@ window.AUDIT_CONTENT = {
       },
 
       {
-        id: "content-guidelines",
-        title: "Content Guidelines",
+        id: "faqs",
+        title: "FAQs",
         partLabel: "Part 1",
         body: `<h3 class="sub-headline">Why It Matters</h3>
 
-<p>Writing content for the modern web is a broad topic, but there are foundational guidelines that apply across the board — practices that improve clarity for both human readers and AI crawlers, regardless of the brand or page type.</p>
-
-<p><strong>Start with a Clear H1 and Introductory Copy:</strong> Every page should open with a clear H1 headline, optionally followed by a brief introductory paragraph that explains what the page is about. Even two or three sentences describing the page's purpose will make a meaningful difference in how it is understood and indexed.</p>
-
-<p><strong>Be Consistent with Product and Brand Names:</strong> Use the same name and label consistently across the page and across related pages. Don't call it "Coke Zero" in one section and "Coke ZS" in another. Inconsistent naming dilutes the clarity of the content for crawlers.</p>
-
-<p><strong>Write Descriptive CTA Labels and Link Text:</strong> CTAs and link text should clearly communicate what happens when a user clicks. "Enter the Sweepstakes" and "View All Coca-Cola Products" are preferable to "Click Here" or "Learn More."</p>
-
-<p><strong>Use FAQs Intentionally:</strong> FAQ sections are valuable for SEO and GEO — they directly address questions users and AI systems might have. However, FAQs should be tailored to the specific page they appear on. Don't place the same generic brand-level FAQs on every page. Put general brand FAQs on the brand landing page, product-specific FAQs on product pages, and campaign-specific FAQs on campaign pages.</p>
+<p>FAQ sections are one of the most valuable content types for SEO and GEO. They directly mirror how people search — and how AI systems process information — by pairing specific questions with clear, concise answers. When a user asks an AI assistant a question about a product or brand, FAQ content structured as explicit question-and-answer pairs is among the most likely content to be surfaced in the response. FAQs also create opportunities for pages to appear in featured snippets and "People Also Ask" results in traditional search.</p>
 
 <h3 class="sub-headline">OneXP-Specific Notes</h3>
 
-<p><strong>Avoid Placing Key Content in Carousels:</strong> On OneXP, when teaser cards are placed inside a carousel component, the title of each card can be duplicated multiple times in the page's h-tag hierarchy. This creates confusing, cluttered signals for AI crawlers. Whenever possible, display teaser cards in a static layout rather than a carousel.</p>`,
+<p>On OneXP, each FAQ question and answer should be placed in its own accordion component. All accordions should be grouped under a single heading that reads "Frequently Asked Questions." Pay attention to the h-tag hierarchy of this section: the "Frequently Asked Questions" headline should sit at the appropriate level in the page's overall hierarchy (typically an H2), and each individual question headline within the accordions should be one level below it (typically H3s).</p>`,
         checklist: [
-          "The page has a clear H1 that explains the page's purpose",
-          "There is introductory copy following the H1 that further explains the page's purpose",
-          "Product and brand names are used consistently throughout the page",
-          "Button labels and link text are specific and descriptive, not generic",
-          "FAQ content is tailored to the specific page (not copy-pasted across multiple pages)",
-          "Key content is not placed inside carousel components (to avoid h-tag duplication issues)",
-          "Content is structured with clear sections and headings so that both users and crawlers can easily parse the page"
+          "The page includes a \"Frequently Asked Questions\" section where appropriate",
+          "Each FAQ is placed in its own accordion component",
+          "The \"Frequently Asked Questions\" heading is at the correct h-tag level (e.g., H2), with individual questions one level below (e.g., H3)"
+        ]
+      },
+
+      {
+        id: "carousels",
+        title: "Carousels",
+        partLabel: "Part 1",
+        body: `<h3 class="sub-headline">Why It Matters</h3>
+
+<p>Carousels present challenges for both SEO and GEO. Multiple studies on carousel engagement — including research by <a href="https://erikrunyon.com/2013/01/carousel-interaction-stats/" target="_blank" rel="noopener" class="ext-link">Erik Runyon at the University of Notre Dame</a> and <a href="https://smileycat.com/image-carousel-click-through-rate-analysis/" target="_blank" rel="noopener" class="ext-link">analyses of e-commerce sites</a> — have shown that the vast majority of user interaction goes to the first slide, with engagement dropping off steeply after that. Content placed in later slides is rarely seen or clicked. This means that any important content buried beyond the first slide of a carousel is likely invisible to most visitors.</p>
+
+<h3 class="sub-headline">OneXP-Specific Notes</h3>
+
+<p>On OneXP specifically, there is an additional technical issue with carousels. When teaser cards are placed inside a carousel component, the way the carousel is built in the code causes the title of each card to be duplicated multiple times in the page's h-tag hierarchy. For example, if three teaser cards are placed in a carousel, the headline of each card may appear up to five times in the underlying code. This creates a cluttered, confusing signal for AI crawlers — they encounter the same headline repeated over and over, which muddies the structure of the page and makes it harder to determine what's actually important.</p>
+
+<p>Whenever possible, display teaser cards and other content in a static layout (such as a grid or vertical stack) rather than placing them in a carousel.</p>`,
+        checklist: [
+          "Essential content (that plays a key role in a crawler\u2019s understanding of the overall page content) is not placed inside a carousel"
         ]
       }
 
@@ -243,22 +249,42 @@ window.AUDIT_CONTENT = {
         ]
       },
 
-      "plp": {
-        id: "pt2-plp",
-        title: "Product Landing Pages (PLPs)",
+      "plp-categories": {
+        id: "pt2-plp-categories",
+        title: "Product Landing Pages (PLPs) with Categories",
         partLabel: "Part 2",
-        body: `<p>The product landing page is the top-level product overview for a brand. For brands with multiple product categories (e.g., Coca-Cola \u2192 Original, Zero Sugar, Flavors), this page displays cards for each category, linking users deeper into the product hierarchy. For brands without categories, this page lists all individual product SKUs directly.</p>
+        body: `<p>This type of PLP is the top-level product overview that highlights all of the product categories available within a brand.</p>
 
 <h3 class="sub-headline">Recommendations</h3>
 
 <ul class="body-list">
-  <li>Include an H1 that states the brand name and the word "Products." For example, "Coca-Cola\u00ae Products." This gives both users and crawlers a clear signal about the page's purpose.</li>
-  <li>All product category cards (or individual product cards, if there are no subcategories) should be H2s. This creates a clean hierarchy: the page headline is the H1, and each product grouping or product beneath it is an H2.</li>
+  <li>Include an H1 that states the brand name and the word "Products." For example, "Coca-Cola\u00ae Products." This gives both users and crawlers a clear signal about the page's purpose. The headline can include marketing-friendly language, but it should contribute to clarity rather than obscure it.</li>
+  <li>Each product category should be displayed in a teaser card that, when clicked, takes the user deeper into the hierarchy to a Product Category Page (PCP).</li>
+</ul>`,
+        checklist: [
+          "The H1 includes the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")",
+          "The meaning of the H1 is not lost in marketing jargon",
+          "Product categories are displayed in teaser cards and each link to the appropriate PCP"
+        ]
+      },
+
+      "plp-skus": {
+        id: "pt2-plp-skus",
+        title: "Product Landing Pages (PLPs) with Individual SKUs",
+        partLabel: "Part 2",
+        body: `<p>This type of PLP is the top-level product overview that highlights all of the individual product SKUs available within a brand.</p>
+
+<h3 class="sub-headline">Recommendations</h3>
+
+<ul class="body-list">
+  <li>Include an H1 that states the brand name and the word "Products." For example, "Fanta\u00ae Products." This gives both users and crawlers a clear signal about the page's purpose. The headline can include marketing-friendly language, but it should contribute to clarity rather than obscure it.</li>
+  <li>Each product SKU should be displayed in a product card that includes the nutrition facts and available sizes of the SKU.</li>
+  <li>Include FAQs that are specific to the products listed on the page. Each FAQ should be placed in an accordion, and all of the accordions should be under a headline that reads "Frequently Asked Questions".</li>
 </ul>
 
 <h3 class="sub-headline">For Individual Product SKUs</h3>
 
-<p>If your PLP includes individual product SKUs, pay attention to the h-tag hierarchy for "View Nutrition Facts" and "Ingredients." These headings are typically authored as H3s by default, but they should be nested underneath the product title in the hierarchy — not at the same level.</p>
+<p>Each product SKU should be displayed in a product card that includes the nutrition facts and available sizes of the SKU. Pay attention to the h-tag hierarchy for "View Nutrition Facts" and "Ingredients." These headings are typically authored as H3s by default, but they should be nested underneath the product title in the hierarchy — not at the same level.</p>
 
 <div class="code-block">
   <div class="code-block-label">Example — default h-tag hierarchy (incorrect):</div>
@@ -274,9 +300,11 @@ H3: Ingredients</pre>
     H5: Ingredients</pre>
 </div>`,
         checklist: [
-          "The H1 includes the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")",
-          "Product category cards (or product cards, if no categories exist) are tagged as H2s",
-          "Cards link to the appropriate product category pages or product detail sections"
+          "The H1 includes the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
+          "The meaning of the H1 is not lost in marketing jargon",
+          "FAQs specific to the products on the page are authored in accordions and appropriately nested within the page's h-tag hierarchy",
+          "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU",
+          "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy"
         ]
       },
 
@@ -284,49 +312,39 @@ H3: Ingredients</pre>
         id: "pt2-pcp",
         title: "Product Category Pages (PCPs)",
         partLabel: "Part 2",
-        body: `<p>Product category pages represent a specific product grouping within a brand — for example, the "Coca-Cola Flavors" page under Coca-Cola, or the "Zero Sugar" page. These pages list the individual product SKUs within that category along with product descriptions, nutrition facts, and other relevant details.</p>
+        body: `<p>Product category pages highlight all of the individual product SKUs available within a specific grouping of a brand.</p>
 
 <h3 class="sub-headline">Recommendations</h3>
 
 <ul class="body-list">
-  <li>Include an H1 that clearly identifies the product category. The headline can include marketing-friendly language, but it should contribute to clarity rather than obscure it. For example, "Coca\u2011Cola\u00ae Zero Sugar: Discover Sugar-Free Soda" is a strong H1 because it names the product category and adds descriptive context.</li>
-  <li>Consider including an introductory section with an H2 headline and a brief paragraph explaining more about the product category.</li>
-  <li>Include an H2 that says "Products" to clearly introduce the product listings section of the page.</li>
-  <li>Tag individual product cards as H3s beneath the "Products" H2, creating a clean three-level hierarchy: H1 (category name) \u2192 H2 ("Products") \u2192 H3s (individual SKUs).</li>
-  <li>Include product-specific FAQs that are relevant to this category, not generic brand-level FAQs.</li>
-</ul>`,
-        checklist: [
-          "The H1 clearly identifies the product category and is not lost in marketing jargon",
-          "There is an introductory section (H2 + brief paragraph) providing context about the product category",
-          "An H2 labeled \"Products\" introduces the product listings",
-          "Individual product cards are tagged as H3s",
-          "FAQs are specific to this product category (not duplicated from the brand landing page)"
-        ]
-      },
+  <li>Include an H1 that states the brand name and the word "Products." For example, "Coca\u2011Cola\u00ae Zero Sugar Products." This gives both users and crawlers a clear signal about the page's purpose. The headline can include marketing-friendly language, but it should contribute to clarity rather than obscure it.</li>
+  <li>Each product SKU should be displayed in a product card that includes the nutrition facts and available sizes of the SKU.</li>
+  <li>Include FAQs that are specific to the products listed on the page. Each FAQ should be placed in an accordion, and all of the accordions should be under a headline that reads "Frequently Asked Questions".</li>
+</ul>
 
-      "campaign": {
-        id: "pt2-campaign",
-        title: "Campaign Pages",
-        partLabel: "Part 2",
-        body: `<p>Because campaign page content varies significantly from one campaign to the next, there is no single content template to follow. However, all of the global best practices apply, and it's especially important to pay attention to h-tag hierarchy, clear headings, and avoiding the carousel duplication issue — since campaign pages often feature a high volume of teaser cards.</p>`,
-        checklist: [
-          "The page has a clear H1 that identifies the campaign or promotion",
-          "Sections of content are organized under descriptive headings",
-          "Key content is not buried inside carousels",
-          "The page links to related pages (e.g., the product category page for the product being promoted)"
-        ]
-      },
+<h3 class="sub-headline">For Individual Product SKUs</h3>
 
-      "offer-promo": {
-        id: "pt2-offer-promo",
-        title: "Offer & Promotional Pages",
-        partLabel: "Part 2",
-        body: `<p>Offer and promotional pages follow a similar pattern to campaign pages — their content varies widely depending on the specific promotion, so there are no prescriptive content guidelines beyond the global best practices. All of the Part 1 guidance applies in full, with particular attention to maintaining a clean h-tag hierarchy, using descriptive headings, and avoiding carousel-based layouts for important content.</p>`,
+<p>Each product SKU should be displayed in a product card that includes the nutrition facts and available sizes of the SKU. Pay attention to the h-tag hierarchy for "View Nutrition Facts" and "Ingredients." These headings are typically authored as H3s by default, but they should be nested underneath the product title in the hierarchy — not at the same level.</p>
+
+<div class="code-block">
+  <div class="code-block-label">Example — default h-tag hierarchy (incorrect):</div>
+  <pre>H3: Coca-Cola Cherry Float
+H3: View Nutrition Facts
+H3: Ingredients</pre>
+</div>
+
+<div class="code-block">
+  <div class="code-block-label">Example — corrected h-tag hierarchy:</div>
+  <pre>H3: Coca-Cola Cherry Float
+  H4: View Nutrition Facts
+    H5: Ingredients</pre>
+</div>`,
         checklist: [
-          "The page has a clear H1 that identifies the campaign or promotion",
-          "Sections of content are organized under descriptive headings",
-          "Key content is not buried inside carousels",
-          "The page links to related pages (e.g., the product category page for the product being promoted)"
+          "The H1 includes the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
+          "The meaning of the H1 is not lost in marketing jargon",
+          "FAQs specific to the products on the page are authored in accordions and appropriately nested within the page's h-tag hierarchy",
+          "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU",
+          "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy"
         ]
       }
 

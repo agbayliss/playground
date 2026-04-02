@@ -81,7 +81,12 @@ function buildSections() {
   var part1 = AUDIT_CONTENT.parts.part1;
   var part2Section = AUDIT_CONTENT.parts.part2[state.pageType];
   var part3 = AUDIT_CONTENT.parts.part3;
-  state.sections = part1.concat([part2Section, part3]);
+  // Gracefully skip part2 if there is no entry for this page type (e.g. "other")
+  if (part2Section) {
+    state.sections = part1.concat([part2Section, part3]);
+  } else {
+    state.sections = part1.concat([part3]);
+  }
 }
 
 
@@ -339,9 +344,20 @@ function validateWelcome() {
   var nameVal  = document.getElementById('page-name').value.trim();
   var urlVal   = document.getElementById('page-url').value.trim();
   var radios   = document.querySelectorAll('input[name="page-type"]');
-  var typeSelected = false;
-  radios.forEach(function(r) { if (r.checked) typeSelected = true; });
-  var isValid = nameVal.length > 0 && urlVal.length > 0 && typeSelected;
+  var selectedType = '';
+  radios.forEach(function(r) { if (r.checked) selectedType = r.value; });
+  var typeSelected = selectedType !== '';
+
+  // If the PLP parent card is selected, also require a sub-type answer
+  var plpValid = true;
+  if (selectedType === 'plp-parent') {
+    var subtypeRadios = document.querySelectorAll('input[name="plp-subtype"]');
+    var subtypeSelected = false;
+    subtypeRadios.forEach(function(r) { if (r.checked) subtypeSelected = true; });
+    plpValid = subtypeSelected;
+  }
+
+  var isValid = nameVal.length > 0 && urlVal.length > 0 && typeSelected && plpValid;
   document.getElementById('begin-audit-btn').disabled = !isValid;
 }
 
@@ -356,6 +372,12 @@ function beginAudit() {
 
   var radios = document.querySelectorAll('input[name="page-type"]');
   radios.forEach(function(r) { if (r.checked) state.pageType = r.value; });
+
+  // If the PLP parent card was selected, resolve the actual page type from the sub-type question
+  if (state.pageType === 'plp-parent') {
+    var subtypeRadios = document.querySelectorAll('input[name="plp-subtype"]');
+    subtypeRadios.forEach(function(r) { if (r.checked) state.pageType = r.value; });
+  }
 
   buildSections();
   initAuditState();
@@ -544,9 +566,53 @@ function exportPDF() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function init() {
-  // Render page type option cards
+  // Render page type option cards.
+  // plp-categories and plp-skus are grouped behind a single "Product Landing Page"
+  // parent card — selecting it reveals an animated follow-up sub-type question.
   var optionsContainer = document.getElementById('page-type-options');
+  var plpFollowup     = document.getElementById('plp-subtype-question');
+  var plpParentRendered = false;
+
   AUDIT_CONTENT.pageTypes.forEach(function(pageType) {
+
+    // ── PLP grouping: render one parent card for both sub-types ──────────────
+    if (pageType.id === 'plp-categories' || pageType.id === 'plp-skus') {
+      if (!plpParentRendered) {
+        plpParentRendered = true;
+
+        var plpLabel = document.createElement('label');
+        plpLabel.className = 'page-type-card';
+        plpLabel.setAttribute('data-type-id', 'plp-parent');
+
+        var plpInput = document.createElement('input');
+        plpInput.type = 'radio';
+        plpInput.name = 'page-type';
+        plpInput.value = 'plp-parent';
+        plpInput.className = 'sr-only';
+
+        var plpSpan = document.createElement('span');
+        plpSpan.className = 'page-type-label';
+        plpSpan.textContent = 'Product Landing Page';
+
+        plpLabel.appendChild(plpInput);
+        plpLabel.appendChild(plpSpan);
+        optionsContainer.appendChild(plpLabel);
+
+        plpInput.addEventListener('change', function() {
+          document.querySelectorAll('.page-type-card').forEach(function(card) {
+            card.classList.remove('active');
+          });
+          plpLabel.classList.add('active');
+          // Animate the sub-type question into view
+          plpFollowup.classList.add('visible');
+          plpFollowup.setAttribute('aria-hidden', 'false');
+          validateWelcome();
+        });
+      }
+      return; // Do not render individual plp-categories / plp-skus cards
+    }
+
+    // ── All other page types ──────────────────────────────────────────────────
     var label = document.createElement('label');
     label.className = 'page-type-card';
     label.setAttribute('data-type-id', pageType.id);
@@ -567,6 +633,56 @@ function init() {
 
     input.addEventListener('change', function() {
       document.querySelectorAll('.page-type-card').forEach(function(card) {
+        card.classList.remove('active');
+      });
+      label.classList.add('active');
+      // Hide the PLP sub-type question and clear its selection
+      plpFollowup.classList.remove('visible');
+      plpFollowup.setAttribute('aria-hidden', 'true');
+      document.querySelectorAll('input[name="plp-subtype"]').forEach(function(r) {
+        r.checked = false;
+      });
+      document.querySelectorAll('.plp-subtype-card').forEach(function(card) {
+        card.classList.remove('active');
+      });
+      validateWelcome();
+    });
+  });
+
+  // ── Render PLP sub-type option cards inside the follow-up question ─────────
+  var subtypeContainer = document.getElementById('plp-subtype-options');
+  var plpSubtypes = [
+    {
+      id: 'plp-categories',
+      htmlLabel: 'My PLP shows a list of product categories displayed in teasers. (Example: <a href="https://www.coca-cola.com/us/en/brands/coca-cola/products" target="_blank" rel="noopener" class="plp-example-link" onclick="event.stopPropagation()">Coca-Cola</a>)'
+    },
+    {
+      id: 'plp-skus',
+      htmlLabel: 'My PLP shows a list of individual product SKUs displayed in product cards. (Example: <a href="https://www.coca-cola.com/us/en/brands/fanta/products" target="_blank" rel="noopener" class="plp-example-link" onclick="event.stopPropagation()">Fanta</a>)'
+    }
+  ];
+
+  plpSubtypes.forEach(function(subtype) {
+    var label = document.createElement('label');
+    label.className = 'page-type-card plp-subtype-card';
+    label.setAttribute('data-type-id', subtype.id);
+
+    var input = document.createElement('input');
+    input.type = 'radio';
+    input.name = 'plp-subtype';
+    input.value = subtype.id;
+    input.className = 'sr-only';
+
+    var span = document.createElement('span');
+    span.className = 'page-type-label';
+    span.innerHTML = subtype.htmlLabel;
+
+    label.appendChild(input);
+    label.appendChild(span);
+    subtypeContainer.appendChild(label);
+
+    input.addEventListener('change', function() {
+      document.querySelectorAll('.plp-subtype-card').forEach(function(card) {
         card.classList.remove('active');
       });
       label.classList.add('active');

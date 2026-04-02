@@ -360,6 +360,33 @@ legend {
   pointer-events: none;
 }
 
+/* PLP sub-type follow-up question — animated slide-down / fade-in */
+
+.plp-subtype-question {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+}
+
+.plp-subtype-question.visible {
+  max-height: 400px; /* generous ceiling — actual content is ~200px */
+  opacity: 1;
+}
+
+/* Inner fieldset: provide top breathing room inside the collapsed container */
+.plp-subtype-question .page-type-fieldset {
+  padding-top: var(--space-xl);
+}
+
+/* Example links inside PLP sub-type cards — underline only, inherit card color */
+.plp-example-link {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: inherit;
+  pointer-events: auto;
+}
+
 /* Welcome screen begin button */
 
 #welcome-screen .btn-primary {
