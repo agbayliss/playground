@@ -331,8 +331,10 @@ legend {
   gap: var(--space-sm);
 }
 
-/* Radio-row style — replaces the old card grid */
-.page-type-card {
+/* Radio-row style — replaces the old card grid.
+   Selector is label.page-type-card (0-1-1) to beat .form-group label (0-1-1)
+   by source order, overriding its display:block and text-transform:uppercase. */
+label.page-type-card {
   display: flex;
   align-items: center;
   gap: var(--space-md);
