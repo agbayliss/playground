@@ -397,6 +397,7 @@ function renderSection(index) {
   var btnNext = document.getElementById('btn-next');
   var exportArea = document.getElementById('export-area');
   var isFirst = (index === 0);
+  btnPrev.innerHTML = '\u2190 Previous Section';
   var isLast  = (index === state.sections.length - 1);
 
   // Use visibility:hidden (not display:none) so the Previous button
@@ -594,9 +595,12 @@ function renderSummary() {
 
   var btnPrev = document.getElementById('btn-prev');
   var btnNext = document.getElementById('btn-next');
+  btnPrev.innerHTML = '\u2190 Back to audit';
   btnPrev.style.visibility  = 'visible';
   btnPrev.style.pointerEvents = '';
-  btnNext.classList.add('hidden');
+  btnNext.classList.remove('hidden');
+  btnNext.textContent = 'Export Audit Report';
+  btnNext.className = 'btn btn-primary';
 
   // Scroll to top of summary
   if (window.innerWidth >= 900) {
@@ -1066,7 +1070,7 @@ function init() {
   });
 
   document.getElementById('btn-next').addEventListener('click', function() {
-    if (state.onSummaryScreen) return; // already on summary, nothing to advance to
+    if (state.onSummaryScreen) { exportPDF(); return; }
     if (state.currentSectionIndex === state.sections.length - 1) {
       renderSummary();
     } else {

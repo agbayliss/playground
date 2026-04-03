@@ -953,12 +953,15 @@ label.page-type-card {
 .audit-nav {
   display: flex;
   align-items: center;
-  max-width: var(--max-content-width);
-  margin: 0 auto;
-  padding: var(--space-xs) var(--space-lg);
+  /* Dynamic side padding: matches the content area's left/right edge at any viewport width.
+     When viewport > max-content-width, padding grows to (viewport - max-width) / 2 + space-lg.
+     When viewport <= max-content-width, max() clamps it to space-lg (the standard gutter). */
+  padding: var(--space-xs) max(var(--space-lg), calc((100% - var(--max-content-width)) / 2 + var(--space-lg)));
   gap: var(--space-md);
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 99;
   background: var(--color-bg-primary);
   border-top: 1px solid var(--color-border);
@@ -1085,8 +1088,10 @@ label.page-type-card {
     flex-direction: column-reverse;
     align-items: stretch;
     padding: var(--space-xs) var(--space-md);
-    position: sticky;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 99;
     background: var(--color-bg-primary);
     border-top: 1px solid var(--color-border);
@@ -1124,6 +1129,7 @@ label.page-type-card {
   max-width: var(--max-content-width);
   margin: 0 auto;
   padding: var(--space-lg);
+  padding-bottom: calc(var(--nav-bar-height) + var(--space-lg));
 }
 
 .summary-inner {
@@ -1136,7 +1142,7 @@ label.page-type-card {
 
 .summary-score-hero {
   text-align: center;
-  padding: var(--space-2xl) 0;
+  padding: var(--space-md) 0 var(--space-xl);
   border-bottom: 1px solid var(--color-border);
   margin-bottom: var(--space-xl);
 }
@@ -1237,6 +1243,11 @@ label.page-type-card {
 
 .summary-fixes {
   padding-bottom: var(--space-xl);
+}
+
+/* Export button lives in the nav bar on the summary screen — hide the in-content version */
+.summary-export {
+  display: none;
 }
 
 .summary-fixes-heading {
