@@ -136,10 +136,38 @@
       <button id="btn-next" class="btn btn-primary">Next Section &#8595;</button>
     </div>
 
-    <!-- EXPORT AREA — visible only after the final section is reached -->
+    <!-- EXPORT AREA — superseded by summary screen; kept for legacy wiring -->
     <div class="export-area hidden" id="export-area">
       <p class="export-message">You've completed the audit. Export your results as a PDF report.</p>
       <button id="btn-export" class="btn btn-primary">Export Audit Report</button>
+    </div>
+
+    <!-- SUMMARY SCREEN — shown after completing all audit sections -->
+    <div id="summary-screen" class="summary-screen hidden">
+      <div class="summary-inner">
+
+        <!-- Overall Score -->
+        <div class="summary-score-hero" id="summary-score-hero">
+          <!-- JS renders: score circle, label, points -->
+        </div>
+
+        <!-- Per-Section Breakdown -->
+        <div class="summary-sections" id="summary-sections">
+          <h2 class="summary-section-title">Score Breakdown</h2>
+          <!-- JS renders: section score rows with bars -->
+        </div>
+
+        <!-- Prioritized Fix List -->
+        <div class="summary-fixes" id="summary-fixes">
+          <!-- JS renders: grouped unchecked items by tier -->
+        </div>
+
+        <!-- Export -->
+        <div class="summary-export">
+          <button id="btn-summary-export" class="btn btn-primary">Export Audit Report</button>
+        </div>
+
+      </div>
     </div>
 
   </div><!-- /#audit-flow -->

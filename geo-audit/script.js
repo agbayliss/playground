@@ -15,7 +15,25 @@ var state = {
   sections: [],               // Resolved flat array of section objects (10 total)
   checkboxState: {},          // { "section-id": { 0: true/false, ... }, ... }
   notesState: {},             // { "section-id": "notes text", ... }
-  visitedSections: new Set()  // Set of section IDs the user has reached
+  visitedSections: new Set(), // Set of section IDs the user has reached
+  onSummaryScreen: false      // true when the summary screen is active
+};
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Tier Weights and Display Metadata
+// ─────────────────────────────────────────────────────────────────────────────
+
+var TIER_WEIGHTS = {
+  "critical":     3,
+  "important":    2,
+  "nice-to-have": 1
+};
+
+var TIER_META = {
+  "critical":     { label: "Critical",     color: "#E53E3E", icon: "🔴" },
+  "important":    { label: "Important",    color: "#D69E2E", icon: "🟡" },
+  "nice-to-have": { label: "Nice-to-have", color: "#38A169", icon: "🟢" }
 };
 
 
@@ -109,6 +127,79 @@ function initAuditState() {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Scoring Engine
+// ─────────────────────────────────────────────────────────────────────────────
+
+function calculateScores() {
+  var totalEarned   = 0;
+  var totalPossible = 0;
+  var sectionScores = [];
+
+  state.sections.forEach(function(section) {
+    if (section.checklist.length === 0) return; // skip Part 3
+
+    var earned   = 0;
+    var possible = 0;
+
+    section.checklist.forEach(function(item, i) {
+      var weight = TIER_WEIGHTS[item.tier];
+      possible += weight;
+      if (state.checkboxState[section.id][i]) {
+        earned += weight;
+      }
+    });
+
+    totalEarned   += earned;
+    totalPossible += possible;
+
+    sectionScores.push({
+      id:        section.id,
+      title:     section.title,
+      partLabel: section.partLabel,
+      earned:    earned,
+      possible:  possible,
+      pct:       possible > 0 ? Math.round((earned / possible) * 100) : 100
+    });
+  });
+
+  return {
+    overall: {
+      earned:   totalEarned,
+      possible: totalPossible,
+      pct:      totalPossible > 0 ? Math.round((totalEarned / totalPossible) * 100) : 100
+    },
+    sections: sectionScores
+  };
+}
+
+
+function getUncheckedItems() {
+  var items     = [];
+  var tierOrder = { "critical": 0, "important": 1, "nice-to-have": 2 };
+
+  state.sections.forEach(function(section) {
+    if (section.checklist.length === 0) return;
+
+    section.checklist.forEach(function(item, i) {
+      if (!state.checkboxState[section.id][i]) {
+        items.push({
+          text:         item.text,
+          tier:         item.tier,
+          sectionTitle: section.title
+        });
+      }
+    });
+  });
+
+  items.sort(function(a, b) {
+    return tierOrder[a.tier] - tierOrder[b.tier];
+  });
+
+  return items;
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Progress Bar
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -158,6 +249,31 @@ function renderOutline() {
     ul.appendChild(li);
   });
 
+  // Summary entry — appears after all section buttons
+  var summaryLi  = document.createElement('li');
+  var summaryBtn = document.createElement('button');
+  summaryBtn.className = 'outline-btn';
+  summaryBtn.setAttribute('data-index', 'summary');
+  summaryBtn.setAttribute('aria-label', 'Summary');
+
+  var summaryCheck = document.createElement('span');
+  summaryCheck.className = 'outline-check';
+  summaryCheck.setAttribute('aria-hidden', 'true');
+  summaryCheck.textContent = '';  // no completion indicator for summary
+
+  var summaryTitle = document.createElement('span');
+  summaryTitle.className = 'outline-title';
+  summaryTitle.textContent = 'Summary';
+
+  summaryBtn.appendChild(summaryCheck);
+  summaryBtn.appendChild(summaryTitle);
+  summaryBtn.addEventListener('click', function() {
+    renderSummary();
+  });
+
+  summaryLi.appendChild(summaryBtn);
+  ul.appendChild(summaryLi);
+
   nav.innerHTML = '';
   nav.appendChild(ul);
 }
@@ -170,11 +286,20 @@ function renderOutline() {
 function updateOutline() {
   var btns = document.querySelectorAll('.outline-btn');
   btns.forEach(function(btn) {
-    var index = parseInt(btn.getAttribute('data-index'), 10);
-    var section = state.sections[index];
+    var idxAttr = btn.getAttribute('data-index');
+
+    // Summary button — just toggle active state and skip section logic
+    if (idxAttr === 'summary') {
+      btn.classList.toggle('active', state.onSummaryScreen);
+      return;
+    }
+
+    var index    = parseInt(idxAttr, 10);
+    var section  = state.sections[index];
     var checkSpan = btn.querySelector('.outline-check');
 
-    btn.classList.toggle('active', index === state.currentSectionIndex);
+    // Active only when on a section (not on summary screen)
+    btn.classList.toggle('active', !state.onSummaryScreen && index === state.currentSectionIndex);
 
     if (state.visitedSections.has(section.id)) {
       checkSpan.textContent = '\u25cf';
@@ -184,7 +309,7 @@ function updateOutline() {
       checkSpan.classList.remove('visited');
     }
 
-    if (index === state.currentSectionIndex) {
+    if (!state.onSummaryScreen && index === state.currentSectionIndex) {
       checkSpan.classList.add('current');
     } else {
       checkSpan.classList.remove('current');
@@ -239,7 +364,7 @@ function renderSection(index) {
     var ul = document.createElement('ul');
     ul.className = 'checklist-list';
 
-    section.checklist.forEach(function(itemText, itemIndex) {
+    section.checklist.forEach(function(item, itemIndex) {
       var li = document.createElement('li');
       var wrapper = document.createElement('div');
       wrapper.className = 'checklist-item';
@@ -254,7 +379,7 @@ function renderSection(index) {
       var label = document.createElement('label');
       label.setAttribute('for', checkId);
       // Use innerHTML to support <em>, <strong>, <a> in checklist text
-      label.innerHTML = sanitizeInline(itemText);
+      label.innerHTML = sanitizeInline(item.text);
 
       input.addEventListener('change', (function(sid, idx) {
         return function(e) {
@@ -310,12 +435,15 @@ function renderSection(index) {
   btnPrev.style.visibility = isFirst ? 'hidden' : 'visible';
   btnPrev.style.pointerEvents = isFirst ? 'none' : '';
 
+  // Export area is permanently hidden — summary screen replaces it
+  exportArea.classList.add('hidden');
+
+  // Next button is always visible from section view; text changes on last section
+  btnNext.classList.remove('hidden');
   if (isLast) {
-    btnNext.classList.add('hidden');
-    exportArea.classList.remove('hidden');
+    btnNext.textContent = 'View Summary \u2192';
   } else {
-    btnNext.classList.remove('hidden');
-    exportArea.classList.add('hidden');
+    btnNext.textContent = 'Next Section \u2193';
   }
 
   // ── OUTLINE + PROGRESS ────────────────────────────────────────────────────
@@ -333,6 +461,180 @@ function renderSection(index) {
 
   // ── FOCUS MANAGEMENT ─────────────────────────────────────────────────────
   heading.focus();
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Summary Screen Renderer
+// ─────────────────────────────────────────────────────────────────────────────
+
+function renderSummary() {
+  state.onSummaryScreen = true;
+
+  // Hide the three-column audit content; keep .audit-nav for the Prev button
+  document.querySelector('.audit-layout').classList.add('hidden');
+
+  // Show summary screen
+  var summaryScreen = document.getElementById('summary-screen');
+  summaryScreen.classList.remove('hidden');
+
+  // Compute scores fresh — reflects any checkbox changes made after a prior visit
+  var scores     = calculateScores();
+  var unchecked  = getUncheckedItems();
+
+  // ── OVERALL SCORE HERO ───────────────────────────────────────────────────
+
+  var heroEl = document.getElementById('summary-score-hero');
+  heroEl.innerHTML = '';
+
+  var pct        = scores.overall.pct;
+  var scoreColor = pct >= 80 ? '#38A169' : (pct >= 50 ? '#D69E2E' : '#E53E3E');
+
+  var circle = document.createElement('div');
+  circle.className = 'score-circle';
+  circle.style.borderColor = scoreColor;
+  circle.style.color       = scoreColor;
+
+  var pctEl = document.createElement('div');
+  pctEl.className   = 'score-circle-pct';
+  pctEl.textContent = pct + '%';
+  circle.appendChild(pctEl);
+  heroEl.appendChild(circle);
+
+  var heroLabel = document.createElement('p');
+  heroLabel.className   = 'score-hero-label';
+  heroLabel.textContent = 'Overall GEO Audit Score';
+  heroEl.appendChild(heroLabel);
+
+  var heroPoints = document.createElement('p');
+  heroPoints.className   = 'score-hero-points';
+  heroPoints.textContent = scores.overall.earned + ' / ' + scores.overall.possible + ' points';
+  heroEl.appendChild(heroPoints);
+
+  // ── PER-SECTION SCORE BREAKDOWN ──────────────────────────────────────────
+
+  var sectionsEl = document.getElementById('summary-sections');
+  // Remove any rows from a previous visit (keep the static <h2>)
+  var oldRows = sectionsEl.querySelectorAll('.score-section-row');
+  oldRows.forEach(function(el) { el.parentNode.removeChild(el); });
+
+  scores.sections.forEach(function(s) {
+    var sPct   = s.pct;
+    var sColor = sPct >= 80 ? '#38A169' : (sPct >= 50 ? '#D69E2E' : '#E53E3E');
+
+    var row = document.createElement('div');
+    row.className = 'score-section-row';
+
+    var nameEl = document.createElement('span');
+    nameEl.className   = 'score-section-name';
+    nameEl.textContent = s.title;
+
+    var barWrap = document.createElement('div');
+    barWrap.className = 'score-bar-wrap';
+
+    var barTrack = document.createElement('div');
+    barTrack.className = 'score-bar-track';
+
+    var barFill = document.createElement('div');
+    barFill.className            = 'score-bar-fill';
+    barFill.style.width          = sPct + '%';
+    barFill.style.backgroundColor = sColor;
+
+    var barPct = document.createElement('span');
+    barPct.className   = 'score-bar-pct';
+    barPct.textContent = sPct + '%';
+
+    barTrack.appendChild(barFill);
+    barWrap.appendChild(barTrack);
+    barWrap.appendChild(barPct);
+    row.appendChild(nameEl);
+    row.appendChild(barWrap);
+    sectionsEl.appendChild(row);
+  });
+
+  // ── PRIORITIZED FIX LIST ─────────────────────────────────────────────────
+
+  var fixesEl = document.getElementById('summary-fixes');
+  fixesEl.innerHTML = '';
+
+  if (unchecked.length === 0) {
+    var congrats = document.createElement('p');
+    congrats.className   = 'summary-congrats';
+    congrats.textContent = 'All checklist items passed. Great work!';
+    fixesEl.appendChild(congrats);
+  } else {
+    var fixHeading = document.createElement('h2');
+    fixHeading.className   = 'summary-fixes-heading';
+    fixHeading.textContent = 'Items to Address';
+    fixesEl.appendChild(fixHeading);
+
+    var countEl = document.createElement('p');
+    countEl.className   = 'summary-fixes-count';
+    countEl.textContent = unchecked.length + ' item' + (unchecked.length === 1 ? '' : 's') + ' remaining';
+    fixesEl.appendChild(countEl);
+
+    // Render each tier group that has items
+    ['critical', 'important', 'nice-to-have'].forEach(function(tier) {
+      var tierItems = unchecked.filter(function(x) { return x.tier === tier; });
+      if (tierItems.length === 0) return;
+
+      var meta = TIER_META[tier];
+
+      var tierHeading = document.createElement('h3');
+      tierHeading.className   = 'summary-tier-heading';
+      tierHeading.style.color = meta.color;
+      tierHeading.textContent = meta.icon + '\u00a0' + meta.label;
+      fixesEl.appendChild(tierHeading);
+
+      var ul = document.createElement('ul');
+      ul.className = 'summary-fix-list';
+
+      tierItems.forEach(function(item) {
+        var li = document.createElement('li');
+        li.className = 'summary-fix-item';
+
+        var textEl = document.createElement('span');
+        textEl.className   = 'fix-item-text';
+        textEl.textContent = item.text;
+
+        var sectionEl = document.createElement('span');
+        sectionEl.className   = 'fix-item-section';
+        sectionEl.textContent = item.sectionTitle;
+
+        li.appendChild(textEl);
+        li.appendChild(sectionEl);
+        ul.appendChild(li);
+      });
+
+      fixesEl.appendChild(ul);
+    });
+  }
+
+  // ── PROGRESS BAR → 100% ──────────────────────────────────────────────────
+
+  var fill  = document.getElementById('progress-bar-fill');
+  var track = document.getElementById('progress-bar-track');
+  fill.style.width = '100%';
+  track.setAttribute('aria-valuenow', '100');
+
+  // ── OUTLINE + NAV BUTTONS ────────────────────────────────────────────────
+
+  updateOutline();
+
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+  btnPrev.style.visibility  = 'visible';
+  btnPrev.style.pointerEvents = '';
+  btnNext.classList.add('hidden');
+
+  // Scroll to top of summary
+  if (window.innerWidth >= 900) {
+    window.scrollTo(0, 0);
+  } else {
+    var headerEl     = document.getElementById('audit-header');
+    var headerBottom = headerEl ? headerEl.getBoundingClientRect().bottom + window.scrollY : 0;
+    window.scrollTo({ top: headerBottom, behavior: 'smooth' });
+  }
 }
 
 
@@ -425,6 +727,15 @@ function exportPDF() {
     y += 1;
   }
 
+  // ── SCORING DATA — computed once, reused in summary block + section headings
+
+  var scores    = calculateScores();
+  var unchecked = getUncheckedItems();
+
+  // Lookup map: section.id → score object (only scored sections are present)
+  var sectionScoreMap = {};
+  scores.sections.forEach(function(s) { sectionScoreMap[s.id] = s; });
+
   // ── HEADER ────────────────────────────────────────────────────────────────
 
   doc.setFont('helvetica', 'bold');
@@ -476,17 +787,103 @@ function exportPDF() {
   drawHRule();
   y += 8;
 
+  // ── SCORE SUMMARY ─────────────────────────────────────────────────────────
+
+  // a) Overall Score
+  checkPageBreak(lineH6 * 3 + 12);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text('Overall Score', x, y);
+  y += lineH6 + 1;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13);
+  var overallText  = scores.overall.pct + '% (' + scores.overall.earned + ' / ' + scores.overall.possible + ' points)';
+  var overallLines = doc.splitTextToSize(overallText, printW);
+  checkPageBreak(overallLines.length * 6.5 + 2);
+  doc.text(overallLines, x, y);
+  y += (overallLines.length * 6.5) + 8;
+
+  // b) Per-Section Score Breakdown
+  checkPageBreak(lineH6 * 2 + 4);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text('Score Breakdown', x, y);
+  y += lineH6 + 2;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  scores.sections.forEach(function(s) {
+    var sLine  = s.title + ': ' + s.pct + '% (' + s.earned + '/' + s.possible + ')';
+    var sLines = doc.splitTextToSize(sLine, printW);
+    checkPageBreak(sLines.length * lineH5 + 1);
+    doc.text(sLines, x, y);
+    y += (sLines.length * lineH5) + 1;
+  });
+  y += 6;
+
+  // c) Items to Address
+  checkPageBreak(lineH6 * 2 + 4);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(0);
+  doc.text('Items to Address', x, y);
+  y += lineH6 + 2;
+
+  doc.setFontSize(10);
+  doc.setTextColor(0);
+
+  if (unchecked.length === 0) {
+    doc.setFont('helvetica', 'normal');
+    checkPageBreak(lineH5 + 2);
+    doc.text('All checklist items passed.', x, y);
+    y += lineH5 + 6;
+  } else {
+    ['critical', 'important', 'nice-to-have'].forEach(function(tier) {
+      var tierItems = unchecked.filter(function(item) { return item.tier === tier; });
+      if (tierItems.length === 0) return;
+
+      checkPageBreak(lineH5 * 2 + 3);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(0);
+      doc.text(TIER_META[tier].label, x, y);
+      y += lineH5 + 1;
+
+      doc.setFont('helvetica', 'normal');
+      tierItems.forEach(function(item) {
+        var fixLine  = '\u2022 ' + stripHtml(item.text) + ' (' + item.sectionTitle + ')';
+        var fixLines = doc.splitTextToSize(fixLine, printW - 4);
+        checkPageBreak(fixLines.length * lineH5 + 1);
+        doc.text(fixLines, x + 4, y);
+        y += (fixLines.length * lineH5) + 1;
+      });
+      y += 3;
+    });
+    y += 3;
+  }
+
+  // d) Horizontal rule before section-by-section results
+  drawHRule();
+  y += 8;
+
   // ── AUDIT RESULTS — LOOP THROUGH SECTIONS ────────────────────────────────
 
   state.sections.forEach(function(section) {
 
     checkPageBreak(16);
 
-    // Section heading — title only, no part label prefix
+    // Section heading — append score percentage for scored sections
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
     doc.setTextColor(0);
-    var titleLines = doc.splitTextToSize(section.title, printW);
+    var sScore      = sectionScoreMap[section.id];
+    var headingText = (section.checklist.length > 0 && sScore)
+      ? section.title + ' \u2014 ' + sScore.pct + '%'
+      : section.title;
+    var titleLines = doc.splitTextToSize(headingText, printW);
     checkPageBreak(titleLines.length * lineH6 + 4);
     doc.text(titleLines, x, y);
     y += (titleLines.length * lineH6) + 4;
@@ -494,11 +891,11 @@ function exportPDF() {
     doc.setFontSize(10);
 
     if (section.checklist.length > 0) {
-      section.checklist.forEach(function(itemText, i) {
+      section.checklist.forEach(function(item, i) {
         var checked = state.checkboxState[section.id][i];
         var prefix  = checked ? '\u2713 ' : '\u2717 ';
         // Strip HTML tags from checklist item text for plain-text PDF output
-        var plainText = stripHtml(itemText);
+        var plainText = stripHtml(item.text) + ' [' + TIER_META[item.tier].label + ']';
 
         checkPageBreak(lineH5 * 2 + 2);
 
@@ -698,18 +1095,31 @@ function init() {
   });
 
   document.getElementById('btn-next').addEventListener('click', function() {
-    if (state.currentSectionIndex < state.sections.length - 1) {
+    if (state.onSummaryScreen) return; // already on summary, nothing to advance to
+    if (state.currentSectionIndex === state.sections.length - 1) {
+      renderSummary();
+    } else {
       renderSection(state.currentSectionIndex + 1);
     }
   });
 
   document.getElementById('btn-prev').addEventListener('click', function() {
-    if (state.currentSectionIndex > 0) {
+    if (state.onSummaryScreen) {
+      // Navigate back from summary to the last section
+      state.onSummaryScreen = false;
+      document.querySelector('.audit-layout').classList.remove('hidden');
+      document.getElementById('summary-screen').classList.add('hidden');
+      renderSection(state.sections.length - 1);
+    } else if (state.currentSectionIndex > 0) {
       renderSection(state.currentSectionIndex - 1);
     }
   });
 
   document.getElementById('btn-export').addEventListener('click', function() {
+    exportPDF();
+  });
+
+  document.getElementById('btn-summary-export').addEventListener('click', function() {
     exportPDF();
   });
 }
