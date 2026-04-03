@@ -95,7 +95,8 @@
   --color-code-bg: #141414;
 
   /* Layout */
-  --header-height:     80px;
+  --header-height:     64px;
+  --nav-bar-height:    52px;
   --outline-width:     220px;
   --checklist-width:   300px;
   --max-content-width: 1280px;
@@ -484,6 +485,42 @@ label.page-type-card {
   border-color: var(--color-text-secondary);
 }
 
+/* Tertiary / ghost — used for prev & next nav buttons */
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: none;
+  padding: var(--space-xs) var(--space-sm);
+  position: relative;
+}
+
+/* Animated underline on hover */
+.btn-ghost::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+
+/* Previous: underline sweeps right → left */
+#btn-prev.btn-ghost::after {
+  transform-origin: right;
+}
+
+/* Next: underline sweeps left → right */
+#btn-next.btn-ghost::after {
+  transform-origin: left;
+}
+
+.btn-ghost:hover:not(:disabled)::after {
+  transform: scaleX(1);
+}
+
 .btn:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -558,7 +595,7 @@ label.page-type-card {
 }
 
 .header-logo {
-  height: 36px;
+  height: 25px;
   width: auto;
   flex-shrink: 0;
 }
@@ -918,14 +955,23 @@ label.page-type-card {
   align-items: center;
   max-width: var(--max-content-width);
   margin: 0 auto;
-  padding: var(--space-lg);
-  padding-top: var(--space-md);
+  padding: var(--space-xs) var(--space-lg);
   gap: var(--space-md);
+  position: sticky;
+  bottom: 0;
+  z-index: 99;
+  background: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border);
 }
 
 /* Keep Next always right-aligned, even when Previous is visibility:hidden */
 #btn-next {
   margin-left: auto;
+}
+
+/* Prevent content from being hidden behind the sticky nav bar */
+.audit-layout {
+  padding-bottom: var(--nav-bar-height);
 }
 
 
@@ -962,28 +1008,24 @@ label.page-type-card {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @media (min-width: 900px) {
-  .audit-outline,
-  .audit-checklist {
+  .audit-outline {
     position: sticky;
     top: calc(var(--header-height) + var(--space-xl));
     align-self: start;
-    max-height: calc(100vh - var(--header-height) - var(--space-2xl));
+    max-height: calc(100vh - var(--header-height) - var(--nav-bar-height) - var(--space-2xl));
     overflow-y: auto;
     /* Subtle scrollbar styling */
     scrollbar-width: thin;
     scrollbar-color: var(--color-border-strong) transparent;
   }
 
-  .audit-outline::-webkit-scrollbar,
-  .audit-checklist::-webkit-scrollbar {
+  .audit-outline::-webkit-scrollbar {
     width: 4px;
   }
-  .audit-outline::-webkit-scrollbar-track,
-  .audit-checklist::-webkit-scrollbar-track {
+  .audit-outline::-webkit-scrollbar-track {
     background: transparent;
   }
-  .audit-outline::-webkit-scrollbar-thumb,
-  .audit-checklist::-webkit-scrollbar-thumb {
+  .audit-outline::-webkit-scrollbar-thumb {
     background: var(--color-border-strong);
     border-radius: 2px;
   }
@@ -1023,7 +1065,7 @@ label.page-type-card {
   }
 
   .header-logo {
-    height: 28px;
+    height: 20px;
     order: 2;
   }
 
@@ -1038,11 +1080,16 @@ label.page-type-card {
     font-size: 0.9375rem;
   }
 
-  /* Stack nav buttons full-width, Next on top */
+  /* Stack nav buttons full-width, Next on top — sticky at bottom */
   .audit-nav {
     flex-direction: column-reverse;
     align-items: stretch;
-    padding: var(--space-md);
+    padding: var(--space-xs) var(--space-md);
+    position: sticky;
+    bottom: 0;
+    z-index: 99;
+    background: var(--color-bg-primary);
+    border-top: 1px solid var(--color-border);
   }
 
   .audit-nav .btn {

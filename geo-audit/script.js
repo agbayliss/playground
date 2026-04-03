@@ -249,31 +249,6 @@ function renderOutline() {
     ul.appendChild(li);
   });
 
-  // Summary entry — appears after all section buttons
-  var summaryLi  = document.createElement('li');
-  var summaryBtn = document.createElement('button');
-  summaryBtn.className = 'outline-btn';
-  summaryBtn.setAttribute('data-index', 'summary');
-  summaryBtn.setAttribute('aria-label', 'Summary');
-
-  var summaryCheck = document.createElement('span');
-  summaryCheck.className = 'outline-check';
-  summaryCheck.setAttribute('aria-hidden', 'true');
-  summaryCheck.textContent = '';  // no completion indicator for summary
-
-  var summaryTitle = document.createElement('span');
-  summaryTitle.className = 'outline-title';
-  summaryTitle.textContent = 'Summary';
-
-  summaryBtn.appendChild(summaryCheck);
-  summaryBtn.appendChild(summaryTitle);
-  summaryBtn.addEventListener('click', function() {
-    renderSummary();
-  });
-
-  summaryLi.appendChild(summaryBtn);
-  ul.appendChild(summaryLi);
-
   nav.innerHTML = '';
   nav.appendChild(ul);
 }
@@ -287,12 +262,6 @@ function updateOutline() {
   var btns = document.querySelectorAll('.outline-btn');
   btns.forEach(function(btn) {
     var idxAttr = btn.getAttribute('data-index');
-
-    // Summary button — just toggle active state and skip section logic
-    if (idxAttr === 'summary') {
-      btn.classList.toggle('active', state.onSummaryScreen);
-      return;
-    }
 
     var index    = parseInt(idxAttr, 10);
     var section  = state.sections[index];
@@ -438,12 +407,14 @@ function renderSection(index) {
   // Export area is permanently hidden — summary screen replaces it
   exportArea.classList.add('hidden');
 
-  // Next button is always visible from section view; text changes on last section
+  // Next button is always visible from section view; text + style changes on last section
   btnNext.classList.remove('hidden');
   if (isLast) {
     btnNext.textContent = 'View Summary \u2192';
+    btnNext.className = 'btn btn-primary';
   } else {
-    btnNext.textContent = 'Next Section \u2193';
+    btnNext.textContent = 'Next Section \u2192';
+    btnNext.className = 'btn btn-ghost';
   }
 
   // ── OUTLINE + PROGRESS ────────────────────────────────────────────────────
