@@ -31,7 +31,7 @@ window.AUDIT_CONTENT = {
 
 <p>Some OneXP components allow authors to change the semantic h-tag level (H1, H2, H3, etc.) without changing the visual size or style of the headline. This means you cannot rely on visual appearance alone to verify your heading hierarchy. A headline that looks like an H2 on the page may actually be coded as an H4 — or vice versa. Always verify the actual h-tag structure in the live code using a browser tool like the <a href="https://chromewebstore.google.com/detail/detailed-seo-extension/pfjdepjjfjjahkjfpkcgfmfhmnakjfba" target="_blank" rel="noopener" class="ext-link">Detailed SEO Extension</a>.</p>`,
         checklist: [
-          "The page has exactly one H1 tag that clearly communicates the main topic of the page",
+          "The page has exactly one H1 tag, and the H1 clearly communicates what the page is about",
           "Heading tags follow a logical order without skipping levels (e.g., H2 \u2192 H3, not H2 \u2192 H4)",
           "Heading copy is clear and concise \u2014 not so loaded with marketing jargon that the meaning is obscured",
           "The actual h-tag hierarchy has been verified in the live code using a tool like the Detailed SEO Extension, not just eyeballed from the visual design"
@@ -157,7 +157,7 @@ window.AUDIT_CONTENT = {
 
 <p>Internal links on OneXP can take multiple forms: traditional anchor text links within body copy, or component-based links like teaser cards that point to other pages in the brand area. Both approaches are valuable and work best when used together. A good practice is to include teaser cards or contextual links near the bottom of each page that guide users to related pages.</p>`,
         checklist: [
-          "The page includes contextually relevant internal links to related content elsewhere on OneXP (via text links, teaser cards, or other components)",
+          "Beyond its main navigation cards, the page includes supplementary internal links to related content on OneXP",
           "Link text and teaser card CTAs are descriptive and specific \u2014 not generic (\"click here,\" \"learn more\")"
         ]
       },
@@ -174,7 +174,7 @@ window.AUDIT_CONTENT = {
 
 <p>On OneXP, each FAQ question and answer should be placed in its own accordion component. All accordions should be grouped under a single heading that reads "Frequently Asked Questions." Pay attention to the h-tag hierarchy of this section: the "Frequently Asked Questions" headline should sit at the appropriate level in the page's overall hierarchy (typically an H2), and each individual question headline within the accordions should be one level below it (typically H3s).</p>`,
         checklist: [
-          "The page includes an FAQ section where appropriate",
+          "The page includes an FAQ section",
           "The section includes a headline that reads \"Frequently Asked Questions\"",
           "Each question is authored in an accordion underneath the \"Frequently Asked Questions\" headline",
           "Both the headline and accordions are appropriately nested within the page's h-tag hierarchy (e.g., each question's headline is one level below the section headline)"
@@ -222,7 +222,7 @@ window.AUDIT_CONTENT = {
   <li>Consider removing cards from carousels and displaying them in a static layout instead, to clean up the h-tag hierarchy and eliminate duplication issues.</li>
 </ul>`,
         checklist: [
-          "The page has a stable H1 that represents OneXP as a whole, not a rotating campaign headline",
+          "The H1 is evergreen and represents OneXP as a whole \u2014 it is not a rotating campaign or brand-specific headline",
           "There is introductory copy below the H1 explaining what OneXP is"
         ]
       },
@@ -241,9 +241,9 @@ window.AUDIT_CONTENT = {
   <li>Use this page for general brand FAQs. If the brand has frequently asked questions that apply broadly (rather than to a specific product), the brand landing page is the right place for them.</li>
 </ul>`,
         checklist: [
-          "The H1 clearly states the brand name and is not obscured by marketing copy",
+          "The H1 includes the actual brand name (e.g., 'Fanta'), not just marketing copy that omits it",
           "Content sections have descriptive headings (e.g., \"What's New,\" \"Products,\" \"About [Brand]\")",
-          "General brand-level FAQs are included on the page",
+          "The FAQs cover topics relevant to the brand as a whole, not specific to a single product or campaign",
           "Teaser cards or other components link to key sub-pages (product pages, active campaigns, etc.)"
         ]
       },
@@ -261,7 +261,7 @@ window.AUDIT_CONTENT = {
   <li>Each product category should be displayed in a teaser card that, when clicked, takes the user deeper into the hierarchy to a Product Category Page (PCP).</li>
 </ul>`,
         checklist: [
-          "The H1 includes the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")",
+          "The H1 includes both the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")",
           "Product categories are displayed in teaser cards and each link to the appropriate PCP"
         ]
       },
@@ -298,7 +298,7 @@ H3: Ingredients</pre>
     H5: Ingredients</pre>
 </div>`,
         checklist: [
-          "The H1 includes the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
+          "The H1 includes both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
           "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)",
           "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU",
           "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy"
@@ -337,7 +337,7 @@ H3: Ingredients</pre>
     H5: Ingredients</pre>
 </div>`,
         checklist: [
-          "The H1 includes the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
+          "The H1 includes both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
           "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)",
           "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU",
           "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy"
