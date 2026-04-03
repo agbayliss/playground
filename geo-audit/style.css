@@ -288,6 +288,16 @@ legend {
   margin-bottom: var(--space-sm);
 }
 
+/* Page Name and Page URL labels — sentence case to match question labels */
+#welcome-screen label[for="page-name"],
+#welcome-screen label[for="page-url"] {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
 .form-group input[type="text"],
 .form-group input[type="url"] {
   width: 100%;
@@ -409,10 +419,6 @@ label.page-type-card {
   opacity: 1;
 }
 
-/* Inner fieldset: provide top breathing room inside the collapsed container */
-.plp-subtype-question .page-type-fieldset {
-  padding-top: var(--space-xl);
-}
 
 /* Example links inside PLP sub-type cards — underline only, inherit card color */
 .plp-example-link {
