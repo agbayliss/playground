@@ -75,10 +75,9 @@ window.AUDIT_CONTENT = {
 
 <p>The Breadcrumb component on OneXP automatically reflects the actual page hierarchy and URL structure, which makes getting this right doubly important. Pages must be positioned correctly within the site's content tree for breadcrumbs to display accurate navigation paths. Authors cannot manually override breadcrumb links — they're generated from the page's actual location in the architecture.</p>`,
         checklist: [
-          "URLs are descriptive and keyword-rich (e.g., /coca-cola/products/original rather than /p/123)",
-          "URLs use hyphens (not underscores) to separate words",
-          "URLs are concise and generally stay within 3\u20134 levels of nesting",
-          "URL patterns are consistent across similar content types"
+          "URL is descriptive and keyword-rich (e.g. /coca-cola/products/original rather than /p/123)",
+          "URL uses hyphens (not underscores) to separate words",
+          "URL is concise and generally stays within 3-4 levels of nesting"
         ]
       },
 
@@ -95,7 +94,7 @@ window.AUDIT_CONTENT = {
 <p>The Breadcrumb component on OneXP automatically applies <strong>BreadcrumbList</strong> schema markup — one of the few structured data benefits available on the platform today without any additional development work. Since the Navigation Title from the page metadata is what appears as the page's label in the breadcrumb trail, it's important to make sure that field is authored clearly and accurately.</p>`,
         checklist: [
           "The Breadcrumb component is included on the page (recommended for all pages except the OneXP homepage)",
-          "The page's Navigation Title is authored clearly, since it will appear as the breadcrumb label",
+          "The page's Navigation Title is authored clearly and appears as the breadcrumb label for this page",
           "The page is positioned correctly in the site hierarchy so that the breadcrumb path is accurate"
         ]
       },
@@ -175,9 +174,10 @@ window.AUDIT_CONTENT = {
 
 <p>On OneXP, each FAQ question and answer should be placed in its own accordion component. All accordions should be grouped under a single heading that reads "Frequently Asked Questions." Pay attention to the h-tag hierarchy of this section: the "Frequently Asked Questions" headline should sit at the appropriate level in the page's overall hierarchy (typically an H2), and each individual question headline within the accordions should be one level below it (typically H3s).</p>`,
         checklist: [
-          "The page includes a \"Frequently Asked Questions\" section where appropriate",
-          "Each FAQ is placed in its own accordion component",
-          "The \"Frequently Asked Questions\" heading is at the correct h-tag level (e.g., H2), with individual questions one level below (e.g., H3)"
+          "The page includes an FAQ section where appropriate",
+          "The section includes a headline that reads \"Frequently Asked Questions\"",
+          "Each question is authored in an accordion underneath the \"Frequently Asked Questions\" headline",
+          "Both the headline and accordions are appropriately nested within the page's h-tag hierarchy (e.g., each question's headline is one level below the section headline)"
         ]
       },
 
@@ -223,8 +223,7 @@ window.AUDIT_CONTENT = {
 </ul>`,
         checklist: [
           "The page has a stable H1 that represents OneXP as a whole, not a rotating campaign headline",
-          "There is introductory copy below the H1 explaining what OneXP is",
-          "Promotional cards are displayed in static layouts rather than carousels where possible"
+          "There is introductory copy below the H1 explaining what OneXP is"
         ]
       },
 
@@ -244,7 +243,7 @@ window.AUDIT_CONTENT = {
         checklist: [
           "The H1 clearly states the brand name and is not obscured by marketing copy",
           "Content sections have descriptive headings (e.g., \"What's New,\" \"Products,\" \"About [Brand]\")",
-          "General brand-level FAQs are included here (not duplicated across all brand pages)",
+          "General brand-level FAQs are included on the page",
           "Teaser cards or other components link to key sub-pages (product pages, active campaigns, etc.)"
         ]
       },
@@ -263,7 +262,6 @@ window.AUDIT_CONTENT = {
 </ul>`,
         checklist: [
           "The H1 includes the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")",
-          "The meaning of the H1 is not lost in marketing jargon",
           "Product categories are displayed in teaser cards and each link to the appropriate PCP"
         ]
       },
@@ -301,8 +299,7 @@ H3: Ingredients</pre>
 </div>`,
         checklist: [
           "The H1 includes the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
-          "The meaning of the H1 is not lost in marketing jargon",
-          "FAQs specific to the products on the page are authored in accordions and appropriately nested within the page's h-tag hierarchy",
+          "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)",
           "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU",
           "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy"
         ]
@@ -341,8 +338,7 @@ H3: Ingredients</pre>
 </div>`,
         checklist: [
           "The H1 includes the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")",
-          "The meaning of the H1 is not lost in marketing jargon",
-          "FAQs specific to the products on the page are authored in accordions and appropriately nested within the page's h-tag hierarchy",
+          "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)",
           "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU",
           "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy"
         ]
