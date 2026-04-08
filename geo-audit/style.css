@@ -209,6 +209,11 @@ legend {
   display: none !important;
 }
 
+/* PDF view is screen-hidden; shown only by @media print below */
+#pdf-view {
+  display: none;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -1317,4 +1322,291 @@ label.page-type-card {
   padding: var(--space-xl) 0;
   border-top: 1px solid var(--color-border);
   margin-top: var(--space-xs);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PDF / PRINT STYLES
+   Triggered by window.print(). Implements a light-mode version of the design
+   system by overriding CSS custom properties. All existing component classes
+   (score-circle, score-bar-fill, summary-fix-item, etc.) are reused directly
+   in #pdf-view — style changes to those classes carry through automatically.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media print {
+
+  /* ── Page setup ──────────────────────────────────────────────────────────── */
+
+  @page {
+    size: A4 portrait;
+    margin: 18mm 20mm;
+  }
+
+  /* ── Light-mode token overrides ──────────────────────────────────────────── */
+
+  :root {
+    --color-text-primary:    #111111;
+    --color-text-secondary:  #555555;
+    --color-bg-primary:      #ffffff;
+    --color-bg-elevated:     #f5f5f4;
+    --color-bg-hover:        #e8e8e7;
+    --color-border:          rgba(0, 0, 0, 0.10);
+    --color-border-strong:   rgba(0, 0, 0, 0.20);
+    --color-checkbox-border: rgba(0, 0, 0, 0.30);
+    --color-checkbox-checked:#111111;
+    --color-info-bg:         #f5f5f4;
+    --color-code-bg:         #f0f0ef;
+    --color-progress-fill:   #111111;
+    --color-progress-track:  #e0e0e0;
+  }
+
+  /* ── Show only #pdf-view; hide the live app ──────────────────────────────── */
+
+  #welcome-screen,
+  #audit-flow {
+    display: none !important;
+  }
+
+  #pdf-view {
+    display: block;
+    background: #ffffff;
+    color: #111111;
+    font-family: var(--font-primary);
+    font-size: 10pt;
+    line-height: 1.55;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* ── Cover block ─────────────────────────────────────────────────────────── */
+
+  .pdf-cover {
+    padding-bottom: 1.75rem;
+    border-bottom: 2px solid #111111;
+    margin-bottom: 2rem;
+  }
+
+  .pdf-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Invert white logo SVG paths to black for the light PDF */
+  .pdf-logo {
+    filter: invert(1);
+    height: 20px;
+    width: auto;
+  }
+
+  .pdf-date {
+    font-size: 8.5pt;
+    color: #777777;
+  }
+
+  .pdf-report-title {
+    font-size: 22pt;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: #111111;
+    margin: 0 0 1.25rem;
+    line-height: 1.15;
+  }
+
+  .pdf-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .pdf-meta-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    font-size: 9.5pt;
+  }
+
+  .pdf-meta-label {
+    flex-shrink: 0;
+    width: 36px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888888;
+  }
+
+  .pdf-meta-value {
+    color: #111111;
+    word-break: break-all;
+  }
+
+  /* ── Score hero (reuses .summary-score-hero + .score-circle etc.) ────────── */
+
+  .pdf-score-hero {
+    margin-bottom: 2rem;
+  }
+
+  /* ── Score breakdown (reuses .summary-sections, .score-bar-* etc.) ───────── */
+
+  .pdf-breakdown {
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* ── Items to address (reuses .summary-fixes-* classes) ─────────────────── */
+
+  .pdf-fixes {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
+    margin-bottom: 0;
+  }
+
+  /* ── Full Audit Results — starts on a new page ───────────────────────────── */
+
+  .pdf-results-heading {
+    font-size: 13pt;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: #111111;
+    margin: 0 0 1.5rem;
+    break-before: page;
+  }
+
+  /* ── Individual section blocks ───────────────────────────────────────────── */
+
+  .pdf-section-block {
+    padding-bottom: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    break-inside: avoid;
+  }
+
+  .pdf-section-block:last-child {
+    border-bottom: none;
+  }
+
+  .pdf-section-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+  }
+
+  .pdf-section-title {
+    font-size: 10.5pt;
+    font-weight: 600;
+    color: #111111;
+    margin: 0;
+  }
+
+  .pdf-section-pct {
+    font-size: 10.5pt;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  /* ── Checklist items ─────────────────────────────────────────────────────── */
+
+  .pdf-checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pdf-checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.45rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.055);
+  }
+
+  .pdf-checklist-item:last-child {
+    border-bottom: none;
+  }
+
+  .pdf-item-indicator {
+    flex-shrink: 0;
+    width: 13px;
+    font-size: 9pt;
+    line-height: 1.6;
+  }
+
+  .pdf-item-text {
+    flex: 1;
+    font-size: 9pt;
+    line-height: 1.55;
+    color: #111111;
+  }
+
+  .pdf-item-checked .pdf-item-text {
+    color: #666666;
+  }
+
+  .pdf-tier-badge {
+    flex-shrink: 0;
+    font-size: 7pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    padding: 1px 4px;
+    margin-top: 2px;
+    white-space: nowrap;
+    line-height: 1.4;
+  }
+
+  /* ── Notes block ─────────────────────────────────────────────────────────── */
+
+  .pdf-notes {
+    margin-top: 0.65rem;
+    padding: 0.6rem 0.75rem;
+    background: #f5f5f4;
+    border-radius: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  .pdf-notes-label {
+    display: block;
+    font-size: 7.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #888888;
+    margin-bottom: 0.2rem;
+  }
+
+  .pdf-notes-text {
+    font-size: 9pt;
+    color: #333333;
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  .pdf-info-note {
+    font-size: 9pt;
+    color: #888888;
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* ── Footer ──────────────────────────────────────────────────────────────── */
+
+  .pdf-footer {
+    margin-top: 2rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
+    font-size: 8pt;
+    color: #999999;
+    text-align: center;
+  }
+
 }

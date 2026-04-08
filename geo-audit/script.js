@@ -675,261 +675,303 @@ function beginAudit() {
 
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PDF Export
+// PDF Export — builds #pdf-view then calls window.print()
 // ─────────────────────────────────────────────────────────────────────────────
 
-function exportPDF() {
-  var jsPDF = window.jspdf.jsPDF;
-  var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+function buildPdfView() {
+  var view = document.getElementById('pdf-view');
+  view.innerHTML = '';
 
-  var margin     = 20;
-  var pageW      = 210;
-  var printW     = pageW - margin * 2;   // 170mm
-  var bottomEdge = 297 - 20;
-  var x          = margin;
-  var y          = margin;
-  var lineH5     = 5;
-  var lineH6     = 6;
-
-  function checkPageBreak(needed) {
-    if (y + needed > bottomEdge) { doc.addPage(); y = margin; }
-  }
-
-  function drawHRule() {
-    doc.setDrawColor(180);
-    doc.setLineWidth(0.3);
-    doc.line(x, y, x + printW, y);
-    y += 1;
-  }
-
-  // ── SCORING DATA — computed once, reused in summary block + section headings
-
-  var scores    = calculateScores();
-  var unchecked = getUncheckedItems();
-
-  // Lookup map: section.id → score object (only scored sections are present)
-  var sectionScoreMap = {};
-  scores.sections.forEach(function(s) { sectionScoreMap[s.id] = s; });
-
-  // ── HEADER ────────────────────────────────────────────────────────────────
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.setTextColor(0);
-  doc.text('OneXP GEO Audit Report', pageW / 2, y, { align: 'center' });
-  y += 10;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.setTextColor(80);
-  doc.text('IfThen', pageW / 2, y, { align: 'center' });
-  y += 5;
-  doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), pageW / 2, y, { align: 'center' });
-  y += 10;
-
-  drawHRule();
-  y += 8;
-
-  // ── PAGE DETAILS ──────────────────────────────────────────────────────────
-
-  doc.setFontSize(10);
-  doc.setTextColor(0);
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Page Name:', x, y);
-  doc.setFont('helvetica', 'normal');
-  var pageNameLines = doc.splitTextToSize(state.pageName, printW - 32);
-  doc.text(pageNameLines, x + 32, y);
-  y += (pageNameLines.length * lineH5) + 3;
-
-  doc.setFont('helvetica', 'bold');
-  doc.text('Page URL:', x, y);
-  doc.setFont('helvetica', 'normal');
-  var pageUrlLines = doc.splitTextToSize(state.pageUrl, printW - 26);
-  doc.text(pageUrlLines, x + 26, y);
-  y += (pageUrlLines.length * lineH5) + 3;
-
+  var scores        = calculateScores();
+  var unchecked     = getUncheckedItems();
+  var pct           = scores.overall.pct;
+  var scoreColor    = pct >= 80 ? '#38A169' : (pct >= 50 ? '#D69E2E' : '#E53E3E');
+  var dateStr       = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   var pageTypeLabel = state.pageType;
   AUDIT_CONTENT.pageTypes.forEach(function(pt) {
     if (pt.id === state.pageType) pageTypeLabel = pt.label;
   });
-  doc.setFont('helvetica', 'bold');
-  doc.text('Page Type:', x, y);
-  doc.setFont('helvetica', 'normal');
-  doc.text(pageTypeLabel, x + 28, y);
-  y += lineH5 + 8;
 
-  drawHRule();
-  y += 8;
+  // ── COVER ─────────────────────────────────────────────────────────────────
 
-  // ── SCORE SUMMARY ─────────────────────────────────────────────────────────
+  var cover = document.createElement('div');
+  cover.className = 'pdf-cover';
 
-  // a) Overall Score
-  checkPageBreak(lineH6 * 3 + 12);
+  var topRow = document.createElement('div');
+  topRow.className = 'pdf-top-row';
+  var logo = document.createElement('img');
+  logo.src = 'assets/logo.svg';
+  logo.alt = 'IfThen';
+  logo.className = 'pdf-logo';
+  var dateEl = document.createElement('span');
+  dateEl.className   = 'pdf-date';
+  dateEl.textContent = dateStr;
+  topRow.appendChild(logo);
+  topRow.appendChild(dateEl);
+  cover.appendChild(topRow);
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(0);
-  doc.text('Overall Score', x, y);
-  y += lineH6 + 1;
+  var titleEl = document.createElement('h1');
+  titleEl.className   = 'pdf-report-title';
+  titleEl.textContent = 'OneXP GEO Audit Report';
+  cover.appendChild(titleEl);
 
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(13);
-  var overallText  = scores.overall.pct + '% (' + scores.overall.earned + ' / ' + scores.overall.possible + ' points)';
-  var overallLines = doc.splitTextToSize(overallText, printW);
-  checkPageBreak(overallLines.length * 6.5 + 2);
-  doc.text(overallLines, x, y);
-  y += (overallLines.length * 6.5) + 8;
-
-  // b) Per-Section Score Breakdown
-  checkPageBreak(lineH6 * 2 + 4);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(0);
-  doc.text('Score Breakdown', x, y);
-  y += lineH6 + 2;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  scores.sections.forEach(function(s) {
-    var sLine  = s.title + ': ' + s.pct + '% (' + s.earned + '/' + s.possible + ')';
-    var sLines = doc.splitTextToSize(sLine, printW);
-    checkPageBreak(sLines.length * lineH5 + 1);
-    doc.text(sLines, x, y);
-    y += (sLines.length * lineH5) + 1;
+  var metaEl = document.createElement('div');
+  metaEl.className = 'pdf-meta';
+  [['Page', state.pageName], ['URL', state.pageUrl], ['Type', pageTypeLabel]].forEach(function(pair) {
+    var row = document.createElement('div');
+    row.className = 'pdf-meta-row';
+    var lbl = document.createElement('span');
+    lbl.className   = 'pdf-meta-label';
+    lbl.textContent = pair[0];
+    var val = document.createElement('span');
+    val.className   = 'pdf-meta-value';
+    val.textContent = pair[1];
+    row.appendChild(lbl);
+    row.appendChild(val);
+    metaEl.appendChild(row);
   });
-  y += 6;
+  cover.appendChild(metaEl);
+  view.appendChild(cover);
 
-  // c) Items to Address
-  checkPageBreak(lineH6 * 2 + 4);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(0);
-  doc.text('Items to Address', x, y);
-  y += lineH6 + 2;
+  // ── SCORE HERO ────────────────────────────────────────────────────────────
 
-  doc.setFontSize(10);
-  doc.setTextColor(0);
+  var heroWrap = document.createElement('div');
+  heroWrap.className = 'summary-score-hero pdf-score-hero';
+
+  var circle = document.createElement('div');
+  circle.className        = 'score-circle';
+  circle.style.borderColor = scoreColor;
+  circle.style.color       = scoreColor;
+  var circlePct = document.createElement('div');
+  circlePct.className   = 'score-circle-pct';
+  circlePct.textContent = pct + '%';
+  circle.appendChild(circlePct);
+  heroWrap.appendChild(circle);
+
+  var heroLabel = document.createElement('p');
+  heroLabel.className   = 'score-hero-label';
+  heroLabel.textContent = 'Overall GEO Audit Score';
+  heroWrap.appendChild(heroLabel);
+
+  var heroPoints = document.createElement('p');
+  heroPoints.className   = 'score-hero-points';
+  heroPoints.textContent = scores.overall.earned + ' / ' + scores.overall.possible + ' points';
+  heroWrap.appendChild(heroPoints);
+
+  view.appendChild(heroWrap);
+
+  // ── SCORE BREAKDOWN ───────────────────────────────────────────────────────
+
+  var breakdown = document.createElement('div');
+  breakdown.className = 'summary-sections pdf-breakdown';
+
+  var breakdownTitle = document.createElement('h2');
+  breakdownTitle.className   = 'summary-section-title';
+  breakdownTitle.textContent = 'Score Breakdown';
+  breakdown.appendChild(breakdownTitle);
+
+  scores.sections.forEach(function(s) {
+    var sPct   = s.pct;
+    var sColor = sPct >= 80 ? '#38A169' : (sPct >= 50 ? '#D69E2E' : '#E53E3E');
+
+    var row = document.createElement('div');
+    row.className = 'score-section-row';
+
+    var nameEl = document.createElement('span');
+    nameEl.className   = 'score-section-name';
+    nameEl.textContent = s.title;
+
+    var barWrap = document.createElement('div');
+    barWrap.className = 'score-bar-wrap';
+
+    var barTrack = document.createElement('div');
+    barTrack.className = 'score-bar-track';
+
+    var barFill = document.createElement('div');
+    barFill.className             = 'score-bar-fill';
+    barFill.style.width           = sPct + '%';
+    barFill.style.backgroundColor = sColor;
+
+    var barPctEl = document.createElement('span');
+    barPctEl.className   = 'score-bar-pct';
+    barPctEl.textContent = sPct + '%';
+
+    barTrack.appendChild(barFill);
+    barWrap.appendChild(barTrack);
+    barWrap.appendChild(barPctEl);
+    row.appendChild(nameEl);
+    row.appendChild(barWrap);
+    breakdown.appendChild(row);
+  });
+
+  view.appendChild(breakdown);
+
+  // ── ITEMS TO ADDRESS ──────────────────────────────────────────────────────
+
+  var fixesEl = document.createElement('div');
+  fixesEl.className = 'pdf-fixes';
 
   if (unchecked.length === 0) {
-    doc.setFont('helvetica', 'normal');
-    checkPageBreak(lineH5 + 2);
-    doc.text('All checklist items passed.', x, y);
-    y += lineH5 + 6;
+    var congrats = document.createElement('p');
+    congrats.className   = 'summary-congrats';
+    congrats.textContent = 'All checklist items passed. Great work!';
+    fixesEl.appendChild(congrats);
   } else {
+    var fixHeading = document.createElement('h2');
+    fixHeading.className   = 'summary-fixes-heading';
+    fixHeading.textContent = 'Items to Address';
+    fixesEl.appendChild(fixHeading);
+
+    var countEl = document.createElement('p');
+    countEl.className   = 'summary-fixes-count';
+    countEl.textContent = unchecked.length + ' item' + (unchecked.length === 1 ? '' : 's') + ' remaining';
+    fixesEl.appendChild(countEl);
+
     ['critical', 'important', 'nice-to-have'].forEach(function(tier) {
-      var tierItems = unchecked.filter(function(item) { return item.tier === tier; });
+      var tierItems = unchecked.filter(function(x) { return x.tier === tier; });
       if (tierItems.length === 0) return;
+      var meta = TIER_META[tier];
 
-      checkPageBreak(lineH5 * 2 + 3);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(0);
-      doc.text(TIER_META[tier].label, x, y);
-      y += lineH5 + 1;
+      var tierHeading = document.createElement('h3');
+      tierHeading.className   = 'summary-tier-heading';
+      tierHeading.style.color = meta.color;
+      tierHeading.textContent = meta.icon + '\u00a0' + meta.label;
+      fixesEl.appendChild(tierHeading);
 
-      doc.setFont('helvetica', 'normal');
+      var ul = document.createElement('ul');
+      ul.className = 'summary-fix-list';
+
       tierItems.forEach(function(item) {
-        var fixLine  = '\u2022 ' + stripHtml(item.text) + ' (' + item.sectionTitle + ')';
-        var fixLines = doc.splitTextToSize(fixLine, printW - 4);
-        checkPageBreak(fixLines.length * lineH5 + 1);
-        doc.text(fixLines, x + 4, y);
-        y += (fixLines.length * lineH5) + 1;
+        var li = document.createElement('li');
+        li.className = 'summary-fix-item';
+
+        var textEl = document.createElement('span');
+        textEl.className   = 'fix-item-text';
+        textEl.textContent = stripHtml(item.text);
+
+        var sectionEl = document.createElement('span');
+        sectionEl.className   = 'fix-item-section';
+        sectionEl.textContent = item.sectionTitle;
+
+        li.appendChild(textEl);
+        li.appendChild(sectionEl);
+        ul.appendChild(li);
       });
-      y += 3;
+
+      fixesEl.appendChild(ul);
     });
-    y += 3;
   }
 
-  // d) Horizontal rule before section-by-section results
-  drawHRule();
-  y += 8;
+  view.appendChild(fixesEl);
 
-  // ── AUDIT RESULTS — LOOP THROUGH SECTIONS ────────────────────────────────
+  // ── SECTION-BY-SECTION RESULTS ────────────────────────────────────────────
+
+  var resultsHeading = document.createElement('h2');
+  resultsHeading.className   = 'pdf-results-heading';
+  resultsHeading.textContent = 'Full Audit Results';
+  view.appendChild(resultsHeading);
+
+  var sectionScoreMap = {};
+  scores.sections.forEach(function(s) { sectionScoreMap[s.id] = s; });
 
   state.sections.forEach(function(section) {
+    var block = document.createElement('div');
+    block.className = 'pdf-section-block';
 
-    checkPageBreak(16);
+    // Section header: title + score percentage
+    var sHeaderEl = document.createElement('div');
+    sHeaderEl.className = 'pdf-section-header';
 
-    // Section heading — append score percentage for scored sections
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    var sScore      = sectionScoreMap[section.id];
-    var headingText = (section.checklist.length > 0 && sScore)
-      ? section.title + ' \u2014 ' + sScore.pct + '%'
-      : section.title;
-    var titleLines = doc.splitTextToSize(headingText, printW);
-    checkPageBreak(titleLines.length * lineH6 + 4);
-    doc.text(titleLines, x, y);
-    y += (titleLines.length * lineH6) + 4;
+    var sTitleEl = document.createElement('h3');
+    sTitleEl.className   = 'pdf-section-title';
+    sTitleEl.textContent = section.title;
+    sHeaderEl.appendChild(sTitleEl);
 
-    doc.setFontSize(10);
+    var sScore = sectionScoreMap[section.id];
+    if (sScore) {
+      var sColor = sScore.pct >= 80 ? '#38A169' : (sScore.pct >= 50 ? '#D69E2E' : '#E53E3E');
+      var sPctEl = document.createElement('span');
+      sPctEl.className   = 'pdf-section-pct';
+      sPctEl.style.color = sColor;
+      sPctEl.textContent = sScore.pct + '%';
+      sHeaderEl.appendChild(sPctEl);
+    }
+    block.appendChild(sHeaderEl);
 
+    // Checklist items
     if (section.checklist.length > 0) {
+      var ul = document.createElement('ul');
+      ul.className = 'pdf-checklist';
+
       section.checklist.forEach(function(item, i) {
         var checked = state.checkboxState[section.id][i];
-        var prefix  = checked ? '\u2713 ' : '\u2717 ';
-        // Strip HTML tags from checklist item text for plain-text PDF output
-        var plainText = stripHtml(item.text) + ' [' + TIER_META[item.tier].label + ']';
+        var li = document.createElement('li');
+        li.className = 'pdf-checklist-item' + (checked ? ' pdf-item-checked' : ' pdf-item-unchecked');
 
-        checkPageBreak(lineH5 * 2 + 2);
+        var indicator = document.createElement('span');
+        indicator.className   = 'pdf-item-indicator';
+        indicator.setAttribute('aria-hidden', 'true');
+        indicator.textContent = checked ? '\u2713' : '\u25cb';
+        indicator.style.color = checked ? '#38A169' : TIER_META[item.tier].color;
 
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(checked ? 0 : 120);
-        doc.text(prefix, x, y);
+        var textEl = document.createElement('span');
+        textEl.className   = 'pdf-item-text';
+        textEl.textContent = stripHtml(item.text);
 
-        doc.setFont('helvetica', 'normal');
-        var itemLines = doc.splitTextToSize(plainText, printW - 10);
-        checkPageBreak(itemLines.length * lineH5 + 2);
-        doc.text(itemLines, x + 7, y);
-        y += (itemLines.length * lineH5) + 2;
+        var badge = document.createElement('span');
+        badge.className        = 'pdf-tier-badge';
+        badge.style.color       = TIER_META[item.tier].color;
+        badge.style.borderColor = TIER_META[item.tier].color;
+        badge.textContent       = TIER_META[item.tier].label;
+
+        li.appendChild(indicator);
+        li.appendChild(textEl);
+        li.appendChild(badge);
+        ul.appendChild(li);
       });
+
+      block.appendChild(ul);
     } else {
-      // Part 3 — no checklist, print a brief note
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(9);
-      doc.setTextColor(100);
-      var infoText = 'Informational section \u2014 no checklist items.';
-      var infoLines = doc.splitTextToSize(infoText, printW);
-      checkPageBreak(infoLines.length * lineH5 + 2);
-      doc.text(infoLines, x, y);
-      y += (infoLines.length * lineH5) + 2;
+      var infoEl = document.createElement('p');
+      infoEl.className   = 'pdf-info-note';
+      infoEl.textContent = 'Informational section \u2014 no checklist items.';
+      block.appendChild(infoEl);
     }
 
-    // Notes — print only if the user entered something
+    // Notes — only if the user entered something
     var notesText = (state.notesState[section.id] || '').trim();
     if (notesText) {
-      y += 2;
-      checkPageBreak(lineH5 * 2 + 4);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(0);
-      doc.text('Notes:', x, y);
-      y += lineH5;
+      var notesBlock = document.createElement('div');
+      notesBlock.className = 'pdf-notes';
 
-      doc.setFont('helvetica', 'normal');
-      var notesLines = doc.splitTextToSize(notesText, printW);
-      checkPageBreak(notesLines.length * lineH5 + 2);
-      doc.text(notesLines, x, y);
-      y += (notesLines.length * lineH5) + 2;
+      var notesLabelEl = document.createElement('span');
+      notesLabelEl.className   = 'pdf-notes-label';
+      notesLabelEl.textContent = 'Notes';
+
+      var notesTextEl = document.createElement('p');
+      notesTextEl.className   = 'pdf-notes-text';
+      notesTextEl.textContent = notesText;
+
+      notesBlock.appendChild(notesLabelEl);
+      notesBlock.appendChild(notesTextEl);
+      block.appendChild(notesBlock);
     }
 
-    y += 8; // gap between sections
+    view.appendChild(block);
   });
 
-  // ── FOOTERS ───────────────────────────────────────────────────────────────
+  // ── FOOTER ────────────────────────────────────────────────────────────────
 
-  var pageCount = doc.internal.getNumberOfPages();
-  for (var i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(150);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Generated by the IfThen OneXP GEO Audit Tool', 105, 290, { align: 'center' });
-  }
+  var footer = document.createElement('div');
+  footer.className   = 'pdf-footer';
+  footer.textContent = 'Generated by the IfThen OneXP GEO Audit Tool';
+  view.appendChild(footer);
+}
 
-  var safeName = state.pageName.replace(/[^a-zA-Z0-9\-_\s]/g, '').replace(/\s+/g, '-').slice(0, 50);
-  doc.save('OneXP-GEO-Audit-' + (safeName || 'Report') + '.pdf');
+
+function printReport() {
+  buildPdfView();
+  window.print();
 }
 
 
@@ -1070,7 +1112,7 @@ function init() {
   });
 
   document.getElementById('btn-next').addEventListener('click', function() {
-    if (state.onSummaryScreen) { exportPDF(); return; }
+    if (state.onSummaryScreen) { printReport(); return; }
     if (state.currentSectionIndex === state.sections.length - 1) {
       renderSummary();
     } else {
@@ -1091,11 +1133,11 @@ function init() {
   });
 
   document.getElementById('btn-export').addEventListener('click', function() {
-    exportPDF();
+    printReport();
   });
 
   document.getElementById('btn-summary-export').addEventListener('click', function() {
-    exportPDF();
+    printReport();
   });
 }
 
