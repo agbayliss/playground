@@ -185,7 +185,9 @@ function getUncheckedItems() {
         items.push({
           text:         item.text,
           tier:         item.tier,
-          sectionTitle: section.title
+          sectionTitle: section.title,
+          actionTitle:  item.actionTitle,
+          actionBody:   item.actionBody
         });
       }
     });
@@ -526,6 +528,12 @@ function renderSummary() {
 
   // ── PRIORITIZED FIX LIST ─────────────────────────────────────────────────
 
+  var TIER_LABELS = {
+    "critical":     "DO FIRST",
+    "important":    "DO NEXT",
+    "nice-to-have": "POLISH"
+  };
+
   var fixesEl = document.getElementById('summary-fixes');
   fixesEl.innerHTML = '';
 
@@ -537,13 +545,22 @@ function renderSummary() {
   } else {
     var fixHeading = document.createElement('h2');
     fixHeading.className   = 'summary-fixes-heading';
-    fixHeading.textContent = 'Items to Address';
+    fixHeading.textContent = 'Your Action Plan';
     fixesEl.appendChild(fixHeading);
+
+    var uniqueSections = [];
+    unchecked.forEach(function(item) {
+      if (uniqueSections.indexOf(item.sectionTitle) === -1) {
+        uniqueSections.push(item.sectionTitle);
+      }
+    });
 
     var countEl = document.createElement('p');
     countEl.className   = 'summary-fixes-count';
-    countEl.textContent = unchecked.length + ' item' + (unchecked.length === 1 ? '' : 's') + ' remaining';
+    countEl.textContent = unchecked.length + ' item' + (unchecked.length === 1 ? '' : 's') + ' to address across ' + uniqueSections.length + ' section' + (uniqueSections.length === 1 ? '' : 's');
     fixesEl.appendChild(countEl);
+
+    var runningCounter = 1;
 
     // Render each tier group that has items
     ['critical', 'important', 'nice-to-have'].forEach(function(tier) {
@@ -555,27 +572,44 @@ function renderSummary() {
       var tierHeading = document.createElement('h3');
       tierHeading.className   = 'summary-tier-heading';
       tierHeading.style.color = meta.color;
-      tierHeading.textContent = meta.icon + '\u00a0' + meta.label;
+      tierHeading.textContent = meta.icon + ' ' + TIER_LABELS[tier] + ' (' + meta.label + ')';
       fixesEl.appendChild(tierHeading);
 
       var ul = document.createElement('ul');
-      ul.className = 'summary-fix-list';
+      ul.className = 'action-list';
 
       tierItems.forEach(function(item) {
         var li = document.createElement('li');
-        li.className = 'summary-fix-item';
+        li.className = 'action-item';
 
-        var textEl = document.createElement('span');
-        textEl.className   = 'fix-item-text';
-        textEl.textContent = item.text;
+        var header = document.createElement('div');
+        header.className = 'action-item-header';
+
+        var numberEl = document.createElement('span');
+        numberEl.className   = 'action-item-number';
+        numberEl.textContent = runningCounter + '.';
+
+        var titleEl = document.createElement('span');
+        titleEl.className   = 'action-item-title';
+        titleEl.textContent = item.actionTitle;
+
+        header.appendChild(numberEl);
+        header.appendChild(titleEl);
+
+        var bodyEl = document.createElement('p');
+        bodyEl.className   = 'action-item-body';
+        bodyEl.textContent = item.actionBody;
 
         var sectionEl = document.createElement('span');
-        sectionEl.className   = 'fix-item-section';
-        sectionEl.textContent = item.sectionTitle;
+        sectionEl.className   = 'action-item-section';
+        sectionEl.textContent = 'Section: ' + item.sectionTitle;
 
-        li.appendChild(textEl);
+        li.appendChild(header);
+        li.appendChild(bodyEl);
         li.appendChild(sectionEl);
         ul.appendChild(li);
+
+        runningCounter++;
       });
 
       fixesEl.appendChild(ul);
@@ -806,7 +840,13 @@ function buildPdfView() {
 
   view.appendChild(breakdown);
 
-  // ── ITEMS TO ADDRESS ──────────────────────────────────────────────────────
+  // ── ACTION PLAN ────────────────────────────────────────────────────────────
+
+  var TIER_LABELS_PDF = {
+    "critical":     "DO FIRST",
+    "important":    "DO NEXT",
+    "nice-to-have": "POLISH"
+  };
 
   var fixesEl = document.createElement('div');
   fixesEl.className = 'pdf-fixes';
@@ -819,13 +859,22 @@ function buildPdfView() {
   } else {
     var fixHeading = document.createElement('h2');
     fixHeading.className   = 'summary-fixes-heading';
-    fixHeading.textContent = 'Items to Address';
+    fixHeading.textContent = 'Action Plan';
     fixesEl.appendChild(fixHeading);
+
+    var pdfUniqueSections = [];
+    unchecked.forEach(function(item) {
+      if (pdfUniqueSections.indexOf(item.sectionTitle) === -1) {
+        pdfUniqueSections.push(item.sectionTitle);
+      }
+    });
 
     var countEl = document.createElement('p');
     countEl.className   = 'summary-fixes-count';
-    countEl.textContent = unchecked.length + ' item' + (unchecked.length === 1 ? '' : 's') + ' remaining';
+    countEl.textContent = unchecked.length + ' item' + (unchecked.length === 1 ? '' : 's') + ' to address across ' + pdfUniqueSections.length + ' section' + (pdfUniqueSections.length === 1 ? '' : 's');
     fixesEl.appendChild(countEl);
+
+    var pdfRunningCounter = 1;
 
     ['critical', 'important', 'nice-to-have'].forEach(function(tier) {
       var tierItems = unchecked.filter(function(x) { return x.tier === tier; });
@@ -835,27 +884,44 @@ function buildPdfView() {
       var tierHeading = document.createElement('h3');
       tierHeading.className   = 'summary-tier-heading';
       tierHeading.style.color = meta.color;
-      tierHeading.textContent = meta.icon + '\u00a0' + meta.label;
+      tierHeading.textContent = meta.icon + ' ' + TIER_LABELS_PDF[tier] + ' (' + meta.label + ')';
       fixesEl.appendChild(tierHeading);
 
       var ul = document.createElement('ul');
-      ul.className = 'summary-fix-list';
+      ul.className = 'action-list';
 
       tierItems.forEach(function(item) {
         var li = document.createElement('li');
-        li.className = 'summary-fix-item';
+        li.className = 'action-item';
 
-        var textEl = document.createElement('span');
-        textEl.className   = 'fix-item-text';
-        textEl.textContent = stripHtml(item.text);
+        var header = document.createElement('div');
+        header.className = 'action-item-header';
+
+        var numberEl = document.createElement('span');
+        numberEl.className   = 'action-item-number';
+        numberEl.textContent = pdfRunningCounter + '.';
+
+        var titleEl = document.createElement('span');
+        titleEl.className   = 'action-item-title';
+        titleEl.textContent = stripHtml(item.actionTitle);
+
+        header.appendChild(numberEl);
+        header.appendChild(titleEl);
+
+        var bodyEl = document.createElement('p');
+        bodyEl.className   = 'action-item-body';
+        bodyEl.textContent = stripHtml(item.actionBody);
 
         var sectionEl = document.createElement('span');
-        sectionEl.className   = 'fix-item-section';
-        sectionEl.textContent = item.sectionTitle;
+        sectionEl.className   = 'action-item-section';
+        sectionEl.textContent = 'Section: ' + item.sectionTitle;
 
-        li.appendChild(textEl);
+        li.appendChild(header);
+        li.appendChild(bodyEl);
         li.appendChild(sectionEl);
         ul.appendChild(li);
+
+        pdfRunningCounter++;
       });
 
       fixesEl.appendChild(ul);

@@ -1314,6 +1314,62 @@ label.page-type-card {
   margin: 0;
 }
 
+/* ─── Action Plan Items ────────────────────────────────────────────────── */
+
+.action-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.action-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.action-item:last-child {
+  border-bottom: none;
+}
+
+.action-item-header {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.action-item-number {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  min-width: 24px;
+  flex-shrink: 0;
+}
+
+.action-item-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+.action-item-body {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin: 0 0 0 32px;
+}
+
+.action-item-section {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-left: 32px;
+  font-style: italic;
+}
+
 
 /* ─── Export Button ─────────────────────────────────────────────────────── */
 
@@ -1463,6 +1519,33 @@ label.page-type-card {
     padding-bottom: 2rem;
     border-top: 1px solid rgba(0, 0, 0, 0.10);
     margin-bottom: 0;
+  }
+
+  /* ── Action Plan items (print overrides) ──────────────────────────────────── */
+
+  .action-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    break-inside: avoid;
+  }
+
+  .action-item-number {
+    color: #111111;
+  }
+
+  .action-item-title {
+    color: #111111;
+    font-size: 9.5pt;
+  }
+
+  .action-item-body {
+    color: #333333;
+    font-size: 8.5pt;
+  }
+
+  .action-item-section {
+    color: #666666;
+    font-size: 8pt;
   }
 
   /* ── Full Audit Results — starts on a new page ───────────────────────────── */
