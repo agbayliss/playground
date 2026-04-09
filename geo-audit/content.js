@@ -31,10 +31,10 @@ window.AUDIT_CONTENT = {
 
 <p>Some OneXP components allow authors to change the semantic h-tag level (H1, H2, H3, etc.) without changing the visual size or style of the headline. This means you cannot rely on visual appearance alone to verify your heading hierarchy. A headline that looks like an H2 on the page may actually be coded as an H4 — or vice versa. Always verify the actual h-tag structure in the live code using a browser tool like the <a href="https://chromewebstore.google.com/detail/detailed-seo-extension/pfjdepjjfjjahkjfpkcgfmfhmnakjfba" target="_blank" rel="noopener" class="ext-link">Detailed SEO Extension</a>.</p>`,
         checklist: [
-          { text: "The page has exactly one H1 tag, and the H1 clearly communicates what the page is about", tier: "critical" },
-          { text: "Heading tags follow a logical order without skipping levels (e.g., H2 \u2192 H3, not H2 \u2192 H4)", tier: "critical" },
-          { text: "Heading copy is clear and concise \u2014 not so loaded with marketing jargon that the meaning is obscured", tier: "important" },
-          { text: "The actual h-tag hierarchy has been verified in the live code using a tool like the Detailed SEO Extension, not just eyeballed from the visual design", tier: "important" }
+          { text: "The page has exactly one H1 tag, and the H1 clearly communicates what the page is about", tier: "critical", actionTitle: "Add a clear, singular H1 tag", actionBody: "Every page needs exactly one H1 that tells crawlers and users what the page is about. Use the Detailed SEO Extension to check if the page has zero, one, or multiple H1s, then add or consolidate as needed." },
+          { text: "Heading tags follow a logical order without skipping levels (e.g., H2 \u2192 H3, not H2 \u2192 H4)", tier: "critical", actionTitle: "Fix skipped heading levels", actionBody: "Review the page's heading structure using the Detailed SEO Extension and ensure tags descend sequentially (H1 → H2 → H3) with no gaps. For most components on OneXP, authors can use the h-tag dropdown to adjust semantic heading levels without changing the visual style." },
+          { text: "Heading copy is clear and concise \u2014 not so loaded with marketing jargon that the meaning is obscured", tier: "important", actionTitle: "Simplify heading copy", actionBody: "Review each heading and ask: would someone unfamiliar with this content understand what this section is about? Rewrite any jargon-heavy headings to clearly describe the content that follows." },
+          { text: "The actual h-tag hierarchy has been verified in the live code using a tool like the Detailed SEO Extension, not just eyeballed from the visual design", tier: "important", actionTitle: "Verify h-tags in the live code", actionBody: "Install the Detailed SEO Extension and run it on the live page. Navigate to the "Headings" tab within the extension to view the existing h-tag hierarchy. OneXP components can display one heading size visually while using a different semantic level in the code — the only way to catch this is to inspect the actual HTML." }
         ]
       },
 
@@ -58,8 +58,8 @@ window.AUDIT_CONTENT = {
 
 <p>The Page Title and Description are easy to check on live pages using the <a href="https://chromewebstore.google.com/detail/detailed-seo-extension/pfjdepjjfjjahkjfpkcgfmfhmnakjfba" target="_blank" rel="noopener" class="ext-link">Detailed SEO Extension</a>. The Navigation Title is verified as part of the Breadcrumbs section of this audit, since the Breadcrumb component is where it surfaces in the UI.</p>`,
         checklist: [
-          { text: "Page Title is authored and is 50\u201360 characters, with primary keywords included naturally", tier: "critical" },
-          { text: "Meta Description is authored and is 150\u2013160 characters, clearly describing what the page contains", tier: "important" }
+          { text: "Page Title is authored and is 50\u201360 characters, with primary keywords included naturally", tier: "critical", actionTitle: "Author a Page Title (50–60 characters)", actionBody: "Author a meta title in OneXP's page properties that is 50–60 characters long and includes the page's primary keywords naturally. Use the Detailed SEO Extension to verify it on the live page." },
+          { text: "Meta Description is authored and is 150\u2013160 characters, clearly describing what the page contains", tier: "important", actionTitle: "Write a Meta Description (150–160 characters)", actionBody: "Author a meta description in OneXP's page properties that is 150–160 characters and clearly tells searchers what the page contains while using keywords naturally." }
         ]
       },
 
@@ -75,9 +75,9 @@ window.AUDIT_CONTENT = {
 
 <p>The Breadcrumb component on OneXP automatically reflects the actual page hierarchy and URL structure, which makes getting this right doubly important. Pages must be positioned correctly within the site's content tree for breadcrumbs to display accurate navigation paths. Authors cannot manually override breadcrumb links — they're generated from the page's actual location in the architecture.</p>`,
         checklist: [
-          { text: "URL is descriptive and keyword-rich (e.g. /coca-cola/products/original rather than /p/123)", tier: "important" },
-          { text: "URL uses hyphens (not underscores) to separate words", tier: "nice-to-have" },
-          { text: "URL is concise and generally stays within 3-4 levels of nesting", tier: "nice-to-have" }
+          { text: "URL is descriptive and keyword-rich (e.g. /coca-cola/products/original rather than /p/123)", tier: "important", actionTitle: "Make the URL descriptive and keyword-rich", actionBody: "Update the URL with natural language and coordinate with the team to implement a 301 redirect from the old URL." },
+          { text: "URL uses hyphens (not underscores) to separate words", tier: "nice-to-have", actionTitle: "Replace underscores with hyphens in the URL", actionBody: "Update the URL to use hyphens, and coordinate with the team to implement a 301 redirect from the old URL." },
+          { text: "URL is concise and generally stays within 3-4 levels of nesting", tier: "nice-to-have", actionTitle: "Shorten deeply nested URLs", actionBody: "Consider whether the page can be repositioned higher in the site's content tree, and coordinate with the team to adjust." }
         ]
       },
 
@@ -93,9 +93,9 @@ window.AUDIT_CONTENT = {
 
 <p>The Breadcrumb component on OneXP automatically applies <strong>BreadcrumbList</strong> schema markup — one of the few structured data benefits available on the platform today without any additional development work. Since the Navigation Title from the page metadata is what appears as the page's label in the breadcrumb trail, it's important to make sure that field is authored clearly and accurately.</p>`,
         checklist: [
-          { text: "The Breadcrumb component is included on the page (recommended for all pages except the OneXP homepage)", tier: "critical" },
-          { text: "The page's Navigation Title is authored clearly and appears as the breadcrumb label for this page", tier: "important" },
-          { text: "The page is positioned correctly in the site hierarchy so that the breadcrumb path is accurate", tier: "important" }
+          { text: "The Breadcrumb component is included on the page (recommended for all pages except the OneXP homepage)", tier: "critical", actionTitle: "Add the Breadcrumb component to the page", actionBody: "This is one of the few components that automatically generates BreadcrumbList schema markup, which helps crawlers understand your site's hierarchy and can display breadcrumb trails in search results." },
+          { text: "The page's Navigation Title is authored clearly and appears as the breadcrumb label for this page", tier: "important", actionTitle: "Author a clear Navigation Title", actionBody: "Author the Navigation Title in OneXP's page properties. This field controls how the page is labeled in the Breadcrumb component, so it should be concise and clearly describe the page's content." },
+          { text: "The page is positioned correctly in the site hierarchy so that the breadcrumb path is accurate", tier: "important", actionTitle: "Verify the page's position in the content tree", actionBody: "Breadcrumb paths are generated automatically from the page's position — they can't be manually overridden — so an incorrect placement produces misleading breadcrumbs." }
         ]
       },
 
@@ -115,8 +115,8 @@ window.AUDIT_CONTENT = {
 
 <p>An alternative solution, if the gradient is a concern, is to author the headline and CTA as a separate rich text component positioned above or below the hero image on the page. This allows the image to be displayed without a gradient, while keeping the important text live and crawlable.</p>`,
         checklist: [
-          { text: "All essential headlines and copy are rendered as live text via OneXP components, not embedded in images", tier: "critical" },
-          { text: "All buttons/CTAs are live interactive elements, not embedded in images", tier: "critical" }
+          { text: "All essential headlines and copy are rendered as live text via OneXP components, not embedded in images", tier: "critical", actionTitle: "Pull baked-in text out of images", actionBody: "Identify any images on the page that contain essential text content (headlines, body copy, etc). Replace them with live text rendered through OneXP components (such as the Hero Teaser), using the image as a visual background only. Crawlers and screen readers cannot read text inside images." },
+          { text: "All buttons/CTAs are live interactive elements, not embedded in images", tier: "critical", actionTitle: "Replace image-embedded CTAs with live buttons", actionBody: "Check for any CTA buttons that are part of an image file rather than live interactive elements. Replace them with OneXP button components so they are clickable, accessible, and visible to crawlers." }
         ]
       },
 
@@ -136,10 +136,10 @@ window.AUDIT_CONTENT = {
 
 <p>To verify alt text on a live page, the <a href="https://chromewebstore.google.com/detail/image-alt-text-viewer/nhmihbneenlkbjjpbimhegikadfleccd" target="_blank" rel="noopener" class="ext-link">Image Alt Text Viewer</a> Chrome extension is an easy way to view the alt text on all images on a single web page at a glance.</p>`,
         checklist: [
-          { text: "All meaningful images on the page have alt text authored", tier: "critical" },
-          { text: "Alt text is concise, accurate, and describes what's actually in the image", tier: "important" },
-          { text: "Alt text does not start with \"Image of...\" or \"Picture of...\"", tier: "nice-to-have" },
-          { text: "Keywords are only included in alt text when they naturally describe the image content \u2014 no keyword stuffing", tier: "nice-to-have" }
+          { text: "All meaningful images on the page have alt text authored", tier: "critical", actionTitle: "Add alt text to all meaningful images", actionBody: "In the DAM in AEM, author alt text in the description field of all meaningful images on the page. This alt text will populate everywhere the image is used. Once published, use the Image Alt Text Viewer extension on the live page to verify." },
+          { text: "Alt text is concise, accurate, and describes what's actually in the image", tier: "important", actionTitle: "Improve alt text accuracy and conciseness", actionBody: "Review each image's alt text and ensure it accurately describes what's depicted — not what you wish the image communicated for SEO purposes. Keep descriptions under 125 characters and focus on what would be useful to someone who can't see the image." },
+          { text: "Alt text does not start with \"Image of...\" or \"Picture of...\"", tier: "nice-to-have", actionTitle: "Remove \"Image of...\" prefixes from alt text", actionBody: "Screen readers already announce that an element is an image, so starting alt text with \"Image of...\" or \"Picture of...\" is redundant. Remove these prefixes from any alt text that has them." },
+          { text: "Keywords are only included in alt text when they naturally describe the image content \u2014 no keyword stuffing", tier: "nice-to-have", actionTitle: "Remove keyword stuffing from alt text", actionBody: "Review alt text for any instances where keywords have been added for SEO purposes rather than to describe the actual image content. Search engines can detect keyword stuffing in alt text and it harms the page's overall quality signals." }
         ]
       },
 
@@ -157,8 +157,8 @@ window.AUDIT_CONTENT = {
 
 <p>Internal links on OneXP can take multiple forms: traditional anchor text links within body copy, or component-based links like teaser cards that point to other pages in the brand area. Both approaches are valuable and work best when used together. A good practice is to include teaser cards or contextual links near the bottom of each page that guide users to related pages.</p>`,
         checklist: [
-          { text: "Beyond its main navigation cards, the page includes supplementary internal links to related content on OneXP", tier: "important" },
-          { text: "Link text and teaser card CTAs are descriptive and specific \u2014 not generic (\"click here,\" \"learn more\")", tier: "important" }
+          { text: "Beyond its main navigation cards, the page includes supplementary internal links to related content on OneXP", tier: "important", actionTitle: "Add internal links to related content", actionBody: "Look for natural opportunities to link this page to related content elsewhere on OneXP — parent pages, sibling pages, or related campaigns. Use teaser cards near the bottom of the page, or contextual text links within body copy, to create pathways for both users and crawlers." },
+          { text: "Link text and teaser card CTAs are descriptive and specific \u2014 not generic (\"click here,\" \"learn more\")", tier: "important", actionTitle: "Make link text and CTAs more descriptive", actionBody: "Replace any generic CTA labels like \"Click Here,\" \"Learn More,\" or \"Explore\" with specific, descriptive text that communicates what the user will find (e.g., \"Explore Coca-Cola Zero Sugar Products\" or \"Enter the Sweepstakes\")." }
         ]
       },
 
@@ -174,10 +174,10 @@ window.AUDIT_CONTENT = {
 
 <p>On OneXP, each FAQ question and answer should be placed in its own accordion component. All accordions should be grouped under a single heading that reads "Frequently Asked Questions." Pay attention to the h-tag hierarchy of this section: the "Frequently Asked Questions" headline should sit at the appropriate level in the page's overall hierarchy (typically an H2), and each individual question headline within the accordions should be one level below it (typically H3s).</p>`,
         checklist: [
-          { text: "The page includes an FAQ section", tier: "important" },
-          { text: "The section includes a headline that reads \"Frequently Asked Questions\"", tier: "important" },
-          { text: "Each question is authored in an accordion underneath the \"Frequently Asked Questions\" headline", tier: "important" },
-          { text: "Both the headline and accordions are appropriately nested within the page's h-tag hierarchy (e.g., each question's headline is one level below the section headline)", tier: "important" }
+          { text: "The page includes an FAQ section", tier: "important", actionTitle: "Add an FAQ section to the page", actionBody: "Create an FAQ section with questions and answers relevant to this specific page's content. FAQ content is highly valuable for GEO — it mirrors how users ask questions and how AI systems process information, making it one of the most likely content types to surface in AI-generated answers." },
+          { text: "The section includes a headline that reads \"Frequently Asked Questions\"", tier: "important", actionTitle: "Add a \"Frequently Asked Questions\" headline", actionBody: "Add a heading that reads \"Frequently Asked Questions\" above the group of FAQs. This explicit label helps crawlers identify the section as FAQ content." },
+          { text: "Each question is authored in an accordion underneath the \"Frequently Asked Questions\" headline", tier: "important", actionTitle: "Place each FAQ in its own accordion", actionBody: "Author each question-and-answer pair in its own accordion component, and group all accordions under the \"Frequently Asked Questions\" heading. This is the standard OneXP pattern for FAQ content." },
+          { text: "Both the headline and accordions are appropriately nested within the page's h-tag hierarchy (e.g., each question's headline is one level below the section headline)", tier: "important", actionTitle: "Fix the FAQ section's h-tag nesting", actionBody: "Check that the \"Frequently Asked Questions\" heading sits at the right level in the page's overall heading hierarchy (typically H2), and that each individual question heading within the accordions is one level below it (typically H3). Use the Detailed SEO Extension to verify." }
         ]
       },
 
@@ -195,7 +195,7 @@ window.AUDIT_CONTENT = {
 
 <p>Whenever possible, display teaser cards and other content in a static layout (such as a grid or vertical stack) rather than placing them in a carousel.</p>`,
         checklist: [
-          { text: "Essential content (that plays a key role in a crawler\u2019s understanding of the overall page content) is not placed inside a carousel", tier: "critical" }
+          { text: "Essential content (that plays a key role in a crawler\u2019s understanding of the overall page content) is not placed inside a carousel", tier: "critical", actionTitle: "Move essential content out of carousels", actionBody: "Identify any content inside carousel components that is important for crawlers to understand the page. Move it into a static layout like a grid or vertical stack. OneXP carousels duplicate each card's headline up to 5× in the underlying code, creating a cluttered signal for AI crawlers, so it's best for essential content to live outside carousels to avoid this problem." }
         ]
       }
 
@@ -222,8 +222,8 @@ window.AUDIT_CONTENT = {
   <li>Consider removing cards from carousels and displaying them in a static layout instead, to clean up the h-tag hierarchy and eliminate duplication issues.</li>
 </ul>`,
         checklist: [
-          { text: "The H1 is evergreen and represents OneXP as a whole \u2014 it is not a rotating campaign or brand-specific headline", tier: "critical" },
-          { text: "There is introductory copy below the H1 explaining what OneXP is", tier: "nice-to-have" }
+          { text: "The H1 is evergreen and represents OneXP as a whole \u2014 it is not a rotating campaign or brand-specific headline", tier: "critical", actionTitle: "Set a stable, evergreen H1 for the OneXP homepage", actionBody: "This H1 doesn't need to replace the existing hero carousel, but it should go above that content to introduce the page and OneXP as a whole. This H1 should remain consistent regardless of which promotional content is currently featured on the page." },
+          { text: "There is introductory copy below the H1 explaining what OneXP is", tier: "nice-to-have", actionTitle: "Add introductory copy explaining what OneXP is", actionBody: "Add a brief paragraph below the H1 that explains what OneXP is and what visitors can find on the site. This orients users arriving from search or shared links and gives crawlers additional context about the page's purpose." }
         ]
       },
 
@@ -241,10 +241,10 @@ window.AUDIT_CONTENT = {
   <li>Use this page for general brand FAQs. If the brand has frequently asked questions that apply broadly (rather than to a specific product), the brand landing page is the right place for them.</li>
 </ul>`,
         checklist: [
-          { text: "The H1 includes the actual brand name (e.g., 'Fanta'), not just marketing copy that omits it", tier: "critical" },
-          { text: "Content sections have descriptive headings (e.g., \"What's New,\" \"Products,\" \"About [Brand]\")", tier: "important" },
-          { text: "The FAQs cover topics relevant to the brand as a whole, not specific to a single product or campaign", tier: "important" },
-          { text: "Teaser cards or other components link to key sub-pages (product pages, active campaigns, etc.)", tier: "important" }
+          { text: "The H1 includes the actual brand name (e.g., 'Fanta'), not just marketing copy that omits it", tier: "critical", actionTitle: "Include the brand name in the H1", actionBody: "Make sure the H1 prominently features the actual brand name — not just marketing copy or a tagline that omits it. The H1 can include additional creative language, but the brand name must be unmistakable (e.g., \"Coca\u2011Cola\u00ae: Meet the Iconic Coca\u2011Cola Brand & Products\")." },
+          { text: "Content sections have descriptive headings (e.g., \"What's New,\" \"Products,\" \"About [Brand]\")", tier: "important", actionTitle: "Add descriptive headings to content sections", actionBody: "Organize the page's content under clearly labeled section headings like \"What's New,\" \"Products,\" or \"About [Brand].\" Descriptive headings help both users and crawlers understand the page's structure and find relevant content." },
+          { text: "The FAQs cover topics relevant to the brand as a whole, not specific to a single product or campaign", tier: "important", actionTitle: "Ensure FAQs are brand-level (not product-specific)", actionBody: "Review the FAQ content on this page and confirm the questions apply broadly to the brand. Product-specific FAQs should live on the relevant product page, and campaign-specific FAQs on the campaign page. This avoids duplicate content and keeps each page focused." },
+          { text: "Teaser cards or other components link to key sub-pages (product pages, active campaigns, etc.)", tier: "important", actionTitle: "Link to key sub-pages via teaser cards", actionBody: "Add teaser cards or other navigational components that link to the brand's most important sub-pages — product landing pages, active campaigns, and other key content areas. These links create pathways for both users and crawlers to discover more content." }
         ]
       },
 
@@ -261,8 +261,8 @@ window.AUDIT_CONTENT = {
   <li>Each product category should be displayed in a teaser card that, when clicked, takes the user deeper into the hierarchy to a Product Category Page (PCP).</li>
 </ul>`,
         checklist: [
-          { text: "The H1 includes both the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")", tier: "critical" },
-          { text: "Product categories are displayed in teaser cards and each link to the appropriate PCP", tier: "important" }
+          { text: "The H1 includes both the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\")", tier: "critical", actionTitle: "Include brand name + \"Products\" in the H1", actionBody: "Update the H1 to include both the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Products\"). This gives crawlers and users a clear signal about the page's purpose. Marketing-friendly language is fine as long as the brand name and \"Products\" are both present." },
+          { text: "Product categories are displayed in teaser cards and each link to the appropriate PCP", tier: "important", actionTitle: "Link each category card to its PCP", actionBody: "Verify that every product category teaser card on the page links to the correct Product Category Page (PCP). Broken or missing links prevent crawlers from discovering deeper product content and block users from navigating the product hierarchy." }
         ]
       },
 
@@ -298,10 +298,10 @@ H3: Ingredients</pre>
     H5: Ingredients</pre>
 </div>`,
         checklist: [
-          { text: "The H1 includes both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")", tier: "critical" },
-          { text: "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)", tier: "important" },
-          { text: "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU", tier: "important" },
-          { text: "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy", tier: "important" }
+          { text: "The H1 includes both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")", tier: "critical", actionTitle: "Include brand name + \"Products\" in the H1", actionBody: "Update the H1 to include both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\"). This gives crawlers and users a clear signal about the page's purpose. Marketing-friendly language is fine as long as the brand name and \"Products\" are both present." },
+          { text: "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)", tier: "important", actionTitle: "Make FAQs specific to these products", actionBody: "Review the FAQ content and confirm the questions are relevant to the specific products listed on this page — not generic brand-level FAQs that have been copied from the brand landing page." },
+          { text: "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU", tier: "important", actionTitle: "Display each SKU in a product card", actionBody: "Ensure each product SKU on the page is displayed using a product card component that includes nutrition facts and available sizes. This structured product detail content is valuable for crawlers and helps users compare products." },
+          { text: "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy", tier: "important", actionTitle: "Fix nutrition/ingredients heading nesting", actionBody: "Check that \"View Nutrition Facts\" and \"Ingredients\" are nested underneath the product name in the heading hierarchy — not at the same level. The default OneXP behavior usually puts these at H3, but they should be H4/H5 under the product name's H3. Use the Detailed SEO Extension to verify." }
         ]
       },
 
@@ -337,10 +337,10 @@ H3: Ingredients</pre>
     H5: Ingredients</pre>
 </div>`,
         checklist: [
-          { text: "The H1 includes both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")", tier: "critical" },
-          { text: "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)", tier: "important" },
-          { text: "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU", tier: "important" },
-          { text: "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy", tier: "important" }
+          { text: "The H1 includes both the brand name and the word \"Products\" (e.g., \"Fanta\u00ae Products\")", tier: "critical", actionTitle: "Include brand name + \"Products\" in the H1", actionBody: "Update the H1 to include both the brand name and the word \"Products\" (e.g., \"Coca-Cola\u00ae Zero Sugar Products\"). This gives crawlers and users a clear signal about the page's purpose. Marketing-friendly language is fine as long as the brand name and \"Products\" are both present." },
+          { text: "The FAQs are topically relevant to the products featured on the page (not generic brand-wide FAQs)", tier: "important", actionTitle: "Make FAQs specific to this product category", actionBody: "Review the FAQ content and confirm the questions are relevant to the specific products listed on this page — not generic brand-level FAQs that have been copied from the brand landing page." },
+          { text: "Each product SKU is displayed in a product card that includes the nutrition facts and available sizes of the SKU", tier: "important", actionTitle: "Display each SKU in a product card", actionBody: "Ensure each product SKU on the page is displayed using a product card component that includes nutrition facts and available sizes. This structured product detail content is valuable for crawlers and helps users compare products." },
+          { text: "The \"View Nutrition Facts\" and \"Ingredients\" headlines are appropriately nested underneath the product title in the page's h-tag hierarchy", tier: "important", actionTitle: "Fix nutrition/ingredients heading nesting", actionBody: "Check that \"View Nutrition Facts\" and \"Ingredients\" are nested underneath the product name in the heading hierarchy — not at the same level. The default OneXP behavior usually puts these at H3, but they should be H4/H5 under the product name's H3. Use the Detailed SEO Extension to verify." }
         ]
       }
 
