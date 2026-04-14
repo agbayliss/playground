@@ -1,0 +1,1065 @@
+/* ================================================================
+   Cosmic Companions — Alien Adoption
+   styles.css
+   ================================================================
+   Single stylesheet for alien-adoption/index.html and adopt.html.
+   Replaces ../tokens.css + all inline <style> blocks.
+
+   Sections:
+     1. Reset
+     2. Design Tokens (:root)
+     3. Base
+     4. Layout
+     5. Shared Components
+     6. INDEX.HTML — Catalog Page
+     7. ADOPT.HTML — Adoption Form
+     8. Responsive
+   ================================================================ */
+
+
+/* ================================================================
+   1. RESET
+   ================================================================ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ================================================================
+   2. DESIGN TOKENS
+   ================================================================ */
+
+:root {
+    /* ─── Backgrounds ─── */
+    --bg:             #0a0a0a;
+    --surface:        #181818;
+    --surface-hover:  #242424;
+
+    /* ─── Borders ─── */
+    --border:         #494949;
+    --border-focus:   #e6e6e6;
+    --border-hover:   #fff9b2;
+
+    /* ─── Text ─── */
+    --text:           #e6e6e6;
+    --text-muted:     #a4a4a4;
+
+    /* ─── Accent ─── */
+    --accent:         #fff9b2;
+    --accent-soft:    rgba(255, 249, 178, 0.12);
+    --accent-glow:    rgba(255, 249, 178, 0.15);
+
+    /* ─── Semantic ─── */
+    --success:        #34d399;
+    --warning:        #ffb052;
+    --danger:         #f87171;
+    --pink:           #f472b6;
+    --cyan:           #22d3ee;
+
+    /* ─── Tags ─── */
+    --tag-bg:         rgba(255, 249, 178, 0.12);
+    --tag-text:       #fff9b2;
+
+    /* ─── Layout ─── */
+    --radius:         0;
+
+    /* ─── Fonts ─── */
+    --sans:           'Strait', sans-serif;
+    --mono:           'Chivo Mono', monospace;
+
+    /* ─── Derived fill tokens ───────────────────────────────────
+       rgba variations of semantic colors used throughout the UI.
+       Defined here so changing a base token cascades everywhere.
+    ─────────────────────────────────────────────────────────── */
+
+    /* Cyan (size tags) */
+    --cyan-border:              rgba(34, 211, 238, 0.3);
+    --cyan-fill:                rgba(34, 211, 238, 0.08);
+
+    /* Success / green (temperament tags, agent indicator, success card) */
+    --success-border-strong:    rgba(52, 211, 153, 0.3);
+    --success-border:           rgba(52, 211, 153, 0.2);
+    --success-fill:             rgba(52, 211, 153, 0.08);
+
+    /* Pink (planet tags) */
+    --pink-border:              rgba(244, 114, 182, 0.3);
+    --pink-fill:                rgba(244, 114, 182, 0.08);
+
+    /* Danger / red (danger tags, warnings block, error card) */
+    --danger-border-strong:     rgba(248, 113, 113, 0.3);
+    --danger-border:            rgba(248, 113, 113, 0.2);
+    --danger-fill:              rgba(248, 113, 113, 0.06);
+    --danger-fill-alt:          rgba(248, 113, 113, 0.08);
+
+    /* Warning / amber (ability tags) */
+    --warning-border:           rgba(255, 176, 82, 0.3);
+    --warning-fill:             rgba(255, 176, 82, 0.08);
+
+    /* ─── Miscellaneous hardcoded values ─── */
+    --placeholder:    #666666;   /* input::placeholder — not in global tokens */
+    --comment:        #666666;   /* pre .cm code comment color */
+}
+
+
+/* ================================================================
+   3. BASE
+   ================================================================ */
+
+body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    padding: 40px 20px 100px;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+}
+
+h1 .emoji { margin-right: 6px; }
+
+
+/* ================================================================
+   4. LAYOUT
+   ================================================================ */
+
+.container {
+    margin: 0 auto;
+}
+
+/* index.html — catalog page */
+.container--catalog {
+    max-width: 900px;
+}
+
+/* adopt.html — adoption form page */
+.container--form {
+    max-width: 640px;
+}
+
+
+/* ================================================================
+   5. SHARED COMPONENTS
+   Used by both index.html and adopt.html
+   ================================================================ */
+
+/* ─── Warnings Block ─── */
+
+.warnings {
+    background: var(--warning-fill);
+    border: 1px solid var(--warning-border);
+    border-radius: 0;
+    padding: 12px 14px;
+}
+
+.inline-detail-body .warnings {
+    margin-bottom: 20px;
+}
+
+.warnings h4 {
+    font-size: 12px;
+    color: var(--warning);
+    font-family: var(--mono);
+    margin-bottom: 6px;
+}
+
+.warnings ul {
+    list-style: none;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.warnings li::before {
+    content: '⚠ ';
+}
+
+/* ─── Log Panel ─── */
+
+.log-section {
+    margin-top: 48px;
+}
+
+.log-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.log-section .log-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.log-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.log-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.log-toolbar span {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.log-clear {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.log-clear:hover { color: var(--text); }
+
+.log-entries {
+    padding: 12px 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.log-entry {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.log-entry:last-child { border-bottom: none; }
+
+.log-entry .log-time {
+    color: var(--text-muted);
+    margin-right: 8px;
+}
+
+.log-entry .log-tool {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.log-entry .log-arrow {
+    color: var(--text-muted);
+    margin: 0 4px;
+}
+
+.log-entry .log-params {
+    color: var(--warning);
+    display: block;
+    margin-top: 4px;
+    margin-left: 70px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.log-entry .log-result {
+    color: var(--success);
+    display: block;
+    margin-top: 4px;
+    margin-left: 70px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.log-empty {
+    color: var(--text-muted);
+    padding: 24px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 12px;
+}
+
+/* ─── Annotations + Code Blocks ─── */
+
+.annotations {
+    margin-top: 48px;
+}
+
+.annotations h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.annotation-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.annotation-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--tag-text);
+    background: var(--tag-bg);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.annotation-label .fn  { color: var(--success); }
+
+.annotation-desc {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.annotation-desc code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    padding: 2px 6px;
+    border-radius: 0;
+}
+
+.annotation-desc strong {
+    color: var(--text);
+    font-weight: 500;
+}
+
+pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 16px;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--text-muted);
+    margin-top: 12px;
+}
+
+pre .hl   { color: var(--accent); }
+pre .fn   { color: var(--success); }
+pre .attr { color: var(--success); }
+pre .str  { color: var(--cyan); }
+pre .val  { color: var(--cyan); }
+pre .kw   { color: var(--pink); }
+pre .tag  { color: var(--tag-text); }
+pre .cm   { color: var(--comment); }
+
+
+/* ================================================================
+   6. INDEX.HTML — Catalog Page
+   ================================================================ */
+
+/* ─── Header ─── */
+
+.page-header {
+    margin-bottom: 40px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--tag-text);
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: 0;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+}
+
+.badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 0;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 1; }
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 15px;
+    max-width: 600px;
+}
+
+/* ─── Stats Bar ─── */
+
+.stats-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 14px 20px;
+    flex: 1;
+    min-width: 140px;
+}
+
+.stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* ─── Section Header + Filter Pills ─── */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.section-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.filter-pills {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pill:hover,
+.pill.active {
+    color: var(--tag-text);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+}
+
+/* ─── Catalog Grid ─── */
+
+.catalog {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+}
+
+/* ─── Alien Cards ─── */
+
+.alien-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.15s;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.alien-card:hover {
+    transform: translateY(-2px);
+    box-shadow: rgba(228, 228, 228, 0.08) 0px 2px 12px 3px;
+}
+
+.alien-card.active {
+    border-color: var(--border-focus);
+    box-shadow: rgba(228, 228, 228, 0.08) 0px 2px 12px 3px;
+}
+
+.alien-card-visual {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    position: relative;
+    overflow: hidden;
+}
+
+.alien-card-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.15;
+}
+
+.alien-card-body {
+    padding: 16px;
+    flex: 1;
+}
+
+.alien-card-body h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.alien-card-body .species {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+
+.alien-card-body .blurb {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+}
+
+.alien-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.alien-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 0;
+}
+
+.alien-tag.size,
+.alien-tag.temperament,
+.alien-tag.planet,
+.alien-tag.danger,
+.alien-tag.ability     { color: var(--text); background: rgba(230, 230, 230, 0.149); }
+
+.alien-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+}
+
+.alien-price {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.compat-score {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* ─── Inline Detail Panel ─── */
+
+.inline-detail {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border: 1px solid var(--border-focus);
+    border-radius: 0;
+    overflow: hidden;
+    animation: expandIn 0.3s ease;
+}
+
+@keyframes expandIn {
+    from { opacity: 0; max-height: 0; margin-top: -8px; }
+    to   { opacity: 1; max-height: 1200px; margin-top: 0; }
+}
+
+.inline-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 28px 0;
+}
+
+.inline-detail-title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.inline-detail-emoji {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.inline-detail-close {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 32px;
+    height: 32px;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    flex-shrink: 0;
+}
+
+.inline-detail-close:hover { background: var(--surface-hover); }
+
+.inline-detail-body {
+    padding: 20px 28px 28px;
+}
+
+.inline-detail-body h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.inline-detail-species {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.inline-detail-bio {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 10px 12px;
+}
+
+.detail-item .label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: var(--mono);
+    margin-bottom: 2px;
+}
+
+.detail-item .value {
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.adopt-btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: #18181b;
+    background: var(--accent);
+    border: none;
+    border-radius: 0;
+    padding: 12px 24px;
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.2s;
+}
+
+.adopt-btn:hover { opacity: 0.9; }
+
+
+/* ================================================================
+   7. ADOPT.HTML — Adoption Form
+   ================================================================ */
+
+/* ─── Back Link ─── */
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 28px;
+    transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--text); }
+
+.back-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ─── Recap Card ─── */
+
+.recap-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 24px;
+    margin-bottom: 28px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.recap-emoji {
+    font-size: 56px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.recap-info h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 2px;
+}
+
+.recap-species {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.recap-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.recap-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 0;
+}
+
+.recap-tag.size,
+.recap-tag.price,
+.recap-tag.care  { color: var(--text); background: rgba(230, 230, 230, 0.149); }
+
+/* ─── Form Card ─── */
+
+.form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    overflow: hidden;
+}
+
+.form-card-header {
+    padding: 24px 28px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.form-card-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.form-card-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.agent-indicator {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--success);
+    background: var(--success-fill);
+    border: 1px solid var(--success-border);
+    padding: 4px 10px;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+/* ─── Form Fields ─── */
+
+.form-body {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+label .required {
+    color: var(--accent);
+    font-size: 11px;
+}
+
+input,
+select,
+textarea {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--placeholder);
+}
+
+select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238888a4' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+input[type="hidden"] {
+    display: none;
+}
+
+/* ─── Submit Button ─── */
+
+.submit-btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: #18181b;
+    background: var(--accent);
+    border: none;
+    border-radius: 0;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    align-self: flex-start;
+}
+
+.submit-btn:hover  { opacity: 0.9; }
+.submit-btn:active { transform: scale(0.98); }
+
+/* ─── Success State ─── */
+
+.success-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--success-border-strong);
+    border-radius: 0;
+    padding: 48px 32px;
+    text-align: center;
+    animation: fadeIn 0.4s ease;
+}
+
+.success-card.show { display: block; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.success-emoji {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.success-card h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--success);
+}
+
+.success-card .success-subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.success-details {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    padding: 20px;
+    margin-bottom: 28px;
+    text-align: left;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.success-detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 13px;
+}
+
+.success-detail-row:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+}
+
+.success-detail-row .sdl {
+    color: var(--text-muted);
+    font-family: var(--mono);
+    font-size: 11px;
+}
+
+.success-detail-row .sdv {
+    font-weight: 500;
+}
+
+.success-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-primary {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 600;
+    color: #18181b;
+    background: var(--accent);
+    border: none;
+    border-radius: 0;
+    padding: 12px 24px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary:hover { opacity: 0.9; }
+
+/* ─── Error State ─── */
+
+.error-card {
+    background: var(--surface);
+    border: 1px solid var(--danger-border-strong);
+    border-radius: 0;
+    padding: 48px 32px;
+    text-align: center;
+}
+
+.error-card h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--danger);
+}
+
+.error-card p {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+
+/* ================================================================
+   8. RESPONSIVE
+   ================================================================ */
+
+@media (max-width: 600px) {
+    /* index.html */
+    .stats-bar    { flex-direction: column; }
+    .catalog      { grid-template-columns: 1fr; }
+    .detail-grid  { grid-template-columns: 1fr; }
+    .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+}
+
+@media (max-width: 500px) {
+    /* adopt.html */
+    .field-row   { grid-template-columns: 1fr; }
+    .recap-card  { flex-direction: column; text-align: center; }
+    .recap-tags  { justify-content: center; }
+}
