@@ -1,0 +1,25 @@
+<svg width="287" height="120" viewBox="-13.5 -12.5 287 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0">
+  <ellipse cx="130" cy="75" rx="95" ry="20" fill="#FF64001F" />
+  <path d="M48 68 Q28 58 22 44 Q18 32 30 28 Q40 25 44 38 Q48 52 60 62" stroke="#CC4400" stroke-width="10" stroke-linecap="round" fill="none" />
+  <ellipse cx="115" cy="65" rx="60" ry="22" fill="#CC4400" />
+  <ellipse cx="115" cy="68" rx="42" ry="13" fill="#FF7722" />
+  <circle cx="90" cy="57" r="6" fill="#FF2200" style="opacity: 0.8" />
+  <circle cx="110" cy="54" r="5" fill="#FF4400" style="opacity: 0.8" />
+  <circle cx="130" cy="56" r="6" fill="#FF2200" style="opacity: 0.8" />
+  <circle cx="150" cy="55" r="5" fill="#FF4400" style="opacity: 0.8" />
+  <circle cx="110" cy="54" r="8" fill="#FF640033" />
+  <circle cx="130" cy="56" r="9" fill="#FF640033" />
+  <ellipse cx="178" cy="58" rx="30" ry="22" fill="#DD4400" />
+  <path d="M192 58 Q200 68 193 72" fill="#222222" />
+  <path d="M204 52 Q218 44 228 50 Q222 56 230 60 Q218 58 226 66 Q214 62 220 70 Q208 62 210 72 Q200 62 204 52Z" fill="#FFD700" style="opacity: 0.9" />
+  <path d="M204 52 Q214 46 222 52 Q217 57 224 61 Q213 59 219 65 Q210 61 204 52Z" fill="#FF6600" style="opacity: 0.8" />
+  <path d="M204 54 Q212 50 218 55 Q213 58 204 54Z" fill="#FF2200" style="opacity: 0.7" />
+  <circle cx="172" cy="53" r="8" fill="#FF9900" />
+  <circle cx="173" cy="54" r="4.5" fill="#1A0800" />
+  <circle cx="174" cy="52" r="1.5" fill="#FFFFFF" />
+  <path d="M75 55 L80 44 L88 53 L95 42 L103 51 L110 40 L118 50 L126 40 L134 50 L142 42 L150 52" stroke="#FF4400" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+  <line x1="88" y1="78" x2="80" y2="92" stroke="#BB3300" stroke-width="4" stroke-linecap="round" />
+  <line x1="108" y1="82" x2="103" y2="94" stroke="#BB3300" stroke-width="4" stroke-linecap="round" />
+  <line x1="138" y1="82" x2="143" y2="94" stroke="#BB3300" stroke-width="4" stroke-linecap="round" />
+  <line x1="158" y1="78" x2="166" y2="92" stroke="#BB3300" stroke-width="4" stroke-linecap="round" />
+</svg>

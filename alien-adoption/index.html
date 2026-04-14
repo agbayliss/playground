@@ -453,7 +453,7 @@ function renderCatalog(filter = 'all') {
     catalogEl.innerHTML = filtered.map(a => `
         <div class="alien-card" data-id="${a.id}" onclick="showDetail('${a.id}')">
             <div class="alien-card-visual" style="background: linear-gradient(135deg, ${getColor(a)}, var(--bg))">
-                ${a.emoji}
+                <img src="illustrations/${a.name.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '')}.svg" alt="${a.name}" class="alien-card-illustration">
             </div>
             <div class="alien-card-body">
                 <h3>${a.name}</h3>
@@ -624,9 +624,7 @@ function closeDetail(smooth = true) {
     const panel = document.getElementById('inlineDetail');
     if (panel) {
         if (smooth) {
-            panel.style.transition = 'opacity 0.2s, max-height 0.3s';
-            panel.style.opacity = '0';
-            panel.style.maxHeight = '0';
+            panel.classList.add('is-closing');
             setTimeout(() => panel.remove(), 300);
         } else {
             panel.remove();

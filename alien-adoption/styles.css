@@ -118,7 +118,7 @@ body {
 }
 
 h1 {
-    font-size: 32px;
+    font-size: 40px;
     font-weight: 700;
     letter-spacing: -0.03em;
     margin-bottom: 8px;
@@ -188,7 +188,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .log-section h2 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 4px;
 }
@@ -297,7 +297,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .annotations h2 {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 16px;
 }
@@ -450,7 +450,7 @@ pre .cm   { color: var(--comment); }
 }
 
 .section-header h2 {
-    font-size: 18px;
+    font-size: 24px;
     font-weight: 600;
 }
 
@@ -521,6 +521,13 @@ pre .cm   { color: var(--comment); }
     overflow: hidden;
 }
 
+.alien-card-illustration {
+    display: block;
+    width: 100%;
+    height: 120px;
+    object-fit: contain;
+}
+
 .alien-card-visual::before {
     content: '';
     position: absolute;
@@ -534,7 +541,7 @@ pre .cm   { color: var(--comment); }
 }
 
 .alien-card-body h3 {
-    font-size: 15px;
+    font-size: 20px;
     font-weight: 600;
     margin-bottom: 2px;
 }
@@ -607,6 +614,15 @@ pre .cm   { color: var(--comment); }
 @keyframes expandIn {
     from { opacity: 0; max-height: 0; margin-top: -8px; }
     to   { opacity: 1; max-height: 1200px; margin-top: 0; }
+}
+
+@keyframes collapseOut {
+    from { opacity: 1; max-height: 1200px; margin-top: 0; }
+    to   { opacity: 0; max-height: 0; margin-top: -8px; }
+}
+
+.inline-detail.is-closing {
+    animation: collapseOut 0.3s ease forwards;
 }
 
 .inline-detail-header {
