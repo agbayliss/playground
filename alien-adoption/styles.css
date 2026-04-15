@@ -407,35 +407,6 @@ pre .cm   { color: var(--comment); }
     max-width: 600px;
 }
 
-/* ─── Stats Bar ─── */
-
-.stats-bar {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 32px;
-    flex-wrap: wrap;
-}
-
-.stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 0;
-    padding: 14px 20px;
-    flex: 1;
-    min-width: 140px;
-}
-
-.stat-value {
-    font-size: 1.375rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-}
-
-.stat-label {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
 
 /* ─── Section Header + Filter Pills ─── */
 
@@ -1155,9 +1126,10 @@ input[type="hidden"] {
    ================================================================ */
 
 @media (max-width: 600px) {
+    :root { font-size: 110%; }
+
     /* index.html */
-    .stats-bar    { flex-direction: column; }
-    .catalog      { grid-template-columns: 1fr; }
+.catalog      { grid-template-columns: 1fr; }
     .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
 
     /* ─── Mobile Inline Detail ─── */
