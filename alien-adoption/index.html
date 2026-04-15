@@ -553,18 +553,28 @@ function showDetail(id) {
     const panel = document.createElement('div');
     panel.className = 'inline-detail';
     panel.id = 'inlineDetail';
+    // Set left rail width to exactly match the card. Subtract 1px to account
+    // for the panel's own 1px left border, which shifts the content box inward.
+    panel.style.setProperty('--detail-left-width', (clickedCard.getBoundingClientRect().width - 1) + 'px');
+    panel.style.setProperty('--hero-color', getColor(a));
+    const illustrationFile = a.name.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
     panel.innerHTML = `
-        <div class="inline-detail-header">
-            <div class="inline-detail-title-row">
-                <span class="inline-detail-emoji">${a.emoji}</span>
-                <div>
-                    <h2>${a.name}</h2>
-                    <div class="inline-detail-species">${a.species} — ${a.id}</div>
-                </div>
+        <div class="inline-detail-left">
+            <div class="inline-detail-hero">
+                <img src="illustrations/${illustrationFile}.svg" alt="${a.name}" class="inline-detail-illustration">
+                <button class="inline-detail-close inline-detail-close--hero" onclick="closeDetail()">✕</button>
             </div>
-            <button class="inline-detail-close" onclick="closeDetail()">✕</button>
+            <div class="inline-detail-left-identity">
+                <h2>${a.name}</h2>
+                <div class="inline-detail-species">${a.species} — ${a.id}</div>
+            </div>
+            <div class="inline-detail-price-row">
+                <span class="inline-detail-price">&#8372;${a.price.toLocaleString()}</span>
+                <span class="inline-detail-match">${a.compatibilityScore}% match</span>
+            </div>
         </div>
-        <div class="inline-detail-body">
+        <div class="inline-detail-right">
+            <button class="inline-detail-close inline-detail-close--right" onclick="closeDetail()">✕</button>
             <p class="inline-detail-bio">${a.bio}</p>
             <div class="detail-grid">
                 <div class="detail-item">
@@ -584,10 +594,6 @@ function showDetail(id) {
                     <div class="value">${a.ability}</div>
                 </div>
                 <div class="detail-item">
-                    <div class="label">diet</div>
-                    <div class="value">${a.diet}</div>
-                </div>
-                <div class="detail-item">
                     <div class="label">lifespan</div>
                     <div class="value">${a.lifespan}</div>
                 </div>
@@ -595,9 +601,13 @@ function showDetail(id) {
                     <div class="label">care level</div>
                     <div class="value">${a.careLevel}</div>
                 </div>
-                <div class="detail-item">
+                <div class="detail-item detail-item--full">
+                    <div class="label">diet</div>
+                    <div class="value">${a.diet}</div>
+                </div>
+                <div class="detail-item detail-item--fee">
                     <div class="label">adoption fee</div>
-                    <div class="value" style="color: var(--accent)">₴${a.price.toLocaleString()}</div>
+                    <div class="value">&#8372;${a.price.toLocaleString()}</div>
                 </div>
             </div>
             ${a.warnings.length ? `
@@ -606,21 +616,29 @@ function showDetail(id) {
                     <ul>${a.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
                 </div>
             ` : ''}
-            <button class="adopt-btn" onclick="handleAdopt('${a.id}')">Adopt ${a.name}</button>
+            <div class="adopt-bar">
+                <button class="adopt-btn" onclick="handleAdopt('${a.id}')">Adopt ${a.name}</button>
+            </div>
         </div>
     `;
 
     // Insert the panel after the last card in the row
     lastInRow.insertAdjacentElement('afterend', panel);
 
-    // Smooth scroll to show the panel
-    setTimeout(() => {
-        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
+    // On mobile the panel is a fixed overlay — lock body scroll
+    if (window.matchMedia('(max-width: 600px)').matches) {
+        document.body.style.overflow = 'hidden';
+    } else {
+        // Desktop: smooth scroll to show the panel
+        setTimeout(() => {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 50);
+    }
 }
 
 function closeDetail(smooth = true) {
     currentDetailId = null;
+    document.body.style.overflow = '';
     const panel = document.getElementById('inlineDetail');
     if (panel) {
         if (smooth) {
@@ -637,6 +655,34 @@ function closeDetail(smooth = true) {
 function handleAdopt(id) {
     window.location.href = `adopt.html?id=${id}`;
 }
+
+window.addEventListener('resize', () => {
+    if (!currentDetailId) return;
+    requestAnimationFrame(() => {
+        const panel = document.getElementById('inlineDetail');
+        const activeCard = catalogEl.querySelector(`.alien-card[data-id="${currentDetailId}"]`);
+        if (!panel || !activeCard) return;
+
+        // Update left rail width to match card's new size
+        panel.style.setProperty('--detail-left-width', (activeCard.getBoundingClientRect().width - 1) + 'px');
+
+        // Re-evaluate which card is last in the active card's row after reflow
+        const cards = catalogEl.querySelectorAll('.alien-card');
+        const activeRow = activeCard.getBoundingClientRect().top;
+        let lastInRow = activeCard;
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            if (Math.abs(rect.top - activeRow) < 5 && rect.left > lastInRow.getBoundingClientRect().left) {
+                lastInRow = card;
+            }
+        });
+
+        // Reinsert panel if it's no longer after the correct card
+        if (panel.previousElementSibling !== lastInRow) {
+            lastInRow.insertAdjacentElement('afterend', panel);
+        }
+    });
+});
 
 // Keep showConfirmation for backwards compat but it won't be used
 function showConfirmation(alien, adopterName) {}
