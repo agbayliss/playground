@@ -1040,10 +1040,10 @@ input[type="hidden"] {
 .success-card {
     display: none;
     background: var(--surface);
-    border: 1px solid var(--success-border-strong);
+    border: 1px solid var(--border);
     border-radius: 0;
-    padding: 48px 32px;
-    text-align: center;
+    overflow: hidden;
+    padding: 0 32px;
     animation: fadeIn 0.4s ease;
 }
 
@@ -1054,43 +1054,63 @@ input[type="hidden"] {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-.success-emoji {
-    font-size: 4rem;
-    margin-bottom: 20px;
+.success-top {
+    padding: 36px 0 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
 }
 
 .success-card h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 8px;
+    font-size: 1.75rem;
+    font-weight: 400;
     color: var(--success);
+    letter-spacing: -0.03em;
+    text-align: center;
 }
 
 .success-card .success-subtitle {
     font-size: 0.9375rem;
     color: var(--text-muted);
-    margin-bottom: 28px;
-    max-width: 440px;
-    margin-left: auto;
-    margin-right: auto;
+    text-align: center;
+}
+
+.success-middle {
+    display: flex;
+    border: 1px solid var(--border);
+}
+
+.success-visual {
+    flex: 1;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(135deg, var(--hero-color), var(--bg));
+    border-right: 1px solid var(--border);
+    min-height: 200px;
+}
+
+.success-illustration {
+    display: block;
+    width: 100%;
+    height: 140px;
+    object-fit: contain;
 }
 
 .success-details {
+    flex: 1;
     background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 0;
-    padding: 20px;
-    margin-bottom: 28px;
-    text-align: left;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .success-detail-row {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
+    align-items: center;
+    padding: 10px 20px;
     font-size: 0.8125rem;
 }
 
@@ -1105,13 +1125,13 @@ input[type="hidden"] {
 }
 
 .success-detail-row .sdv {
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .success-actions {
     display: flex;
-    gap: 12px;
     justify-content: center;
+    padding: 24px 0;
 }
 
 .btn-primary {
@@ -1200,6 +1220,24 @@ input[type="hidden"] {
     .recap-species { margin-bottom: 10px; }
 
     .recap-price { font-size: 1.25rem; }
+
+    /* adopt.html — full-width buttons */
+    .submit-btn,
+    .success-actions .btn-primary {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* adopt.html — success card */
+    .success-middle {
+        flex-direction: column;
+    }
+
+    .success-visual {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
 
     /* index.html */
 .catalog      { grid-template-columns: 1fr; }
