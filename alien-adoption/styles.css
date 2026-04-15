@@ -166,6 +166,9 @@ h1 .emoji { margin-right: 6px; }
     color: var(--danger);
     font-family: var(--mono);
     margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .warnings ul {
@@ -174,8 +177,15 @@ h1 .emoji { margin-right: 6px; }
     color: var(--text-muted);
 }
 
-.warnings li::before {
-    content: '⚠ ';
+.warnings li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.warnings li svg {
+    flex-shrink: 0;
+    margin-top: 2px;
 }
 
 /* ─── Log Panel ─── */
@@ -262,7 +272,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .log-entry .log-params {
-    color: var(--warning);
+    color: var(--cyan);
     display: block;
     margin-top: 4px;
     margin-left: 70px;
@@ -810,10 +820,11 @@ pre .cm   { color: var(--comment); }
     border-radius: 0;
     margin-bottom: 28px;
     display: flex;
+    flex-direction: row-reverse;
     align-items: center;
     gap: 20px;
     overflow: hidden;
-    padding: 0 24px 0 0;
+    padding: 0 0 0 24px;
 }
 
 .recap-card-visual {
@@ -881,7 +892,7 @@ pre .cm   { color: var(--comment); }
 
 .recap-price {
     font-family: var(--sans);
-    font-size: 1.625rem;
+    font-size: 1.375rem;
     color: var(--accent);
     flex-shrink: 0;
     text-align: right;

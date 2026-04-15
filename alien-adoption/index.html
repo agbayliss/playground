@@ -38,7 +38,7 @@
 
     <!-- Tool Call Log -->
     <div class="log-section">
-        <h2>&#128225; Agent Tool Log</h2>
+        <h2>Agent Tool Log</h2>
         <p class="log-desc">Real-time log of WebMCP tool invocations. When an AI agent calls a tool, the call and response appear here.</p>
         <div class="log-panel">
             <div class="log-toolbar">
@@ -53,7 +53,7 @@
 
     <!-- Annotations -->
     <div class="annotations">
-        <h2>&#128270; Imperative API Explained</h2>
+        <h2>Imperative API Explained</h2>
 
         <div class="annotation-block">
             <div class="annotation-label">
@@ -104,7 +104,7 @@
             </div>
         </div>
 
-        <h2 style="margin-top: 32px;">&#128196; Full Tool Registrations</h2>
+        <h2 style="margin-top: 32px;">Full Tool Registrations</h2>
         <pre><span class="cm">// ── Tool 1: Search Aliens ──</span>
 <span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
   <span class="hl">name</span>: <span class="str">"search_aliens"</span>,
@@ -578,8 +578,8 @@ function showDetail(id) {
             </div>
             ${a.warnings.length ? `
                 <div class="warnings">
-                    <h4>&#9888; Warnings</h4>
-                    <ul>${a.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
+                    <h4><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg> Warnings</h4>
+                    <ul>${a.warnings.map(w => `<li><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg>${w}</li>`).join('')}</ul>
                 </div>
             ` : ''}
             <div class="adopt-bar">
