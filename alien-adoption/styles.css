@@ -33,6 +33,8 @@
    ================================================================ */
 
 :root {
+    font-size: 110%;
+
     /* ─── Backgrounds ─── */
     --bg:             #0a0a0a;
     --surface:        #181818;
@@ -68,7 +70,7 @@
 
     /* ─── Fonts ─── */
     --sans:           'Strait', sans-serif;
-    --mono:           'Chivo Mono', monospace;
+    --mono:           'DM Mono', monospace;
 
     /* ─── Derived fill tokens ───────────────────────────────────
        rgba variations of semantic colors used throughout the UI.
@@ -1193,8 +1195,6 @@ input[type="hidden"] {
    ================================================================ */
 
 @media (max-width: 600px) {
-    :root { font-size: 110%; }
-
     /* adopt.html — recap card */
     .recap-card {
         flex-direction: column;
@@ -1206,11 +1206,13 @@ input[type="hidden"] {
     .recap-card-visual {
         width: 100%;
         height: 150px;
+        order: 2;
     }
 
     .recap-card-info {
         padding: 16px;
         gap: 0;
+        order: 1;
     }
 
     .recap-title-row { margin-bottom: 2px; }
