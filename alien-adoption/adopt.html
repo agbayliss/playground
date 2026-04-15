@@ -356,9 +356,6 @@ if (!alien) {
     const illustrationFile = alien.name.toLowerCase().replace(/\s+/g, '-').replace(/\./g, '');
     recapCard.style.setProperty('--hero-color', getColor(alien));
     recapCard.innerHTML = `
-        <div class="recap-card-visual">
-            <img src="illustrations/${illustrationFile}.svg" alt="${alien.name}" class="recap-card-illustration">
-        </div>
         <div class="recap-card-info">
             <div class="recap-title-row">
                 <h1>Adopting ${alien.name}</h1>
@@ -371,6 +368,9 @@ if (!alien) {
                 <span class="recap-tag">${alien.planet}</span>
                 <span class="recap-tag">${alien.ability}</span>
             </div>
+        </div>
+        <div class="recap-card-visual">
+            <img src="illustrations/${illustrationFile}.svg" alt="${alien.name}" class="recap-card-illustration">
         </div>
     `;
 
