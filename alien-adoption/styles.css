@@ -808,31 +808,60 @@ pre .cm   { color: var(--comment); }
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 0;
-    padding: 24px;
     margin-bottom: 28px;
     display: flex;
-    gap: 20px;
     align-items: center;
+    gap: 20px;
+    overflow: hidden;
+    padding: 0 24px 0 0;
 }
 
-.recap-emoji {
-    font-size: 3.5rem;
-    line-height: 1;
+.recap-card-visual {
+    width: 289px;
+    min-height: 140px;
+    align-self: stretch;
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-image: linear-gradient(135deg, var(--hero-color), var(--bg));
 }
 
-.recap-info h1 {
+.recap-card-illustration {
+    display: block;
+    width: 100%;
+    height: 110px;
+    object-fit: contain;
+}
+
+.recap-card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.recap-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.recap-card-info h1 {
     font-size: 1.375rem;
-    font-weight: 700;
+    font-weight: 400;
     letter-spacing: -0.02em;
-    margin-bottom: 2px;
+    margin: 0;
 }
 
 .recap-species {
     font-family: var(--mono);
     font-size: 0.75rem;
     color: var(--text-muted);
-    margin-bottom: 8px;
 }
 
 .recap-tags {
@@ -846,11 +875,17 @@ pre .cm   { color: var(--comment); }
     font-size: 0.625rem;
     padding: 4px 8px;
     border-radius: 0;
+    color: var(--text);
+    background: rgba(230, 230, 230, 0.149);
 }
 
-.recap-tag.size,
-.recap-tag.price,
-.recap-tag.care  { color: var(--text); background: rgba(230, 230, 230, 0.149); }
+.recap-price {
+    font-family: var(--sans);
+    font-size: 1.625rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    text-align: right;
+}
 
 /* ─── Form Card ─── */
 
@@ -1129,6 +1164,32 @@ input[type="hidden"] {
 @media (max-width: 600px) {
     :root { font-size: 110%; }
 
+    /* adopt.html — recap card */
+    .recap-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
+        gap: 0;
+    }
+
+    .recap-card-visual {
+        width: 100%;
+        height: 150px;
+    }
+
+    .recap-card-info {
+        padding: 16px;
+        gap: 0;
+    }
+
+    .recap-title-row { margin-bottom: 2px; }
+
+    .recap-card-info h1 { font-size: 1.25rem; }
+
+    .recap-species { margin-bottom: 10px; }
+
+    .recap-price { font-size: 1.25rem; }
+
     /* index.html */
 .catalog      { grid-template-columns: 1fr; }
     .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
@@ -1266,7 +1327,5 @@ input[type="hidden"] {
 
 @media (max-width: 500px) {
     /* adopt.html */
-    .field-row   { grid-template-columns: 1fr; }
-    .recap-card  { flex-direction: column; text-align: center; }
-    .recap-tags  { justify-content: center; }
+    .field-row { grid-template-columns: 1fr; }
 }
