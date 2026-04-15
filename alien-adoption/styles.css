@@ -41,16 +41,16 @@
     /* ─── Borders ─── */
     --border:         #494949;
     --border-focus:   #e6e6e6;
-    --border-hover:   #fff9b2;
+    --border-hover:   #FFF698;
 
     /* ─── Text ─── */
     --text:           #e6e6e6;
     --text-muted:     #a4a4a4;
 
     /* ─── Accent ─── */
-    --accent:         #fff9b2;
-    --accent-soft:    rgba(255, 249, 178, 0.12);
-    --accent-glow:    rgba(255, 249, 178, 0.15);
+    --accent:         #FFF698;
+    --accent-soft:    rgba(255, 246, 152, 0.12);
+    --accent-glow:    rgba(255, 246, 152, 0.15);
 
     /* ─── Semantic ─── */
     --success:        #34d399;
@@ -60,8 +60,8 @@
     --cyan:           #22d3ee;
 
     /* ─── Tags ─── */
-    --tag-bg:         rgba(255, 249, 178, 0.12);
-    --tag-text:       #fff9b2;
+    --tag-bg:         rgba(255, 246, 152, 0.12);
+    --tag-text:       #FFF698;
 
     /* ─── Layout ─── */
     --radius:         0;
@@ -118,7 +118,7 @@ body {
 }
 
 h1 {
-    font-size: 40px;
+    font-size: 2.5rem;
     font-weight: 700;
     letter-spacing: -0.03em;
     margin-bottom: 8px;
@@ -154,23 +154,23 @@ h1 .emoji { margin-right: 6px; }
 /* ─── Warnings Block ─── */
 
 .warnings {
-    background: var(--warning-fill);
-    border: 1px solid var(--warning-border);
+    background: var(--danger-fill-alt);
+    border: 1px solid var(--danger-border-strong);
     border-radius: 0;
     padding: 12px 14px;
 }
 
 
 .warnings h4 {
-    font-size: 12px;
-    color: var(--warning);
+    font-size: 0.75rem;
+    color: var(--danger);
     font-family: var(--mono);
     margin-bottom: 6px;
 }
 
 .warnings ul {
     list-style: none;
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--text-muted);
 }
 
@@ -185,13 +185,13 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .log-section h2 {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 4px;
 }
 
 .log-section .log-desc {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--text-muted);
     margin-bottom: 16px;
 }
@@ -213,13 +213,13 @@ h1 .emoji { margin-right: 6px; }
 
 .log-toolbar span {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
 .log-clear {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: var(--text-muted);
     background: var(--tag-bg);
     border: 1px solid var(--border);
@@ -235,7 +235,7 @@ h1 .emoji { margin-right: 6px; }
     max-height: 400px;
     overflow-y: auto;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.8;
 }
 
@@ -284,7 +284,7 @@ h1 .emoji { margin-right: 6px; }
     padding: 24px;
     text-align: center;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
 }
 
 /* ─── Annotations + Code Blocks ─── */
@@ -294,7 +294,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .annotations h2 {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 16px;
 }
@@ -309,7 +309,7 @@ h1 .emoji { margin-right: 6px; }
 
 .annotation-label {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--tag-text);
     background: var(--tag-bg);
     padding: 10px 16px;
@@ -320,14 +320,14 @@ h1 .emoji { margin-right: 6px; }
 
 .annotation-desc {
     padding: 14px 16px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--text-muted);
     line-height: 1.7;
 }
 
 .annotation-desc code {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     background: var(--tag-bg);
     color: var(--tag-text);
     padding: 2px 6px;
@@ -346,7 +346,7 @@ pre {
     padding: 16px;
     overflow-x: auto;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.8;
     color: var(--text-muted);
     margin-top: 12px;
@@ -377,7 +377,7 @@ pre .cm   { color: var(--comment); }
     align-items: center;
     gap: 6px;
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--tag-text);
     background: var(--tag-bg);
     border: 1px solid var(--border);
@@ -403,7 +403,7 @@ pre .cm   { color: var(--comment); }
 
 .subtitle {
     color: var(--text-muted);
-    font-size: 15px;
+    font-size: 0.9375rem;
     max-width: 600px;
 }
 
@@ -426,13 +426,13 @@ pre .cm   { color: var(--comment); }
 }
 
 .stat-value {
-    font-size: 22px;
+    font-size: 1.375rem;
     font-weight: 700;
     letter-spacing: -0.02em;
 }
 
 .stat-label {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 2px;
 }
@@ -447,7 +447,7 @@ pre .cm   { color: var(--comment); }
 }
 
 .section-header h2 {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 600;
 }
 
@@ -459,7 +459,7 @@ pre .cm   { color: var(--comment); }
 
 .pill {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: var(--text-muted);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -513,7 +513,7 @@ pre .cm   { color: var(--comment); }
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 52px;
+    font-size: 3.25rem;
     position: relative;
     overflow: hidden;
 }
@@ -538,20 +538,20 @@ pre .cm   { color: var(--comment); }
 }
 
 .alien-card-body h3 {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 2px;
 }
 
 .alien-card-body .species {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: var(--text-muted);
     margin-bottom: 10px;
 }
 
 .alien-card-body .blurb {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--text-muted);
     line-height: 1.5;
     margin-bottom: 12px;
@@ -566,7 +566,7 @@ pre .cm   { color: var(--comment); }
 
 .alien-tag {
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 0.625rem;
     padding: 4px 8px;
     border-radius: 0;
 }
@@ -583,7 +583,7 @@ pre .cm   { color: var(--comment); }
     align-items: center;
     padding: 12px 16px;
     border-top: 1px solid var(--border);
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 
 .alien-price {
@@ -593,7 +593,7 @@ pre .cm   { color: var(--comment); }
 
 .compat-score {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: var(--text-muted);
 }
 
@@ -656,7 +656,7 @@ pre .cm   { color: var(--comment); }
 }
 
 .inline-detail-left-identity h2 {
-    font-size: 34px;
+    font-size: 2.125rem;
     font-weight: 400;
     line-height: 1.2;
     text-align: center;
@@ -665,7 +665,7 @@ pre .cm   { color: var(--comment); }
 
 .inline-detail-species {
     font-family: var(--mono);
-    font-size: 15px;
+    font-size: 0.9375rem;
     color: var(--text-muted);
     margin-top: 5px;
     text-align: center;
@@ -683,14 +683,14 @@ pre .cm   { color: var(--comment); }
 
 .inline-detail-price {
     font-family: var(--sans);
-    font-size: 28px;
+    font-size: 1.75rem;
     line-height: 34px;
     color: var(--accent);
 }
 
 .inline-detail-match {
     font-family: var(--mono);
-    font-size: 14px;
+    font-size: 0.875rem;
     color: var(--text-muted);
 }
 
@@ -731,7 +731,7 @@ pre .cm   { color: var(--comment); }
 }
 
 .inline-detail-bio {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: var(--text-muted);
     line-height: 1.7;
     margin-bottom: 18px;
@@ -761,14 +761,14 @@ pre .cm   { color: var(--comment); }
 .detail-item--fee  { display: none; }
 
 .detail-item .label {
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: var(--text-muted);
     font-family: var(--mono);
     margin-bottom: 3px;
 }
 
 .detail-item .value {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: var(--text);
 }
 
@@ -780,7 +780,7 @@ pre .cm   { color: var(--comment); }
 
 .inline-detail-right .warnings h4 {
     font-family: var(--sans);
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 
 /* ─── Adopt Bar + Button ─── */
@@ -791,7 +791,7 @@ pre .cm   { color: var(--comment); }
 
 .adopt-btn {
     font-family: var(--sans);
-    font-size: 15px;
+    font-size: 0.9375rem;
     font-weight: 600;
     color: #18181b;
     background: var(--accent);
@@ -816,7 +816,7 @@ pre .cm   { color: var(--comment); }
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--text-muted);
     text-decoration: none;
     margin-bottom: 28px;
@@ -844,13 +844,13 @@ pre .cm   { color: var(--comment); }
 }
 
 .recap-emoji {
-    font-size: 56px;
+    font-size: 3.5rem;
     line-height: 1;
     flex-shrink: 0;
 }
 
 .recap-info h1 {
-    font-size: 22px;
+    font-size: 1.375rem;
     font-weight: 700;
     letter-spacing: -0.02em;
     margin-bottom: 2px;
@@ -858,7 +858,7 @@ pre .cm   { color: var(--comment); }
 
 .recap-species {
     font-family: var(--mono);
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--text-muted);
     margin-bottom: 8px;
 }
@@ -871,7 +871,7 @@ pre .cm   { color: var(--comment); }
 
 .recap-tag {
     font-family: var(--mono);
-    font-size: 10px;
+    font-size: 0.625rem;
     padding: 4px 8px;
     border-radius: 0;
 }
@@ -898,19 +898,19 @@ pre .cm   { color: var(--comment); }
 }
 
 .form-card-header h2 {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 600;
     margin-bottom: 4px;
 }
 
 .form-card-header p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     color: var(--text-muted);
 }
 
 .agent-indicator {
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.6875rem;
     color: var(--success);
     background: var(--success-fill);
     border: 1px solid var(--success-border);
@@ -941,7 +941,7 @@ pre .cm   { color: var(--comment); }
 }
 
 label {
-    font-size: 13px;
+    font-size: 0.8125rem;
     font-weight: 500;
     color: var(--text-muted);
     display: flex;
@@ -951,14 +951,14 @@ label {
 
 label .required {
     color: var(--accent);
-    font-size: 11px;
+    font-size: 0.6875rem;
 }
 
 input,
 select,
 textarea {
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 0.875rem;
     color: var(--text);
     background: var(--bg);
     border: 1px solid var(--border);
@@ -1002,7 +1002,7 @@ input[type="hidden"] {
 
 .submit-btn {
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #18181b;
     background: var(--accent);
@@ -1037,19 +1037,19 @@ input[type="hidden"] {
 }
 
 .success-emoji {
-    font-size: 64px;
+    font-size: 4rem;
     margin-bottom: 20px;
 }
 
 .success-card h2 {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 8px;
     color: var(--success);
 }
 
 .success-card .success-subtitle {
-    font-size: 15px;
+    font-size: 0.9375rem;
     color: var(--text-muted);
     margin-bottom: 28px;
     max-width: 440px;
@@ -1073,7 +1073,7 @@ input[type="hidden"] {
     display: flex;
     justify-content: space-between;
     padding: 6px 0;
-    font-size: 13px;
+    font-size: 0.8125rem;
 }
 
 .success-detail-row:not(:last-child) {
@@ -1083,7 +1083,7 @@ input[type="hidden"] {
 .success-detail-row .sdl {
     color: var(--text-muted);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 0.6875rem;
 }
 
 .success-detail-row .sdv {
@@ -1098,7 +1098,7 @@ input[type="hidden"] {
 
 .btn-primary {
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: #18181b;
     background: var(--accent);
@@ -1126,14 +1126,14 @@ input[type="hidden"] {
 }
 
 .error-card h2 {
-    font-size: 20px;
+    font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 8px;
     color: var(--danger);
 }
 
 .error-card p {
-    font-size: 14px;
+    font-size: 0.875rem;
     color: var(--text-muted);
     margin-bottom: 20px;
 }
@@ -1228,12 +1228,12 @@ input[type="hidden"] {
     }
 
     .inline-detail-left-identity h2 {
-        font-size: 28px;
+        font-size: 1.75rem;
         text-align: left;
     }
 
     .inline-detail-species {
-        font-size: 12px;
+        font-size: 0.75rem;
         text-align: left;
         margin-top: 0;
         margin-bottom: 10px;
@@ -1245,9 +1245,9 @@ input[type="hidden"] {
         border-top: none;
     }
 
-    .inline-detail-price { font-size: 22px; line-height: 28px; }
+    .inline-detail-price { font-size: 1.375rem; line-height: 28px; }
 
-    .inline-detail-match { font-size: 12px; }
+    .inline-detail-match { font-size: 0.75rem; }
 
     .inline-detail-right {
         border-top: 1px solid var(--border);
@@ -1267,7 +1267,7 @@ input[type="hidden"] {
 
     .detail-item { min-width: 100%; }
 
-    .detail-item .value { font-size: 13px; }
+    .detail-item .value { font-size: 0.8125rem; }
 
     .detail-item--fee { display: block; }
 
