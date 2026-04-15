@@ -108,19 +108,13 @@
         <pre><span class="cm">// ── Tool 1: Search Aliens ──</span>
 <span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
   <span class="hl">name</span>: <span class="str">"search_aliens"</span>,
-  <span class="hl">description</span>: <span class="str">"Search the alien pet catalog. Filter by planet of origin,
-    size (small/medium/large), temperament (gentle/playful/chaotic/
-    independent), special ability, maximum price in Galactic Credits,
-    or minimum compatibility score (0-100). Returns a list of matching
-    aliens with basic info. Call get_alien_details for full profiles."</span>,
+  <span class="hl">description</span>: <span class="str">"Search the alien pet catalog. Filter by planet of origin, size (small/medium/large), temperament (gentle/playful/chaotic/independent), special ability, maximum price in Galactic Credits, or minimum compatibility score (0-100). Returns a list of matching aliens with basic info. Call get_alien_details for full profiles."</span>,
   <span class="hl">inputSchema</span>: {
     type: <span class="str">"object"</span>,
     properties: {
       planet: {
         type: <span class="str">"string"</span>,
-        description: <span class="str">"Planet of origin to filter by (e.g., 'Zorbax-7',
-          'Krixos Prime', 'Flimora', 'Vexar Minor', 'Grakka',
-          'Nebula Drift', 'Zynara', 'Paxia Verdant', 'Xelara')"</span>
+        description: <span class="str">"Planet of origin to filter by (e.g., 'Zorbax-7', 'Krixos Prime', 'Flimora', 'Vexar Minor', 'Grakka', 'Nebula Drift', 'Zynara', 'Paxia Verdant', 'Xelara')"</span>
       },
       size: {
         type: <span class="str">"string"</span>,
@@ -134,8 +128,7 @@
       },
       ability: {
         type: <span class="str">"string"</span>,
-        description: <span class="str">"Special ability to search for (e.g., 'telepathy',
-          'shapeshifting', 'fire breath')"</span>
+        description: <span class="str">"Special ability to search for (e.g., 'telepathy', 'shapeshifting', 'fire breath')"</span>
       },
       max_price: {
         type: <span class="str">"number"</span>,
@@ -162,10 +155,7 @@
 <span class="cm">// ── Tool 2: Get Alien Details ──</span>
 <span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
   <span class="hl">name</span>: <span class="str">"get_alien_details"</span>,
-  <span class="hl">description</span>: <span class="str">"Get the full profile of a specific alien pet, including
-    detailed bio, diet, care requirements, lifespan, warnings, and
-    adoption fee. Requires the alien's ID (e.g., 'zorb-001').
-    Use search_aliens first to find IDs."</span>,
+  <span class="hl">description</span>: <span class="str">"Get the full profile of a specific alien pet, including detailed bio, diet, care requirements, lifespan, warnings, and adoption fee. Requires the alien's ID (e.g., 'zorb-001'). Use search_aliens first to find IDs."</span>,
   <span class="hl">inputSchema</span>: {
     type: <span class="str">"object"</span>,
     properties: {
@@ -191,11 +181,7 @@
 <span class="cm">// ── Tool 3: Adopt Alien ──</span>
 <span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
   <span class="hl">name</span>: <span class="str">"adopt_alien"</span>,
-  <span class="hl">description</span>: <span class="str">"Begin the adoption process for an alien pet. This
-    navigates to the adoption form page where the adopter's details
-    can be filled in. Requires the alien's ID. Use the
-    submit_adoption_form tool on the next page to complete
-    the adoption."</span>,
+  <span class="hl">description</span>: <span class="str">"Begin the adoption process for an alien pet. This navigates to the adoption form page where the adopter's details can be filled in. Requires the alien's ID. Use the submit_adoption_form tool on the next page to complete the adoption."</span>,
   <span class="hl">inputSchema</span>: {
     type: <span class="str">"object"</span>,
     properties: {

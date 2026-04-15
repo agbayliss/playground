@@ -142,7 +142,7 @@ h1 .emoji { margin-right: 6px; }
 
 /* adopt.html — adoption form page */
 .container--form {
-    max-width: 640px;
+    max-width: 900px;
 }
 
 
@@ -345,6 +345,7 @@ pre {
     border-radius: 0;
     padding: 16px;
     overflow-x: auto;
+    white-space: pre-wrap;
     font-family: var(--mono);
     font-size: 0.75rem;
     line-height: 1.8;
