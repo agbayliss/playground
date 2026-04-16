@@ -325,7 +325,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .log-entry .log-params {
-    color: var(--cyan);
+    color: var(--text);
     display: block;
     margin-top: 4px;
     margin-left: 70px;
@@ -334,7 +334,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 .log-entry .log-result {
-    color: var(--success);
+    color: var(--text-muted);
     display: block;
     margin-top: 4px;
     margin-left: 70px;
@@ -367,13 +367,10 @@ h1 .emoji { margin-right: 6px; }
 .annotation-label {
     font-family: var(--mono);
     font-size: 0.75rem;
-    color: var(--tag-text);
-    background: var(--tag-bg);
+    color: var(--text-muted);
     padding: 10px 16px;
     border-bottom: 1px solid var(--border);
 }
-
-.annotation-label .fn  { color: var(--success); }
 
 .annotation-desc {
     padding: 14px 16px;
@@ -397,7 +394,7 @@ h1 .emoji { margin-right: 6px; }
 }
 
 pre {
-    background: var(--bg);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 0;
     padding: 16px;
@@ -410,13 +407,24 @@ pre {
     margin-top: 12px;
 }
 
+pre::before {
+    content: 'tool markup';
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    margin: -16px -16px 16px -16px;
+}
+
 pre .hl   { color: var(--accent); }
-pre .fn   { color: var(--success); }
-pre .attr { color: var(--success); }
-pre .str  { color: var(--cyan); }
-pre .val  { color: var(--cyan); }
-pre .kw   { color: var(--pink); }
-pre .tag  { color: var(--tag-text); }
+pre .fn   { color: var(--accent); }
+pre .attr { color: var(--accent); }
+pre .str  { color: var(--text); }
+pre .val  { color: var(--text); }
+pre .kw   { color: var(--text-muted); }
+pre .tag  { color: var(--text-muted); }
 pre .cm   { color: var(--comment); }
 
 
