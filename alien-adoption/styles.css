@@ -136,6 +136,7 @@ h1 .emoji { margin-right: 6px; }
 
 .container {
     margin: 0 auto;
+    padding-top: 16px;
 }
 
 /* index.html — catalog page */
@@ -191,19 +192,74 @@ h1 .emoji { margin-right: 6px; }
     margin-top: 2px;
 }
 
-/* ─── Log Panel ─── */
+/* ─── Accordions ─── */
 
-.log-section {
-    margin-top: 48px;
+.accordion-item {
+    margin-top: 32px;
 }
 
-.log-section h2 {
+.accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 16px 0;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: color 0.15s ease;
+}
+
+.accordion-header h3,
+.log-section h3,
+.annotations h3 {
     font-size: 1.25rem;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin: 0;
 }
 
-.log-section .log-desc {
+.accordion-header:hover {
+    color: var(--text);
+}
+
+.accordion-caret {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+}
+
+.accordion-item.open .accordion-caret {
+    transform: rotate(90deg);
+}
+
+.accordion-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+}
+
+.accordion-item.open .accordion-body {
+    grid-template-rows: 1fr;
+}
+
+.accordion-inner {
+    overflow: hidden;
+    padding-bottom: 0;
+    transition: padding-bottom 0.3s ease;
+}
+
+.accordion-item.open .accordion-inner {
+    padding-bottom: 32px;
+}
+
+/* ─── Log Panel ─── */
+
+.log-desc {
     font-size: 0.8125rem;
     color: var(--text-muted);
     margin-bottom: 16px;
@@ -303,13 +359,7 @@ h1 .emoji { margin-right: 6px; }
 /* ─── Annotations + Code Blocks ─── */
 
 .annotations {
-    margin-top: 48px;
-}
-
-.annotations h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 16px;
+    margin-top: 0;
 }
 
 .annotation-block {
@@ -384,7 +434,7 @@ pre .cm   { color: var(--comment); }
 
 .page-hero {
     position: relative;
-    margin: -40px -20px 32px;
+    margin: -40px -20px 0;
     overflow: hidden;
     height: 420px;
     background: var(--bg-deep);
@@ -466,7 +516,7 @@ pre .cm   { color: var(--comment); }
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 200px;
+    height: 115px;
     z-index: 2;
     pointer-events: none;
 }
@@ -500,7 +550,7 @@ pre .cm   { color: var(--comment); }
     top: 0;
     left: 0;
     width: 100%;
-    height: 200px;
+    height: 115px;
     z-index: 2;
     pointer-events: none;
 }
@@ -512,6 +562,17 @@ pre .cm   { color: var(--comment); }
     color: var(--text-muted);
     margin-top: 80px;
     font-size: 0.875rem;
+}
+
+.footer-content a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+}
+
+.footer-content a:hover {
+    color: var(--text);
 }
 
 
@@ -1037,6 +1098,7 @@ pre .cm   { color: var(--comment); }
     border: 1px solid var(--border);
     border-radius: 0;
     overflow: hidden;
+    margin-bottom: 48px;
 }
 
 .form-card-header {
@@ -1328,8 +1390,14 @@ input[type="hidden"] {
     /* index.html — hero */
     .page-hero {
         height: 340px;
-        padding-top: 52px;
-        margin-bottom: 40px;
+        align-items: center;
+        padding-top: 0;
+        padding-bottom: 80px;
+        margin-bottom: 0;
+    }
+
+    .hero-content {
+        margin-top: 30px;
     }
 
     .hero-content h1 {
@@ -1341,7 +1409,11 @@ input[type="hidden"] {
     }
 
     .hero-horizon {
-        height: 140px;
+        height: 80px;
+    }
+
+    .footer-horizon {
+        height: 80px;
     }
 
     /* adopt.html — recap card */

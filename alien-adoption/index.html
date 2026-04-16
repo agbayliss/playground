@@ -27,8 +27,8 @@
                 </feMerge>
             </filter>
         </defs>
-        <path class="horizon-mask" d="M0,110 Q720,20 1440,110 L1440,200 L0,200 Z"/>
-        <path d="M0,110 Q720,20 1440,110" fill="none" stroke="rgba(255,246,152,0.6)" stroke-width="1.5" filter="url(#rim-glow)"/>
+        <path class="horizon-mask" d="M0,170 Q720,10 1440,170 L1440,200 L0,200 Z"/>
+        <path d="M0,170 Q720,10 1440,170" fill="none" stroke="rgba(255,246,152,0.6)" stroke-width="1.5" filter="url(#rim-glow)"/>
     </svg>
 </section>
 
@@ -49,24 +49,41 @@
 
     <div class="catalog" id="catalog"></div>
 
-    <!-- Tool Call Log -->
-    <div class="log-section">
-        <h2>Agent Tool Log</h2>
-        <p class="log-desc">Real-time log of WebMCP tool invocations. When an AI agent calls a tool, the call and response appear here.</p>
-        <div class="log-panel">
-            <div class="log-toolbar">
-                <span>navigator.modelContext</span>
-                <button class="log-clear" onclick="clearLog()">clear</button>
-            </div>
-            <div class="log-entries" id="logEntries">
-                <div class="log-empty">No tool calls yet. Use an agent to interact with this page.</div>
+    <!-- Web MCP Section Header -->
+    <div class="section-header">
+        <h2>For Web MCP Users</h2>
+    </div>
+
+    <!-- Accordion: Agent Tool Log -->
+    <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+            <svg class="accordion-caret" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Agent Tool Log</h3>
+        </button>
+        <div class="accordion-body">
+            <div class="accordion-inner">
+                <p class="log-desc">Real-time log of WebMCP tool invocations. When an AI agent calls a tool, the call and response appear here.</p>
+                <div class="log-panel">
+                    <div class="log-toolbar">
+                        <span>navigator.modelContext</span>
+                        <button class="log-clear" onclick="clearLog()">clear</button>
+                    </div>
+                    <div class="log-entries" id="logEntries">
+                        <div class="log-empty">No tool calls yet. Use an agent to interact with this page.</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Annotations -->
-    <div class="annotations">
-        <h2>Imperative API Explained</h2>
+    <!-- Accordion: Imperative API Explained -->
+    <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+            <svg class="accordion-caret" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Imperative API Explained</h3>
+        </button>
+        <div class="accordion-body">
+            <div class="accordion-inner annotations">
 
         <div class="annotation-block">
             <div class="annotation-label">
@@ -117,7 +134,18 @@
             </div>
         </div>
 
-        <h2 style="margin-top: 32px;">Full Tool Registrations</h2>
+            </div><!-- /accordion-inner: API Explained -->
+        </div><!-- /accordion-body -->
+    </div><!-- /accordion-item: API Explained -->
+
+    <!-- Accordion: Full Tool Registrations -->
+    <div class="accordion-item">
+        <button class="accordion-header" aria-expanded="false">
+            <svg class="accordion-caret" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <h3>Full Tool Registrations</h3>
+        </button>
+        <div class="accordion-body">
+            <div class="accordion-inner">
         <pre><span class="cm">// ── Tool 1: Search Aliens ──</span>
 <span class="kw">navigator</span>.<span class="hl">modelContext</span>.<span class="fn">registerTool</span>({
   <span class="hl">name</span>: <span class="str">"search_aliens"</span>,
@@ -222,9 +250,11 @@
     };
   }
 });</pre>
-    </div>
+            </div><!-- /accordion-inner: Full Tool Regs -->
+        </div><!-- /accordion-body -->
+    </div><!-- /accordion-item: Full Tool Regs -->
 
-</div>
+</div><!-- /container -->
 
 <script>
 // ═══════════════════════════════════════════════════
@@ -956,6 +986,16 @@ document.addEventListener('DOMContentLoaded', function () {
     initStarfield(document.querySelector('.hero-stars'));
     initStarfield(document.querySelector('.footer-stars'));
 });
+
+// ─── Accordion toggles ────────────────────────────────
+document.querySelectorAll('.accordion-header').forEach(function (header) {
+    header.addEventListener('click', function () {
+        const item = this.closest('.accordion-item');
+        const opening = !item.classList.contains('open');
+        item.classList.toggle('open', opening);
+        this.setAttribute('aria-expanded', opening);
+    });
+});
 </script>
 
 <footer class="page-footer">
@@ -970,11 +1010,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 </feMerge>
             </filter>
         </defs>
-        <path class="horizon-mask" d="M0,90 Q720,180 1440,90 L1440,0 L0,0 Z"/>
-        <path d="M0,90 Q720,180 1440,90" fill="none" stroke="rgba(180,180,180,0.45)" stroke-width="1" filter="url(#footer-stroke-glow)"/>
+        <path class="horizon-mask" d="M0,30 Q720,190 1440,30 L1440,0 L0,0 Z"/>
+        <path d="M0,30 Q720,190 1440,30" fill="none" stroke="rgba(180,180,180,0.45)" stroke-width="1" filter="url(#footer-stroke-glow)"/>
     </svg>
     <div class="footer-content">
-        <p>footer text here</p>
+        <p>Created with <a href="https://www.claude.ai" target="_blank" rel="noopener">Claude</a> + <a href="https://www.paper.design" target="_blank" rel="noopener">Paper</a></p>
+        <p>Anna Grace Bayliss</p>
+        <p>2026</p>
     </div>
 </footer>
 
