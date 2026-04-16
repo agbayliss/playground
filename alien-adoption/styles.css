@@ -44,16 +44,17 @@
     /* ─── Borders ─── */
     --border:         #494949;
     --border-focus:   #e6e6e6;
-    --border-hover:   #FFF698;
+    --border-selected: #BDBDBD;
+    --border-hover:   #FFF9B2;
 
     /* ─── Text ─── */
     --text:           #e6e6e6;
     --text-muted:     #a4a4a4;
 
     /* ─── Accent ─── */
-    --accent:         #FFF698;
-    --accent-soft:    rgba(255, 246, 152, 0.12);
-    --accent-glow:    rgba(255, 246, 152, 0.15);
+    --accent:         #FFF9B2;
+    --accent-soft:    rgba(255, 249, 178, 0.12);
+    --accent-glow:    rgba(255, 249, 178, 0.15);
 
     /* ─── Semantic ─── */
     --success:        #34d399;
@@ -63,8 +64,8 @@
     --cyan:           #22d3ee;
 
     /* ─── Tags ─── */
-    --tag-bg:         rgba(255, 246, 152, 0.12);
-    --tag-text:       #FFF698;
+    --tag-bg:         rgba(255, 249, 178, 0.12);
+    --tag-text:       #FFF9B2;
 
     /* ─── Layout ─── */
     --radius:         0;
@@ -452,11 +453,11 @@ pre .cm   { color: var(--comment); }
     width: 1300px;
     height: 700px;
     background: radial-gradient(ellipse at 50% 100%,
-        rgba(255,246,152,0.85) 0%,
-        rgba(255,246,152,0.45) 10%,
-        rgba(255,246,152,0.2)  22%,
-        rgba(255,246,152,0.07) 38%,
-        rgba(255,246,152,0)    56%
+        rgba(255,249,178,0.85) 0%,
+        rgba(255,249,178,0.45) 10%,
+        rgba(255,249,178,0.2)  22%,
+        rgba(255,249,178,0.07) 38%,
+        rgba(255,249,178,0)    56%
     );
     z-index: 1;
     pointer-events: none;
@@ -679,7 +680,7 @@ pre .cm   { color: var(--comment); }
 }
 
 .alien-card.active {
-    border-color: var(--border-focus);
+    border-color: var(--border-selected);
     box-shadow: rgba(228, 228, 228, 0.08) 0px 2px 12px 3px;
 }
 
@@ -778,7 +779,7 @@ pre .cm   { color: var(--comment); }
     grid-column: 1 / -1;
     display: flex;
     background: var(--surface);
-    border: 1px solid var(--border-focus);
+    border: 1px solid var(--border-selected);
     border-radius: 0;
     overflow: hidden;
     animation: expandIn 0.3s ease;
