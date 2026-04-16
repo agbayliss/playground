@@ -37,6 +37,7 @@
 
     /* ─── Backgrounds ─── */
     --bg:             #0a0a0a;
+    --bg-deep:        #040408;   /* hero/footer inky black */
     --surface:        #181818;
     --surface-hover:  #242424;
 
@@ -379,11 +380,140 @@ pre .cm   { color: var(--comment); }
    6. INDEX.HTML — Catalog Page
    ================================================================ */
 
-/* ─── Header ─── */
+/* ─── Hero ─── */
 
-.page-header {
-    margin-bottom: 40px;
+.page-hero {
+    position: relative;
+    margin: -40px -20px 32px;
+    overflow: hidden;
+    height: 420px;
+    background: var(--bg-deep);
+    transform: translateZ(0); /* promote to GPU layer so canvas sublayer seam is contained */
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 96px;
 }
+
+/* Star glow — inset: 0 removes all element edges from the hero.
+   Ellipse size is declared explicitly in the gradient so the visual
+   footprint matches the original. Focal point X tracks cursor via
+   --glow-x (lerped in JS for smooth easing). */
+/* Star glow — radiates from behind the planet, tracks cursor via --glow-x */
+.page-hero::before {
+    content: '';
+    position: absolute;
+    left: var(--glow-x, 50%);
+    bottom: -60px;
+    transform: translateX(-50%);
+    width: 1300px;
+    height: 700px;
+    background: radial-gradient(ellipse at 50% 100%,
+        rgba(255,246,152,0.85) 0%,
+        rgba(255,246,152,0.45) 10%,
+        rgba(255,246,152,0.2)  22%,
+        rgba(255,246,152,0.07) 38%,
+        rgba(255,246,152,0)    56%
+    );
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-stars {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    max-width: 660px;
+    padding: 0 24px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    margin-bottom: 14px;
+    line-height: 1.05;
+}
+
+.hero-content .subtitle {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+/* SVG mask fills — match page background so transitions are seamless.
+   Only the space inside the curve uses --bg-deep. */
+.hero-horizon .horizon-mask,
+.footer-horizon .horizon-mask {
+    fill: var(--bg);
+}
+
+.hero-horizon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+
+/* ─── Footer ─── */
+
+.page-footer {
+    position: relative;
+    margin: 32px -20px -100px;
+    overflow: hidden;
+    height: 420px;
+    background: var(--bg-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-stars {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+.footer-horizon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.footer-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: var(--text-muted);
+    margin-top: 80px;
+    font-size: 0.875rem;
+}
+
 
 .badge {
     display: inline-flex;
@@ -1195,6 +1325,25 @@ input[type="hidden"] {
    ================================================================ */
 
 @media (max-width: 600px) {
+    /* index.html — hero */
+    .page-hero {
+        height: 340px;
+        padding-top: 52px;
+        margin-bottom: 40px;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-content .subtitle {
+        font-size: 0.875rem;
+    }
+
+    .hero-horizon {
+        height: 140px;
+    }
+
     /* adopt.html — recap card */
     .recap-card {
         flex-direction: column;

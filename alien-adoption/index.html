@@ -10,16 +10,29 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="container container--catalog">
 
-    <header class="page-header">
-        <div class="badge">WebMCP Imperative API</div>
+<section class="page-hero">
+    <canvas class="hero-stars"></canvas>
+    <div class="hero-content">
         <h1>Cosmic Companions</h1>
-        <p class="subtitle">
-            Intergalactic Alien Pet Adoption Agency. Browse our catalog of exotic extraterrestrial 
-            companions — or let an AI agent find the perfect match for you using WebMCP tools.
-        </p>
-    </header>
+        <p class="subtitle">Intergalactic Alien Pet Adoption Agency. Browse our catalog of exotic extraterrestrial companions — or let an AI agent find the perfect match for you using WebMCP tools.</p>
+    </div>
+    <svg class="hero-horizon" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="rim-glow" x="-20%" y="-200%" width="140%" height="500%">
+                <feGaussianBlur stdDeviation="3" result="blur"/>
+                <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <path class="horizon-mask" d="M0,110 Q720,20 1440,110 L1440,200 L0,200 Z"/>
+        <path d="M0,110 Q720,20 1440,110" fill="none" stroke="rgba(255,246,152,0.6)" stroke-width="1.5" filter="url(#rim-glow)"/>
+    </svg>
+</section>
+
+<div class="container container--catalog">
 
     <!-- Catalog -->
     <div class="section-header">
@@ -863,6 +876,107 @@ function registerWebMCPTools() {
 
 // Register tools when page loads
 registerWebMCPTools();
+
+// ─── Hero: cursor-tracked star glow (JS lerp, no CSS transition) ──
+(function () {
+    const hero = document.querySelector('.page-hero');
+    if (!hero) return;
+
+    let current = 50;
+    let target  = 50;
+    let rafId   = null;
+
+    function tick() {
+        current += (target - current) * 0.08;
+        hero.style.setProperty('--glow-x', current.toFixed(2) + '%');
+        if (Math.abs(current - target) > 0.05) {
+            rafId = requestAnimationFrame(tick);
+        } else {
+            rafId = null;
+        }
+    }
+
+    function startLerp() {
+        if (!rafId) rafId = requestAnimationFrame(tick);
+    }
+
+    hero.addEventListener('mousemove', function (e) {
+        const rect = hero.getBoundingClientRect();
+        const raw = (e.clientX - rect.left) / rect.width;
+        target = 30 + raw * 40;
+        startLerp();
+    });
+
+    hero.addEventListener('mouseleave', function () {
+        target = 50;
+        startLerp();
+    });
+}());
+
+// ─── Shared starfield initialiser ─────────────────────
+function initStarfield(canvas) {
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const stars = [];
+
+    function init() {
+        canvas.width  = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+        stars.length  = 0;
+        for (let i = 0; i < 110; i++) {
+            stars.push({
+                x:           Math.random() * canvas.width,
+                y:           Math.random() * canvas.height,
+                r:           Math.random() * 1.33 + 0.24,
+                baseOpacity: Math.random() * 0.55 + 0.2,
+                speed:       Math.random() * 0.0008 + 0.0004,
+                phase:       Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    function draw(t) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(function (s) {
+            const op = s.baseOpacity * (0.4 + 0.6 * Math.sin(t * s.speed + s.phase));
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,' + op.toFixed(3) + ')';
+            ctx.fill();
+        });
+        requestAnimationFrame(draw);
+    }
+
+    init();
+    requestAnimationFrame(draw);
+    window.addEventListener('resize', init);
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    initStarfield(document.querySelector('.hero-stars'));
+    initStarfield(document.querySelector('.footer-stars'));
+});
 </script>
+
+<footer class="page-footer">
+    <canvas class="footer-stars"></canvas>
+    <svg class="footer-horizon" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <filter id="footer-stroke-glow" x="-20%" y="-200%" width="140%" height="500%">
+                <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+        </defs>
+        <path class="horizon-mask" d="M0,90 Q720,180 1440,90 L1440,0 L0,0 Z"/>
+        <path d="M0,90 Q720,180 1440,90" fill="none" stroke="rgba(180,180,180,0.45)" stroke-width="1" filter="url(#footer-stroke-glow)"/>
+    </svg>
+    <div class="footer-content">
+        <p>footer text here</p>
+    </div>
+</footer>
+
 </body>
 </html>
