@@ -540,11 +540,23 @@ function launchConfetti(colors) {
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    function drawStar(ctx, r) {
+        const inner = r * 0.4;
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+            const radius = i % 2 === 0 ? r : inner;
+            const angle = (i * Math.PI) / 5 - Math.PI / 2;
+            if (i === 0) ctx.moveTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+            else ctx.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+
     const particles = Array.from({ length: 130 }, () => ({
         x: Math.random() * canvas.width,
         y: -10 - Math.random() * canvas.height * 0.6,
-        w: 6 + Math.random() * 8,
-        h: 3 + Math.random() * 5,
+        r: 4 + Math.random() * 6,
         color: colors[Math.floor(Math.random() * colors.length)],
         rotation: Math.random() * Math.PI * 2,
         rotationSpeed: (Math.random() - 0.5) * 0.14,
@@ -570,7 +582,7 @@ function launchConfetti(colors) {
             ctx.translate(p.x, p.y);
             ctx.rotate(p.rotation);
             ctx.fillStyle = p.color;
-            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            drawStar(ctx, p.r);
             ctx.restore();
         }
         if (alive > 0) requestAnimationFrame(animate);
