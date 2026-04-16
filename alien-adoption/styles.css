@@ -1592,6 +1592,20 @@ input[type="hidden"] {
     .adopt-btn { margin-top: 0; }
 }
 
+@media (max-width: 600px) {
+    .form-card-header {
+        padding: 16px;
+    }
+
+    .form-body {
+        padding: 16px;
+    }
+
+    .success-card {
+        padding: 0 16px;
+    }
+}
+
 @media (max-width: 500px) {
     /* adopt.html */
     .field-row { grid-template-columns: 1fr; }
