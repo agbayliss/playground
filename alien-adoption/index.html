@@ -622,7 +622,7 @@ function showDetail(id) {
             ${a.warnings.length ? `
                 <div class="warnings">
                     <h4><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg> Warnings</h4>
-                    <ul>${a.warnings.map(w => `<li><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg>${w}</li>`).join('')}</ul>
+                    <ul>${a.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
                 </div>
             ` : ''}
             <div class="adopt-bar">

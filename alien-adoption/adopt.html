@@ -11,11 +11,10 @@
 </head>
 <body>
 
-<section class="page-hero">
+<section class="page-hero page-hero--slim">
     <canvas class="hero-stars"></canvas>
     <div class="hero-content">
-        <h1>Cosmic Companions</h1>
-        <p class="subtitle">Intergalactic Alien Pet Adoption Agency. Browse our catalog of exotic extraterrestrial companions — or let an AI agent find the perfect match for you using WebMCP tools.</p>
+        <h1>Adoption Application</h1>
     </div>
     <svg class="hero-horizon" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -48,7 +47,7 @@
     <div id="formSection" class="form-card">
         <div class="form-card-header">
             <div>
-                <h2>Complete Your Adoption</h2>
+                <h2>Complete Your Application</h2>
                 <p>Tell us about yourself so we can prepare your companion's care package.</p>
             </div>
         </div>
@@ -67,11 +66,11 @@
             ═══════════════════════════════════════════════
         -->
 
-        <form 
+        <form
             id="adoptionForm"
             class="form-body"
             toolname="submit_adoption_form"
-            tooldescription="Fill in the alien pet adoption form with the adopter's personal details. The alien being adopted is already selected. Fill in the adopter's full name, email, phone, home environment type, experience level with exotic pets, and any optional notes. IMPORTANT: This tool ONLY fills in the form fields — it does NOT submit the form. After filling in the fields, tell the user to review the information and click the 'Confirm Adoption' button themselves when they are ready."
+            tooldescription="Fill in the alien pet adoption form with the adopter's personal details. The alien being adopted is already selected. Fill in the adopter's full name, email, home environment type, experience level with exotic pets, and any optional notes. IMPORTANT: This tool ONLY fills in the form fields — it does NOT submit the form. After filling in the fields, tell the user to review the information and click the 'Submit Application' button themselves when they are ready."
         >
             <!-- Hidden field: alien ID (pre-filled from URL) -->
             <input type="hidden" name="alien_id" id="alienIdField">
@@ -80,41 +79,32 @@
             <div class="field-row">
                 <div class="field">
                     <label>Full Name <span class="required">required</span></label>
-                    <input 
-                        type="text" 
-                        name="adopter_name" 
-                        required 
+                    <input
+                        type="text"
+                        name="adopter_name"
+                        required
                         placeholder="Jane Smith"
                         toolparamdescription="The adopter's full legal name"
                     >
                 </div>
                 <div class="field">
                     <label>Email <span class="required">required</span></label>
-                    <input 
-                        type="email" 
-                        name="adopter_email" 
-                        required 
+                    <input
+                        type="email"
+                        name="adopter_email"
+                        required
                         placeholder="jane@example.com"
                         toolparamdescription="The adopter's email for adoption confirmation and care updates"
                     >
                 </div>
             </div>
 
-            <!-- Phone + Home Environment -->
+            <!-- Home Environment + Experience -->
             <div class="field-row">
                 <div class="field">
-                    <label>Phone Number</label>
-                    <input 
-                        type="tel" 
-                        name="phone" 
-                        placeholder="+1 (555) 000-0000"
-                        toolparamdescription="Contact phone number for pickup coordination"
-                    >
-                </div>
-                <div class="field">
                     <label>Home Environment <span class="required">required</span></label>
-                    <select 
-                        name="home_environment" 
+                    <select
+                        name="home_environment"
                         required
                         toolparamdescription="Type of living space: apartment, house, space_station, or underwater_dome"
                     >
@@ -125,38 +115,36 @@
                         <option value="underwater_dome">Underwater Dome</option>
                     </select>
                 </div>
+                <div class="field">
+                    <label>Experience with Exotic Pets <span class="required">required</span></label>
+                    <select
+                        name="experience_level"
+                        required
+                        toolparamdescription="Adopter's experience level: none (first time), some (1-2 exotic pets before), experienced (3+ exotic pets), or expert (professional handler)"
+                    >
+                        <option value="">Select your experience level...</option>
+                        <option value="none">First time — never had an exotic pet</option>
+                        <option value="some">Some — owned 1-2 exotic pets before</option>
+                        <option value="experienced">Experienced — owned 3+ exotic pets</option>
+                        <option value="expert">Expert — professional exotic pet handler</option>
+                    </select>
+                </div>
             </div>
-
-            <!-- Experience Level -->
-            <div class="field">
-                <label>Experience with Exotic Pets <span class="required">required</span></label>
-                <select 
-                    name="experience_level" 
-                    required
-                    toolparamdescription="Adopter's experience level: none (first time), some (1-2 exotic pets before), experienced (3+ exotic pets), or expert (professional handler)"
-                >
-                    <option value="">Select your experience level...</option>
-                    <option value="none">First time — never had an exotic pet</option>
-                    <option value="some">Some — owned 1-2 exotic pets before</option>
-                    <option value="experienced">Experienced — owned 3+ exotic pets</option>
-                    <option value="expert">Expert — professional exotic pet handler</option>
-                </select>
-            </div>
-
-            <!-- Warnings (populated by JS if applicable) -->
-            <div id="warningsSection"></div>
 
             <!-- Notes -->
             <div class="field">
                 <label>Notes for the Care Team</label>
-                <textarea 
-                    name="notes" 
+                <textarea
+                    name="notes"
                     placeholder="Anything we should know? Allergies, other pets in the household, special accommodations..."
                     toolparamdescription="Optional notes about the adopter's household, other pets, allergies, or special requirements"
                 ></textarea>
             </div>
 
-            <button type="submit" class="submit-btn" id="submitBtn">Confirm Adoption</button>
+            <!-- Warnings (populated by JS if applicable) -->
+            <div id="warningsSection"></div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Submit Application</button>
         </form>
     </div>
 
@@ -209,7 +197,7 @@
 
 <span class="tag">&lt;form</span>
   <span class="attr">toolname</span>=<span class="val">"submit_adoption_form"</span>
-  <span class="attr">tooldescription</span>=<span class="val">"Fill in the alien pet adoption form with the adopter's personal details. The alien being adopted is already selected. Fill in the adopter's full name, email, phone, home environment type, experience level with exotic pets, and any optional notes. IMPORTANT: This tool ONLY fills in the form fields — it does NOT submit the form. After filling in the fields, tell the user to review the information and click the 'Confirm Adoption' button themselves when they are ready."</span>
+  <span class="attr">tooldescription</span>=<span class="val">"Fill in the alien pet adoption form with the adopter's personal details. The alien being adopted is already selected. Fill in the adopter's full name, email, home environment type, experience level with exotic pets, and any optional notes. IMPORTANT: This tool ONLY fills in the form fields — it does NOT submit the form. After filling in the fields, tell the user to review the information and click the 'Submit Application' button themselves when they are ready."</span>
 <span class="tag">&gt;</span>
 
   <span class="tag">&lt;input</span>
@@ -226,12 +214,6 @@
     type="email" name="adopter_email" required
     placeholder="jane@example.com"
     <span class="attr">toolparamdescription</span>=<span class="val">"The adopter's email for adoption confirmation and care updates"</span>
-  <span class="tag">/&gt;</span>
-
-  <span class="tag">&lt;input</span>
-    type="tel" name="phone"
-    placeholder="+1 (555) 000-0000"
-    <span class="attr">toolparamdescription</span>=<span class="val">"Contact phone number for pickup coordination"</span>
   <span class="tag">/&gt;</span>
 
   <span class="tag">&lt;select</span>
@@ -280,6 +262,7 @@ const ALIENS = [
         id: "zorb-001", name: "Blinky", species: "Zorbian Puffworm", emoji: "🟣",
         planet: "Zorbax-7", size: "small", temperament: "gentle", ability: "bioluminescence",
         price: 450, compatibilityScore: 94, careLevel: "Easy",
+        blurb: "A squishy, glowing companion that purrs in ultraviolet. Perfect for beginners.",
         diet: "Photon flakes, crushed starlight, occasional moonberry",
         lifespan: "35 Earth years",
         warnings: ["Glows brightly at night — may disrupt sleep", "Do not expose to FM radio frequencies"]
@@ -288,6 +271,7 @@ const ALIENS = [
         id: "krix-002", name: "Thundermaw", species: "Krixian Howlbeast", emoji: "🔴",
         planet: "Krixos Prime", size: "large", temperament: "chaotic", ability: "sonic roar",
         price: 8500, compatibilityScore: 42, careLevel: "Expert",
+        blurb: "A massive predator with a heart of gold (literally — it has a gold organ).",
         diet: "Raw plasma steak, iron ore nuggets, the occasional asteroid fragment",
         lifespan: "200+ Earth years",
         warnings: ["Sonic roar can cause structural damage", "Requires Class-4 containment license", "May eat furniture during bonding phase"]
@@ -296,6 +280,7 @@ const ALIENS = [
         id: "flim-003", name: "Puddle", species: "Flimorian Shapeshifter", emoji: "🔵",
         planet: "Flimora", size: "medium", temperament: "playful", ability: "shapeshifting",
         price: 3200, compatibilityScore: 78, careLevel: "Moderate",
+        blurb: "A liquid-bodied trickster that mimics household objects for fun.",
         diet: "Distilled nebula water, mineral supplements, any Earth liquid (prefers orange juice)",
         lifespan: "80 Earth years",
         warnings: ["May impersonate important objects (keys, phones, remotes)", "Cannot hold shape if startled", "Keep away from extreme heat — will evaporate temporarily"]
@@ -304,6 +289,7 @@ const ALIENS = [
         id: "vex-004", name: "Whisper", species: "Vexari Thoughtfox", emoji: "🟡",
         planet: "Vexar Minor", size: "small", temperament: "gentle", ability: "telepathy",
         price: 6000, compatibilityScore: 88, careLevel: "Easy",
+        blurb: "A fox-like empath that communicates through projected emotions and images.",
         diet: "Thought-enriched kibble, Vexari dream nectar, chamomile tea",
         lifespan: "50 Earth years",
         warnings: ["May project your embarrassing memories if anxious", "Sensitive to loud arguments"]
@@ -312,6 +298,7 @@ const ALIENS = [
         id: "grak-005", name: "Crunchwing", species: "Grakkian Crystalbeetle", emoji: "🟢",
         planet: "Grakka", size: "medium", temperament: "independent", ability: "crystal generation",
         price: 1800, compatibilityScore: 71, careLevel: "Easy",
+        blurb: "A crystalline insectoid that grows decorative gems on its shell. Low maintenance.",
         diet: "Assorted gravel, mineral dust, UV light exposure (2 hrs/day minimum)",
         lifespan: "120 Earth years",
         warnings: ["Shed crystals may scratch hardwood floors", "Loud crunching sounds at night"]
@@ -320,6 +307,7 @@ const ALIENS = [
         id: "neb-006", name: "Nimbus", species: "Nebulan Cloudling", emoji: "⚪",
         planet: "Nebula Drift", size: "small", temperament: "gentle", ability: "weather control",
         price: 4200, compatibilityScore: 85, careLevel: "Easy",
+        blurb: "A floating, cloud-like being that generates tiny indoor weather patterns.",
         diet: "Atmospheric moisture, humidity, the occasional spritz from a spray bottle",
         lifespan: "Unknown (oldest recorded: 300+ years)",
         warnings: ["May cause indoor rain if neglected", "Keep away from open flames", "Electronics may need waterproofing"]
@@ -328,6 +316,7 @@ const ALIENS = [
         id: "vol-007", name: "Inferno Jr.", species: "Volcanite Salamander", emoji: "🟠",
         planet: "Krixos Prime", size: "medium", temperament: "chaotic", ability: "fire breath",
         price: 5500, compatibilityScore: 53, careLevel: "Advanced",
+        blurb: "A fiery reptilian with a mischievous streak and a taste for charcoal.",
         diet: "Charcoal, lava rocks, any food item (will self-char before eating)",
         lifespan: "90 Earth years",
         warnings: ["Fire hazard — fireproof habitat required", "Will char unattended clothing", "Insurance surcharge may apply"]
@@ -336,6 +325,7 @@ const ALIENS = [
         id: "zyn-008", name: "Glitch", species: "Zynari Phase-Cat", emoji: "🟣",
         planet: "Zynara", size: "small", temperament: "playful", ability: "phasing",
         price: 7200, compatibilityScore: 66, careLevel: "Advanced",
+        blurb: "A cat-like entity that can phase through solid matter. Yes, walls included.",
         diet: "Standard cat food (weirdly), quantum kibble supplement, the occasional moth",
         lifespan: "45 Earth years",
         warnings: ["Cannot be contained by physical barriers", "May appear in your bed at 3 AM", "Phase-proof rooms available for purchase separately"]
@@ -344,6 +334,7 @@ const ALIENS = [
         id: "pax-009", name: "Mossworth", species: "Paxian Treeling", emoji: "🟤",
         planet: "Paxia Verdant", size: "large", temperament: "gentle", ability: "plant growth",
         price: 250, compatibilityScore: 97, careLevel: "Easy",
+        blurb: "A slow-moving, tree-like companion that accelerates plant growth around it.",
         diet: "Water, compost, sunlight, classical music (not food but they insist)",
         lifespan: "500+ Earth years",
         warnings: ["Very slow — may block hallways", "Accelerated plant growth may affect property", "Produces 3kg of moss daily"]
@@ -352,6 +343,7 @@ const ALIENS = [
         id: "xel-010", name: "Axiom", species: "Xelari Hivemind Sprite", emoji: "🔵",
         planet: "Xelara", size: "small", temperament: "independent", ability: "duplication",
         price: 12000, compatibilityScore: 58, careLevel: "Expert",
+        blurb: "A tiny entity that splits into up to 12 copies. You're adopting a swarm.",
         diet: "Electromagnetic energy (sits near routers/outlets), crystallized logic cubes (included)",
         lifespan: "Unknown — may be functionally immortal",
         warnings: ["Up to 12 copies at once — can be overwhelming", "Rearranges furniture without asking", "Has been known to optimize your schedule without consent"]
@@ -402,31 +394,23 @@ if (!alien) {
         </div>
         <div class="recap-card-info">
             <div class="recap-title-row">
-                <h1>Adopting ${alien.name}</h1>
+                <h1>${alien.name}</h1>
                 <span class="recap-price">&#8372;${alien.price.toLocaleString()}</span>
             </div>
             <div class="recap-species">${alien.species}</div>
-            <div class="recap-tags">
-                <span class="recap-tag">${alien.size}</span>
-                <span class="recap-tag">${alien.temperament}</span>
-                <span class="recap-tag">${alien.planet}</span>
-                <span class="recap-tag">${alien.ability}</span>
-            </div>
         </div>
     `;
 
     // Set hidden alien ID field
     document.getElementById('alienIdField').value = alien.id;
 
-    // Update submit button text
-    document.getElementById('submitBtn').textContent = `Confirm Adoption of ${alien.name}`;
 
     // Show warnings if any
     if (alien.warnings && alien.warnings.length > 0) {
         document.getElementById('warningsSection').innerHTML = `
             <div class="warnings">
-                <h4><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg> Before you adopt — please acknowledge</h4>
-                <ul>${alien.warnings.map(w => `<li><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg>${w}</li>`).join('')}</ul>
+                <h4><svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 1.5L10 9.5H1Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><line x1="5.5" y1="4.5" x2="5.5" y2="6.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><circle cx="5.5" cy="8" r="0.6" fill="currentColor"/></svg> Before submitting, please be aware:</h4>
+                <ul>${alien.warnings.map(w => `<li>${w}</li>`).join('')}</ul>
             </div>
         `;
     }
@@ -461,12 +445,12 @@ if (!alien) {
         formSection.style.display = 'none';
         recapCard.style.display = 'none';
         document.querySelector('.back-link').style.display = 'none';
+        document.querySelector('.hero-content h1').textContent = 'Adoption Confirmed!';
 
         successCard.style.setProperty('--hero-color', getColor(alien));
         successCard.innerHTML = `
             <div class="success-top">
-                <h2>Adoption Confirmed!</h2>
-                <p class="success-subtitle">Congratulations, <strong>${data.adopter_name}</strong>! ${alien.name} the ${alien.species} is officially yours.</p>
+                <h2>Congratulations, ${data.adopter_name}!<br>${alien.name} the ${alien.species} is officially yours.</h2>
             </div>
             <div class="success-middle">
                 <div class="success-visual">
