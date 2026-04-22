@@ -1442,6 +1442,15 @@ label.page-type-card {
   @page {
     size: A4 portrait;
     margin: 18mm 20mm;
+
+    /* Custom page numbers — only visible when the browser's own
+       "Headers and footers" print option is turned off. */
+    @bottom-center {
+      content: "Page " counter(page) " of " counter(pages);
+      font-family: 'IfThenFont', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 8.5pt;
+      color: #888888;
+    }
   }
 
   /* ── Light-mode token overrides ──────────────────────────────────────────── */
