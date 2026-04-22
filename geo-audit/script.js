@@ -877,6 +877,42 @@ function buildPdfView() {
 
   view.appendChild(breakdown);
 
+  // ── SECTION NOTES ─────────────────────────────────────────────────────────
+  // Mirrors the summary screen's Notes block; omitted entirely when no notes.
+
+  var pdfNotesSections = state.sections.filter(function(section) {
+    return (state.notesState[section.id] || '').trim().length > 0;
+  });
+
+  if (pdfNotesSections.length > 0) {
+    var notesGroup = document.createElement('div');
+    notesGroup.className = 'summary-notes pdf-notes-group';
+
+    var notesGroupHeading = document.createElement('h2');
+    notesGroupHeading.className   = 'summary-section-title';
+    notesGroupHeading.textContent = 'Notes';
+    notesGroup.appendChild(notesGroupHeading);
+
+    pdfNotesSections.forEach(function(section) {
+      var item = document.createElement('div');
+      item.className = 'summary-notes-item';
+
+      var sectionLabel = document.createElement('p');
+      sectionLabel.className   = 'summary-notes-section';
+      sectionLabel.textContent = section.title;
+
+      var noteText = document.createElement('p');
+      noteText.className   = 'summary-notes-text';
+      noteText.textContent = state.notesState[section.id].trim();
+
+      item.appendChild(sectionLabel);
+      item.appendChild(noteText);
+      notesGroup.appendChild(item);
+    });
+
+    view.appendChild(notesGroup);
+  }
+
   // ── ACTION PLAN ────────────────────────────────────────────────────────────
 
   var TIER_LABELS_PDF = {

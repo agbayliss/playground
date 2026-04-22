@@ -1558,6 +1558,44 @@ label.page-type-card {
     padding-bottom: 0;
   }
 
+  /* ── Notes group (reuses .summary-notes, .summary-notes-* classes) ───────── */
+
+  .pdf-notes-group {
+    padding-top: 2rem;
+    padding-bottom: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.10);
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .pdf-notes-group .summary-section-title {
+    font-size: 13pt;
+    margin-bottom: 0.9rem;
+  }
+
+  .pdf-notes-group .summary-notes-item {
+    padding: 0.4rem 0;
+    break-inside: avoid;
+  }
+
+  .pdf-notes-group .summary-notes-item + .summary-notes-item {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 0.3rem;
+    padding-top: 0.6rem;
+  }
+
+  .pdf-notes-group .summary-notes-section {
+    font-size: 7.5pt;
+    color: #888888;
+    margin-bottom: 0.2rem;
+  }
+
+  .pdf-notes-group .summary-notes-text {
+    font-size: 9pt;
+    color: #333333;
+    line-height: 1.5;
+  }
+
   /* ── Items to address (reuses .summary-fixes-* classes) ─────────────────── */
 
   .pdf-fixes {
