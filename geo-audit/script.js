@@ -526,6 +526,43 @@ function renderSummary() {
     sectionsEl.appendChild(row);
   });
 
+  // ── SECTION NOTES ────────────────────────────────────────────────────────
+
+  var notesEl = document.getElementById('summary-notes');
+  notesEl.innerHTML = '';
+
+  var notesSections = state.sections.filter(function(section) {
+    return (state.notesState[section.id] || '').trim().length > 0;
+  });
+
+  if (notesSections.length === 0) {
+    notesEl.classList.add('hidden');
+  } else {
+    notesEl.classList.remove('hidden');
+
+    var notesHeading = document.createElement('h2');
+    notesHeading.className   = 'summary-section-title';
+    notesHeading.textContent = 'Notes';
+    notesEl.appendChild(notesHeading);
+
+    notesSections.forEach(function(section) {
+      var item = document.createElement('div');
+      item.className = 'summary-notes-item';
+
+      var sectionLabel = document.createElement('p');
+      sectionLabel.className   = 'summary-notes-section';
+      sectionLabel.textContent = section.title;
+
+      var noteText = document.createElement('p');
+      noteText.className   = 'summary-notes-text';
+      noteText.textContent = state.notesState[section.id].trim();
+
+      item.appendChild(sectionLabel);
+      item.appendChild(noteText);
+      notesEl.appendChild(item);
+    });
+  }
+
   // ── PRIORITIZED FIX LIST ─────────────────────────────────────────────────
 
   var TIER_LABELS = {
