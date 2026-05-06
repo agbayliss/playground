@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Tools for Designers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #faf8f4;
+      --warm-white: #ffffff;
+      --ink: #1a1814;
+      --ink-light: #4a4640;
+      --ink-muted: #8a8480;
+      --rule: #e8e4de;
+      --accent: #c4622d;
+      --accent-light: #f5ebe3;
+      --accent-mid: #e8a882;
+      --tag-bg: #f0ede8;
+      --tag-text: #5a5450;
+      --highlight: #fef9f0;
+      --note-border: #d4c5a9;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 40px 120px;
+    }
+
+    /* ── Masthead ── */
+    .masthead {
+      border-bottom: 1px solid var(--rule);
+      padding: 56px 0 40px;
+      margin-bottom: 64px;
+    }
+
+    .masthead-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .masthead h1 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--ink);
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .masthead-sub {
+      font-size: 17px;
+      color: var(--ink-light);
+      max-width: 560px;
+      line-height: 1.65;
+    }
+
+    .meta-row {
+      margin-top: 28px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .meta-tag {
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      font-size: 11.5px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 4px 12px;
+      border-radius: 2px;
+    }
+
+    /* ── Table of Contents ── */
+    .toc {
+      background: var(--warm-white);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--accent);
+      padding: 28px 32px;
+      margin-bottom: 72px;
+    }
+
+    .toc-title {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 16px;
+    }
+
+    .toc ol {
+      list-style: none;
+      counter-reset: toc-counter;
+    }
+
+    .toc li {
+      counter-increment: toc-counter;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .toc li:last-child { border-bottom: none; }
+
+    .toc li::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      font-family: 'Fraunces', serif;
+      font-size: 13px;
+      color: var(--accent);
+      min-width: 24px;
+    }
+
+    .toc a {
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.15s;
+    }
+
+    .toc a:hover { color: var(--accent); }
+
+    .toc .toc-sub {
+      font-size: 12.5px;
+      color: var(--ink-muted);
+      margin-left: auto;
+    }
+
+    /* ── Status badge (for "coming soon" sections) ── */
+    .badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 10px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+    .badge-soon {
+      background: var(--tag-bg);
+      color: var(--ink-muted);
+      border: 1px solid var(--rule);
+    }
+
+    /* ── Section ── */
+    .section {
+      margin-bottom: 80px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+
+    .section-number {
+      font-family: 'Fraunces', serif;
+      font-size: 13px;
+      color: var(--accent);
+      font-style: italic;
+    }
+
+    .section h2 {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.6rem, 3vw, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .section-tagline {
+      font-size: 14px;
+      color: var(--ink-muted);
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--rule);
+      font-style: italic;
+    }
+
+    /* ── Subsections ── */
+    .subsection {
+      margin-bottom: 36px;
+    }
+
+    .subsection h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .subsection p {
+      color: var(--ink-light);
+      font-size: 15.5px;
+      margin-bottom: 12px;
+    }
+
+    .subsection p:last-child { margin-bottom: 0; }
+
+    /* ── Callout / Note ── */
+    .note {
+      background: var(--highlight);
+      border: 1px solid var(--note-border);
+      border-left: 3px solid var(--accent-mid);
+      padding: 16px 20px;
+      margin: 20px 0;
+      font-size: 14.5px;
+      color: var(--ink-light);
+    }
+
+    .note strong {
+      color: var(--ink);
+      font-weight: 500;
+    }
+
+    /* ── Feature grid ── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin: 24px 0;
+    }
+
+    .feature-cell {
+      background: var(--warm-white);
+      padding: 20px 22px;
+    }
+
+    .feature-cell .label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 8px;
+    }
+
+    .feature-cell .value {
+      font-size: 14.5px;
+      color: var(--ink-light);
+      line-height: 1.55;
+    }
+
+    /* ── Comparison table ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+
+    .compare-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      padding: 10px 16px;
+      border-bottom: 2px solid var(--rule);
+      background: var(--cream);
+    }
+
+    .compare-table td {
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink-light);
+      vertical-align: top;
+      line-height: 1.55;
+    }
+
+    .compare-table td:first-child {
+      font-weight: 500;
+      color: var(--ink);
+      width: 180px;
+      white-space: nowrap;
+    }
+
+    .compare-table tr:last-child td { border-bottom: none; }
+
+    .compare-table .yes {
+      color: #4a7c59;
+      font-weight: 500;
+    }
+
+    .compare-table .no {
+      color: var(--ink-muted);
+    }
+
+    /* ── Use-case cards ── */
+    .use-cases {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .use-case {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--warm-white);
+      border: 1px solid var(--rule);
+    }
+
+    .use-case-icon {
+      font-size: 18px;
+      line-height: 1;
+      margin-top: 2px;
+      min-width: 24px;
+    }
+
+    .use-case-text {
+      font-size: 14.5px;
+      color: var(--ink-light);
+      line-height: 1.55;
+    }
+
+    .use-case-text strong {
+      display: block;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 2px;
+      font-size: 14px;
+    }
+
+    /* ── Divider ── */
+    hr.section-rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 72px 0;
+    }
+
+    /* ── Footer ── */
+    .doc-footer {
+      border-top: 1px solid var(--rule);
+      padding-top: 28px;
+      margin-top: 80px;
+      font-size: 12.5px;
+      color: var(--ink-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 20px 80px; }
+      .feature-grid { grid-template-columns: 1fr; }
+      .toc .toc-sub { display: none; }
+      .compare-table td:first-child { white-space: normal; width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrap">
+
+    <!-- Masthead -->
+    <div class="masthead">
+      <div class="masthead-label">Design Team Reference</div>
+      <h1>Claude Tools:<br>A Designer's Guide</h1>
+      <p class="masthead-sub">
+        A plain-English breakdown of the different Claude products — what each one does,
+        when to use it, and how to work with it day-to-day.
+      </p>
+      <div class="meta-row">
+        <span class="meta-tag">Claude Chat</span>
+        <span class="meta-tag">Projects</span>
+        <span class="meta-tag">Cowork</span>
+        <span class="meta-tag">Claude Code</span>
+      </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc">
+      <div class="toc-title">Contents</div>
+      <ol>
+        <li>
+          <a href="#claude-chat">Claude Chat</a>
+          <span class="toc-sub">The everyday AI conversation tool</span>
+        </li>
+        <li>
+          <a href="#projects">Projects in Claude Chat</a>
+          <span class="toc-sub">Persistent context &amp; knowledge bases</span>
+        </li>
+        <li>
+          <a href="#cowork">Cowork</a>
+          <span class="toc-sub">Agent-powered task automation</span>
+        </li>
+        <li>
+          <a href="#code">Claude Code</a>
+          <span class="toc-sub">AI in your terminal &amp; editor</span>
+        </li>
+      </ol>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════
+         SECTION 1 — CLAUDE CHAT
+    ════════════════════════════════════════ -->
+    <div class="section" id="claude-chat">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2>Claude Chat</h2>
+      </div>
+      <p class="section-tagline">Your conversational AI — claude.ai in a browser or the desktop app.</p>
+
+      <div class="subsection">
+        <h3>The mental model</h3>
+        <p>
+          Think of Claude Chat as a brilliant new coworker who just got onboarded to your project. They're
+          sharp, capable, and ready to help with almost anything — but they don't have the project history
+          you do. They don't know the client's quirks, the decisions that got reversed two months ago, or
+          what the brand guide actually means in practice. You have to bring them up to speed at the start
+          of every conversation.
+        </p>
+        <p>
+          That's the default state of Claude Chat: highly capable, but starting fresh each time. Each new
+          conversation is a clean slate — Claude has no memory of anything you discussed in a previous chat
+          unless you bring it back up yourself, or unless you've enabled Memory (more on that below).
+        </p>
+        <p>
+          That said, within a single conversation, Claude remembers everything — every message, every file
+          you've shared, every decision you've talked through. It's only when you start a new conversation
+          that the slate gets wiped.
+        </p>
+      </div>
+
+      <div class="subsection">
+        <h3>Memory — turning that new hire into a real colleague</h3>
+        <p>
+          There's an opt-in feature called Memory that changes things meaningfully. When it's on, Claude
+          pays attention across your conversations and builds up a running picture of who you are, how you
+          work, and what matters to you — your preferences, your team's conventions, recurring client context,
+          and so on. That context then gets quietly carried into every new conversation.
+        </p>
+        <p>
+          With Memory off, Claude is that brilliant new hire: capable, but needs briefing every time.
+          With Memory on, Claude is more like a real colleague — someone who remembers that you had this
+          conversation last week, knows your preferred tone for that client, and doesn't need you to explain
+          your workflow from scratch.
+        </p>
+        <p>
+          A few things worth knowing:
+        </p>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">🔍</div>
+            <div class="use-case-text">
+              <strong>You're in control of what it remembers</strong>
+              Go to Settings → Capabilities → "View and edit your memory" to see exactly what Claude has noted down. You can edit or delete anything.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🗂️</div>
+            <div class="use-case-text">
+              <strong>Each Project has its own separate memory</strong>
+              Memory inside a Project stays scoped to that Project — it doesn't bleed into your general conversations or other Projects.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">👻</div>
+            <div class="use-case-text">
+              <strong>Incognito mode skips memory entirely</strong>
+              Click the ghost icon in the top-right corner of a new chat for a conversation that isn't saved to memory or chat history — good for sensitive brainstorms.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">💬</div>
+            <div class="use-case-text">
+              <strong>You can update it mid-conversation</strong>
+              Just tell Claude "remember that…" and it'll update immediately, without waiting for the daily refresh.
+            </div>
+          </div>
+        </div>
+        <div class="note">
+          <strong>Memory is off by default.</strong> Enable it in <strong>Settings → Capabilities</strong> whenever you're ready to try it.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>What designers use it for</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">✍️</div>
+            <div class="use-case-text">
+              <strong>Writing and editing</strong>
+              UX copy, microcopy, design doc drafts, presentation narratives, design critiques, client emails.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🧠</div>
+            <div class="use-case-text">
+              <strong>Brainstorming and research</strong>
+              Exploring concepts, competitive research, getting a second opinion on a design direction, mapping user flows in conversation.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📄</div>
+            <div class="use-case-text">
+              <strong>Working with documents</strong>
+              Upload a brief, a spec, a transcript, or a PDF and ask Claude to summarize, find gaps, pull out key insights, or draft a response.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🎨</div>
+            <div class="use-case-text">
+              <strong>Generating artifacts</strong>
+              Claude can produce things like HTML mockups, SVG illustrations, or styled documents right in the chat — viewable in a side panel.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- ═══════════════════════════════════════
+         SECTION 2 — PROJECTS
+    ════════════════════════════════════════ -->
+    <div class="section" id="projects">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2>Projects in Claude Chat</h2>
+      </div>
+      <p class="section-tagline">A dedicated workspace for ongoing work — with shared context built in.</p>
+
+      <div class="subsection">
+        <h3>The mental model</h3>
+        <p>
+          A Project is still Claude Chat — same interface, same conversation style — but now that brilliant
+          coworker has been on the project with you since the beginning. You've given them a proper brief
+          pack: the brand guidelines, the client history, the tone of voice doc, the decisions that were
+          already made. Every time you sit down together, they're fully read-in. You don't re-explain; you
+          just get to work.
+        </p>
+        <p>
+          You set that context up once — by uploading reference files and writing a set of instructions —
+          and it's available in every conversation you have inside that Project, from that point on.
+        </p>
+        <p>
+          There's one important constraint to understand, though. Whatever Claude produces in a
+          conversation — a draft, a revised brief, a set of copy options — it hands back to you like a file
+          over Slack. You still have to take that output and do something with it yourself: download it,
+          upload it to Box, paste it into your doc, integrate it into your design. Claude can't reach into
+          your files and make those changes for you. That's what Cowork and Claude Code are for.
+        </p>
+      </div>
+
+      <div class="subsection">
+        <h3>What's in a Project</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">📚</div>
+            <div class="use-case-text">
+              <strong>The Knowledge Base — your brief pack</strong>
+              Upload files (PDFs, docs, CSVs, etc.) and they become permanently available to every
+              conversation inside the Project. Brand guide, research notes, past work, meeting transcripts —
+              anything Claude should know before you start talking. You can upload a substantial amount of
+              content, and when you exceed the limit, Claude automatically starts pulling in only what's
+              most relevant to each message — so you don't need to manage it manually.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📋</div>
+            <div class="use-case-text">
+              <strong>Custom Instructions — standing rules</strong>
+              Write instructions that shape how Claude behaves across every conversation in the Project.
+              This is where you'd set tone, role, output format, and conventions — anything you'd otherwise
+              have to say at the start of every chat. Example: "Always follow our design system naming
+              conventions. When reviewing copy, flag anything that contradicts the brand voice guide
+              uploaded here."
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>One thing to know about conversations within a Project:</strong> they don't see each other.
+          If you finish a great draft in one conversation, open a new one, and ask "can you continue where
+          we left off?" — Claude won't know what you mean. Each conversation draws from the same knowledge
+          base and instructions, but they're otherwise separate threads.
+          <br /><br />
+          The workaround: if you want output from one conversation to carry into future ones, you can save
+          it to the Project's knowledge base manually.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Sharing a Project with your team</h3>
+        <p>
+          Projects can be shared with anyone else on your team account. When you share one, you choose
+          the access level: <strong>Can use</strong> means they can chat within the Project but can't
+          change its setup; <strong>Can edit</strong> gives full access to modify the instructions,
+          knowledge base, and settings.
+        </p>
+        <p>
+          A shared Project means the whole team is working from the same briefed-up version of Claude —
+          consistent behavior, consistent context, without everyone having to maintain their own copy.
+          Projects are private by default; you explicitly choose who gets in.
+        </p>
+      </div>
+
+      <div class="subsection">
+        <h3>What designers use it for</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">🗃️</div>
+            <div class="use-case-text">
+              <strong>Client or brand workspaces</strong>
+              Upload brand guidelines, tone of voice docs, past work, and briefs. Every conversation for that client already knows the context — you just ask your question.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📐</div>
+            <div class="use-case-text">
+              <strong>Design system reference</strong>
+              Keep your component documentation, naming conventions, and usage guidelines in a Project so Claude can check anything against them, or help you write new entries that match the existing style.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🔬</div>
+            <div class="use-case-text">
+              <strong>Research synthesis</strong>
+              Drop in interview transcripts, survey results, and research notes. Ask questions, pull quotes, find patterns — without re-uploading every time.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🤝</div>
+            <div class="use-case-text">
+              <strong>Team shared context</strong>
+              A shared Project means everyone works from the same briefed-up Claude — consistent output, less repeated setup across the team.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Chat vs. Projects — when to use which</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Situation</th>
+              <th>Use Chat</th>
+              <th>Use a Project</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>One-off question or task</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Recurring work with consistent context</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Working from specific reference documents</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Sharing context with teammates</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Sensitive or confidential brainstorm</td>
+              <td class="yes">✓ (use incognito)</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Ongoing client or project work</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- ═══════════════════════════════════════
+         SECTION 3 — COWORK
+    ════════════════════════════════════════ -->
+    <div class="section" id="cowork">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2>Cowork</h2>
+      </div>
+      <p class="section-tagline">Claude as an executive assistant — not just answering questions, but getting things done.</p>
+
+      <div class="subsection">
+        <h3>The mental model</h3>
+        <p>
+          Remember the limitation in Projects — that Claude hands you output like a file over Slack, and
+          you're the one who has to download it, upload it to Box, paste it into the doc, integrate it
+          wherever it needs to go? Cowork is where that constraint disappears.
+        </p>
+        <p>
+          With Cowork, that same tenured, well-briefed coworker now has direct access to your files and
+          your computer. You describe what you want done — "go through these five research files, pull
+          out anything relevant to our accessibility audit, and put together a structured report" — and
+          they go do it. They work across your files and folders, coordinate the steps themselves, and
+          come back when they're finished or when they've hit a decision only you can make.
+        </p>
+        <p>
+          Think of it less like a conversation and more like assigning a task. You give the outcome, not
+          the instructions.
+        </p>
+        <div class="note">
+          <strong>Where to find it:</strong> Cowork lives in the Claude Desktop app (Mac and Windows) — not
+          in the browser. Look for the "Cowork" tab once you've got the desktop app open. You'll also need
+          to point Claude at the folders it's allowed to work with before it can touch your files.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>What Cowork can actually do</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">📁</div>
+            <div class="use-case-text">
+              <strong>Read and write your local files directly</strong>
+              No uploading, no downloading. Claude works with files in the folders you've given it access
+              to — opening, editing, creating, renaming, and organizing them on your behalf.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🔀</div>
+            <div class="use-case-text">
+              <strong>Break complex tasks into parallel workstreams</strong>
+              For bigger jobs, Cowork can spin up multiple sub-agents working simultaneously on different
+              parts of the task, then pull the results together. You don't have to orchestrate that — it does.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🖥️</div>
+            <div class="use-case-text">
+              <strong>Use apps on your computer</strong>
+              Cowork can operate software on your desktop — navigating dashboards, working inside
+              spreadsheets, interacting with tools that don't have an API. It's using your computer the
+              way you would, just without you having to sit there.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🗓️</div>
+            <div class="use-case-text">
+              <strong>Run tasks on a schedule</strong>
+              Set up recurring tasks — a weekly summary, a daily file sort, a regular report — and Cowork
+              runs them automatically on your schedule, while your computer is awake and the app is open.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📱</div>
+            <div class="use-case-text">
+              <strong>Assign tasks from your phone</strong>
+              You can kick off a Cowork task from the Claude mobile app while you're away from your desk,
+              and your desktop handles the work. Come back to a finished deliverable.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>What designers use it for</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">🗂️</div>
+            <div class="use-case-text">
+              <strong>File and asset organization</strong>
+              Point Claude at a messy downloads folder or a sprawling project directory and ask it to
+              rename, sort, deduplicate, or surface what's relevant. The kind of cleanup that always
+              gets deprioritized.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📋</div>
+            <div class="use-case-text">
+              <strong>Research synthesis and report drafting</strong>
+              Feed it a folder of source files — briefs, transcripts, PDFs — and ask for a structured
+              draft. Claude handles the assembly and synthesis; you handle the refinement.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🔁</div>
+            <div class="use-case-text">
+              <strong>Repetitive, multi-step tasks</strong>
+              Anything that's time-consuming but not technically complex — updating a set of documents
+              with new information, pulling consistent data from a batch of files, reformatting a
+              folder of deliverables to match a new template.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>A few things to know before you start</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">👀</div>
+            <div class="use-case-text">
+              <strong>You stay in the loop</strong>
+              Cowork shows you what it's doing at each step. You can jump in to redirect it mid-task,
+              and it will always ask your explicit permission before permanently deleting any files.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🔒</div>
+            <div class="use-case-text">
+              <strong>You control what it can access</strong>
+              Claude only works with the folders you've explicitly shared with it. A good habit: create
+              a dedicated working folder for Cowork rather than giving it broad access to everything.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">💻</div>
+            <div class="use-case-text">
+              <strong>Your computer needs to stay on</strong>
+              Cowork runs on your machine. If the desktop app is closed or your computer goes to sleep,
+              Claude can't work. Tasks resume when the app is back open.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-rule" />
+
+    <!-- ═══════════════════════════════════════
+         SECTION 4 — CLAUDE CODE
+    ════════════════════════════════════════ -->
+    <div class="section" id="code">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2>Claude Code</h2>
+      </div>
+      <p class="section-tagline">Claude as a specialist contractor — building real, working things from your ideas.</p>
+
+      <div class="subsection">
+        <h3>The mental model</h3>
+        <p>
+          If Cowork is a generalist executive assistant, Claude Code is a specialist contractor —
+          someone brought in specifically to build things. Not to help you think through ideas or
+          hand you a document to integrate yourself, but to sit down and actually make something that
+          runs in a browser.
+        </p>
+        <p>
+          For designers at an agency working across many different client projects, jumping into
+          production codebases probably isn't the right entry point — and that's fine. That's not
+          what Claude Code is most useful for here. What it <em>is</em> useful for is everything
+          you'd want to build or explore on your own: interactive prototypes, animation experiments,
+          responsive behavior tests, side projects, small tools. Things where a Figma file or a
+          static mockup just isn't enough to answer the question.
+        </p>
+        <p>
+          You describe what you want. Claude Code creates the files, writes the code, and shows
+          you something real in a browser. You react to it, ask for changes, and iterate — the same
+          way you'd work with a developer, except the loop is just you.
+        </p>
+      </div>
+
+      <div class="subsection">
+        <h3>Getting started — no terminal required</h3>
+        <p>
+          The biggest barrier for most designers is the assumption that Claude Code requires knowing
+          your way around a terminal. It doesn't have to. The Claude Desktop app includes Claude Code
+          in a visual interface — same capability, no command line. Download the desktop app, open
+          the Code tab, point it at a folder, and start describing what you want to build.
+        </p>
+        <p>
+          A good first project: create a new empty folder on your desktop, open it in Claude Code,
+          and say "build me a simple webpage with a card that animates in on scroll." You'll have
+          something to look at in a browser within minutes.
+        </p>
+        <div class="note">
+          <strong>How to get it:</strong> Claude Code is included in your team account. Download the
+          Claude Desktop app at <strong>claude.ai/download</strong>, open it, and look for the Code tab.
+          If you'd rather start in a browser first, there's also a web version at <strong>claude.ai/code</strong>
+          — no installation needed.
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>What designers use it for</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">🎬</div>
+            <div class="use-case-text">
+              <strong>Prototyping animations and interactions</strong>
+              Scroll-triggered reveals, hover states, staggered entrance animations, custom cursor
+              behavior — these are nearly impossible to fully communicate in a static mockup. Claude
+              Code lets you build the real thing in a browser and iterate on it in plain English.
+              "Make the cards drift up as they enter" is a valid prompt.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📱</div>
+            <div class="use-case-text">
+              <strong>Testing responsive behavior in real code</strong>
+              Figma's responsive previews are approximations. If you want to know what a layout
+              actually does at 375px — whether the nav collapses right, whether the type scale holds
+              up, whether the spacing still works — Claude Code lets you see it in a real browser,
+              on a real device, and tweak it until it's right.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🛠️</div>
+            <div class="use-case-text">
+              <strong>Building side projects and personal tools</strong>
+              A portfolio site, a small tool you've always wanted, something you're building to
+              learn — Claude Code makes these tractable even without a development background.
+              You bring the vision and the taste; Claude handles the code.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">✅</div>
+            <div class="use-case-text">
+              <strong>Validating specs before handoff</strong>
+              Designers sometimes spec things that are awkward to implement — unusual layouts,
+              specific timing curves, layered effects. Building a quick prototype in Claude Code
+              lets you pressure-test an idea yourself, so you arrive at the dev handoff with
+              more confidence, or knowing you need to rethink something.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📚</div>
+            <div class="use-case-text">
+              <strong>Learning front-end through doing</strong>
+              This has been one of the most valuable uses for designers who are curious about code
+              but don't have a background in it. You describe what you want, Claude Code writes it,
+              and you can ask it to explain what it did and why. You pick up how things work
+              naturally, at your own pace, with something real to point at — not a tutorial exercise.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>A few things to know before you start</h3>
+        <div class="use-cases">
+          <div class="use-case">
+            <div class="use-case-icon">✅</div>
+            <div class="use-case-text">
+              <strong>It asks before making changes</strong>
+              By default, Claude Code asks for your approval before modifying files or running
+              commands. You're always in control of what actually gets changed.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">🧠</div>
+            <div class="use-case-text">
+              <strong>It learns your project over time</strong>
+              Claude Code builds up memory of the project you're working in — your preferences,
+              decisions you've made, how you like things structured — and carries that into future
+              sessions automatically. The longer you work in a project, the less re-explaining you do.
+            </div>
+          </div>
+          <div class="use-case">
+            <div class="use-case-icon">📁</div>
+            <div class="use-case-text">
+              <strong>It works best with a folder to anchor it</strong>
+              Claude Code is most useful when it has a project folder to work in — even if that
+              folder starts completely empty. Think of the folder as the job site. Once it's there,
+              Claude can create files, build structure, and iterate within it.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <h3>Cowork vs. Claude Code — which one do I reach for?</h3>
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <th>Situation</th>
+              <th>Use Cowork</th>
+              <th>Use Claude Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Organizing or processing files</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Synthesizing research into a report</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Scheduled or recurring tasks</td>
+              <td class="yes">✓</td>
+              <td class="no">—</td>
+            </tr>
+            <tr>
+              <td>Building an interactive prototype</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Prototyping animations or interactions</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Testing responsive behavior in a browser</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Building a side project or personal site</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+            <tr>
+              <td>Learning front-end through experimentation</td>
+              <td class="no">—</td>
+              <td class="yes">✓</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- Footer -->
+    <div class="doc-footer">
+      <span>Claude Tools for Designers — Design Team Reference</span>
+      <span>Sources: support.claude.com · anthropic.com/news</span>
+    </div>
+
+  </div>
+</body>
+</html>
